@@ -1,0 +1,164 @@
+{
+  "family_id": "FAM001",
+  "indication": "Ejemplo piloto de enfermedad genética",
+  "people": [
+    {
+      "uid": "P1",
+      "label": "",
+      "gender": "man",
+      "sex_at_birth": "male",
+      "affected": false,
+      "proband": false,
+      "deceased": false,
+      "birth_order": null,
+      "age": 68,
+      "generation_override": null,
+      "record_type": "person",
+      "gestational_age_weeks": null,
+      "clinical": {
+        "phenotype_status": "unaffected",
+        "conditions": [],
+        "genetic_study_status": "not_performed",
+        "evaluation_type": "",
+        "gene": "",
+        "variant": "",
+        "zygosity": "",
+        "carrier_status": "none",
+        "documented_evaluation": false,
+        "evaluation_summary": ""
+      },
+      "condition_states": []
+    },
+    {
+      "uid": "P2",
+      "label": "",
+      "gender": "woman",
+      "sex_at_birth": "female",
+      "affected": true,
+      "proband": false,
+      "deceased": false,
+      "birth_order": null,
+      "age": 66,
+      "generation_override": null,
+      "record_type": "person",
+      "gestational_age_weeks": null,
+      "clinical": {
+        "phenotype_status": "affected",
+        "conditions": [],
+        "genetic_study_status": "not_performed",
+        "evaluation_type": "",
+        "gene": "",
+        "variant": "",
+        "zygosity": "",
+        "carrier_status": "none",
+        "documented_evaluation": false,
+        "evaluation_summary": ""
+      },
+      "condition_states": []
+    },
+    {
+      "uid": "P3",
+      "label": "",
+      "gender": "woman",
+      "sex_at_birth": "female",
+      "affected": false,
+      "proband": false,
+      "deceased": false,
+      "birth_order": 1,
+      "age": 42,
+      "generation_override": null,
+      "record_type": "person",
+      "gestational_age_weeks": null,
+      "clinical": {
+        "phenotype_status": "unaffected",
+        "conditions": [],
+        "genetic_study_status": "not_performed",
+        "evaluation_type": "",
+        "gene": "",
+        "variant": "",
+        "zygosity": "",
+        "carrier_status": "none",
+        "documented_evaluation": false,
+        "evaluation_summary": ""
+      },
+      "condition_states": []
+    },
+    {
+      "uid": "P4",
+      "label": "Caso índice",
+      "gender": "man",
+      "sex_at_birth": "male",
+      "affected": true,
+      "proband": true,
+      "deceased": false,
+      "birth_order": 2,
+      "age": 39,
+      "generation_override": null,
+      "record_type": "person",
+      "gestational_age_weeks": null,
+      "clinical": {
+        "phenotype_status": "affected",
+        "conditions": [],
+        "genetic_study_status": "not_performed",
+        "evaluation_type": "",
+        "gene": "",
+        "variant": "",
+        "zygosity": "",
+        "carrier_status": "none",
+        "documented_evaluation": false,
+        "evaluation_summary": ""
+      },
+      "condition_states": []
+    },
+    {
+      "uid": "P5",
+      "label": "",
+      "gender": "man",
+      "sex_at_birth": "male",
+      "affected": false,
+      "proband": false,
+      "deceased": true,
+      "birth_order": 3,
+      "age": 35,
+      "generation_override": null,
+      "record_type": "person",
+      "gestational_age_weeks": null,
+      "clinical": {
+        "phenotype_status": "unaffected",
+        "conditions": [],
+        "genetic_study_status": "not_performed",
+        "evaluation_type": "",
+        "gene": "",
+        "variant": "",
+        "zygosity": "",
+        "carrier_status": "none",
+        "documented_evaluation": false,
+        "evaluation_summary": ""
+      },
+      "condition_states": []
+    }
+  ],
+  "relationships": [
+    {
+      "type": "union",
+      "people": [
+        "P1",
+        "P2"
+      ]
+    },
+    {
+      "type": "parentage",
+      "parents": [
+        "P1",
+        "P2"
+      ],
+      "children": [
+        "P3",
+        "P4",
+        "P5"
+      ]
+    }
+  ],
+  "schema_version": "4.4",
+  "conditions": []
+}

@@ -1,0 +1,3 @@
+# Impedir el acceso HTTP directo a los casos almacenados en Apache 2.4.
+# Requiere que el servidor permita aplicar las reglas .htaccess.
+Require all denied

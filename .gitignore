@@ -1,0 +1,24 @@
+# No subir familias reales ni datos de pacientes
+/data/*.json
+/data/*.json.*
+/data/*.bak
+/data/*.tmp
+
+# Archivos locales, credenciales y cachés
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+__pycache__/
+*.pyc
+
+# Datos locales: nunca versionar
+/data/*
+!/data/.gitkeep
+!/data/.htaccess
+
+# Paquetes y copias locales
+*.zip
+*.bak
+*~

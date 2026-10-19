@@ -1,0 +1,362 @@
+{
+  "schema_version": "4.4",
+  "family_id": "T19F_REORDEN_RAMAS_MULTIGENERACIONAL",
+  "indication": "Regresión T19f: dos ramas con ascendencia representada pueden intercambiarse en generación II según su descendencia en III",
+  "show_pedigree_numbers": true,
+  "conditions": [],
+  "people": [
+    {
+      "uid": "P1",
+      "record_type": "person",
+      "label": "",
+      "brief_info": "",
+      "gender": "man",
+      "sex_at_birth": "male",
+      "age": null,
+      "birth_order": null,
+      "generation_override": null,
+      "affected": false,
+      "consultand": false,
+      "proband": false,
+      "deceased": false,
+      "family_history_unknown": false,
+      "reproductive_status": "none",
+      "reproductive_reason": "",
+      "condition_states": [],
+      "notes": ""
+    },
+    {
+      "uid": "P2",
+      "record_type": "person",
+      "label": "",
+      "brief_info": "",
+      "gender": "woman",
+      "sex_at_birth": "female",
+      "age": null,
+      "birth_order": null,
+      "generation_override": null,
+      "affected": false,
+      "consultand": false,
+      "proband": false,
+      "deceased": false,
+      "family_history_unknown": false,
+      "reproductive_status": "none",
+      "reproductive_reason": "",
+      "condition_states": [],
+      "notes": ""
+    },
+    {
+      "uid": "P3",
+      "record_type": "person",
+      "label": "",
+      "brief_info": "",
+      "gender": "man",
+      "sex_at_birth": "male",
+      "age": null,
+      "birth_order": null,
+      "generation_override": null,
+      "affected": false,
+      "consultand": false,
+      "proband": false,
+      "deceased": false,
+      "family_history_unknown": false,
+      "reproductive_status": "none",
+      "reproductive_reason": "",
+      "condition_states": [],
+      "notes": ""
+    },
+    {
+      "uid": "P4",
+      "record_type": "person",
+      "label": "",
+      "brief_info": "",
+      "gender": "woman",
+      "sex_at_birth": "female",
+      "age": null,
+      "birth_order": null,
+      "generation_override": null,
+      "affected": false,
+      "consultand": false,
+      "proband": false,
+      "deceased": false,
+      "family_history_unknown": false,
+      "reproductive_status": "none",
+      "reproductive_reason": "",
+      "condition_states": [],
+      "notes": ""
+    },
+    {
+      "uid": "P5",
+      "record_type": "person",
+      "label": "",
+      "brief_info": "",
+      "gender": "man",
+      "sex_at_birth": "male",
+      "age": null,
+      "birth_order": 1,
+      "generation_override": null,
+      "affected": false,
+      "consultand": false,
+      "proband": false,
+      "deceased": false,
+      "family_history_unknown": false,
+      "reproductive_status": "none",
+      "reproductive_reason": "",
+      "condition_states": [],
+      "notes": ""
+    },
+    {
+      "uid": "P6",
+      "record_type": "person",
+      "label": "",
+      "brief_info": "",
+      "gender": "woman",
+      "sex_at_birth": "female",
+      "age": null,
+      "birth_order": null,
+      "generation_override": null,
+      "affected": false,
+      "consultand": false,
+      "proband": false,
+      "deceased": false,
+      "family_history_unknown": false,
+      "reproductive_status": "none",
+      "reproductive_reason": "",
+      "condition_states": [],
+      "notes": ""
+    },
+    {
+      "uid": "P7",
+      "record_type": "person",
+      "label": "",
+      "brief_info": "",
+      "gender": "man",
+      "sex_at_birth": "male",
+      "age": null,
+      "birth_order": 1,
+      "generation_override": null,
+      "affected": false,
+      "consultand": false,
+      "proband": false,
+      "deceased": false,
+      "family_history_unknown": false,
+      "reproductive_status": "none",
+      "reproductive_reason": "",
+      "condition_states": [],
+      "notes": ""
+    },
+    {
+      "uid": "P8",
+      "record_type": "person",
+      "label": "",
+      "brief_info": "",
+      "gender": "woman",
+      "sex_at_birth": "female",
+      "age": null,
+      "birth_order": null,
+      "generation_override": null,
+      "affected": false,
+      "consultand": false,
+      "proband": false,
+      "deceased": false,
+      "family_history_unknown": false,
+      "reproductive_status": "none",
+      "reproductive_reason": "",
+      "condition_states": [],
+      "notes": ""
+    },
+    {
+      "uid": "P9",
+      "record_type": "person",
+      "label": "",
+      "brief_info": "",
+      "gender": "woman",
+      "sex_at_birth": "female",
+      "age": null,
+      "birth_order": 1,
+      "generation_override": null,
+      "affected": false,
+      "consultand": false,
+      "proband": false,
+      "deceased": false,
+      "family_history_unknown": false,
+      "reproductive_status": "none",
+      "reproductive_reason": "",
+      "condition_states": [],
+      "notes": ""
+    },
+    {
+      "uid": "P10",
+      "record_type": "person",
+      "label": "Josemi",
+      "brief_info": "",
+      "gender": "man",
+      "sex_at_birth": "male",
+      "age": null,
+      "birth_order": 1,
+      "generation_override": null,
+      "affected": false,
+      "consultand": false,
+      "proband": false,
+      "deceased": false,
+      "family_history_unknown": false,
+      "reproductive_status": "none",
+      "reproductive_reason": "",
+      "condition_states": [],
+      "notes": ""
+    },
+    {
+      "uid": "P11",
+      "record_type": "person",
+      "label": "",
+      "brief_info": "",
+      "gender": "man",
+      "sex_at_birth": "male",
+      "age": null,
+      "birth_order": 2,
+      "generation_override": null,
+      "affected": false,
+      "consultand": false,
+      "proband": false,
+      "deceased": false,
+      "family_history_unknown": false,
+      "reproductive_status": "none",
+      "reproductive_reason": "",
+      "condition_states": [],
+      "notes": ""
+    },
+    {
+      "uid": "P12",
+      "record_type": "person",
+      "label": "",
+      "brief_info": "",
+      "gender": "man",
+      "sex_at_birth": "male",
+      "age": null,
+      "birth_order": 3,
+      "generation_override": null,
+      "affected": false,
+      "consultand": false,
+      "proband": false,
+      "deceased": false,
+      "family_history_unknown": false,
+      "reproductive_status": "none",
+      "reproductive_reason": "",
+      "condition_states": [],
+      "notes": ""
+    }
+  ],
+  "relationships": [
+    {
+      "type": "union",
+      "people": [
+        "P1",
+        "P2"
+      ],
+      "consanguineous": false,
+      "consanguinity_degree": "",
+      "relationship_status": "current",
+      "reproductive_status": "none",
+      "reproductive_attribution": "union",
+      "reproductive_reason": ""
+    },
+    {
+      "type": "union",
+      "people": [
+        "P3",
+        "P4"
+      ],
+      "consanguineous": false,
+      "consanguinity_degree": "",
+      "relationship_status": "current",
+      "reproductive_status": "none",
+      "reproductive_attribution": "union",
+      "reproductive_reason": ""
+    },
+    {
+      "type": "parentage",
+      "parents": [
+        "P1",
+        "P2"
+      ],
+      "children": [
+        "P5"
+      ],
+      "descent_type": "biological"
+    },
+    {
+      "type": "parentage",
+      "parents": [
+        "P3",
+        "P4"
+      ],
+      "children": [
+        "P7"
+      ],
+      "descent_type": "biological"
+    },
+    {
+      "type": "union",
+      "people": [
+        "P5",
+        "P6"
+      ],
+      "consanguineous": false,
+      "consanguinity_degree": "",
+      "relationship_status": "current",
+      "reproductive_status": "none",
+      "reproductive_attribution": "union",
+      "reproductive_reason": ""
+    },
+    {
+      "type": "union",
+      "people": [
+        "P7",
+        "P8"
+      ],
+      "consanguineous": false,
+      "consanguinity_degree": "",
+      "relationship_status": "current",
+      "reproductive_status": "none",
+      "reproductive_attribution": "union",
+      "reproductive_reason": ""
+    },
+    {
+      "type": "parentage",
+      "parents": [
+        "P5",
+        "P6"
+      ],
+      "children": [
+        "P10",
+        "P11",
+        "P12"
+      ],
+      "descent_type": "biological"
+    },
+    {
+      "type": "parentage",
+      "parents": [
+        "P7",
+        "P8"
+      ],
+      "children": [
+        "P9"
+      ],
+      "descent_type": "biological"
+    },
+    {
+      "type": "union",
+      "people": [
+        "P9",
+        "P10"
+      ],
+      "consanguineous": false,
+      "consanguinity_degree": "",
+      "relationship_status": "current",
+      "reproductive_status": "none",
+      "reproductive_attribution": "union",
+      "reproductive_reason": ""
+    }
+  ]
+}

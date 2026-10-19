@@ -1,0 +1,104 @@
+{
+  "schema_version": "4.14",
+  "family_id": "FAM001-ART-SIBS",
+  "indication": "Regresión FAM001: donante junto a pareja entre hermanos",
+  "conditions": [],
+  "people": [
+    {
+      "uid": "P1",
+      "record_type": "person",
+      "gender": "man",
+      "label": "Abuelo"
+    },
+    {
+      "uid": "P2",
+      "record_type": "person",
+      "gender": "woman",
+      "label": "Abuela"
+    },
+    {
+      "uid": "P3",
+      "record_type": "person",
+      "gender": "man",
+      "label": "Hermano mayor",
+      "birth_order": 1
+    },
+    {
+      "uid": "P4",
+      "record_type": "person",
+      "gender": "man",
+      "label": "Receptor",
+      "birth_order": 2
+    },
+    {
+      "uid": "P5",
+      "record_type": "person",
+      "gender": "woman",
+      "label": "Receptora"
+    },
+    {
+      "uid": "P6",
+      "record_type": "person",
+      "gender": "man",
+      "label": "Hermano menor",
+      "birth_order": 3
+    },
+    {
+      "uid": "P7",
+      "record_type": "fetus",
+      "gender": "unspecified",
+      "gestational_age_weeks": 12
+    },
+    {
+      "uid": "P8",
+      "record_type": "sperm_donor",
+      "gender": "man",
+      "label": "Donante esperma",
+      "donation_target": "P7",
+      "donation_targets": [
+        "P7"
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "type": "union",
+      "people": [
+        "P1",
+        "P2"
+      ],
+      "relationship_status": "current"
+    },
+    {
+      "type": "parentage",
+      "parents": [
+        "P1",
+        "P2"
+      ],
+      "children": [
+        "P3",
+        "P4",
+        "P6"
+      ],
+      "descent_type": "biological"
+    },
+    {
+      "type": "union",
+      "people": [
+        "P4",
+        "P5"
+      ],
+      "relationship_status": "current"
+    },
+    {
+      "type": "parentage",
+      "parents": [
+        "P5"
+      ],
+      "children": [
+        "P7"
+      ],
+      "descent_type": "biological"
+    }
+  ]
+}
