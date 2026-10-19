@@ -1,0 +1,10 @@
+# Local/editor files
+.DS_Store
+Thumbs.db
+*.bak
+*~
+*.zip
+.env
+.env.*
+__pycache__/
+*.pyc

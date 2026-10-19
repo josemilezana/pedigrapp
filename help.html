@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PedigrAPP · Ayuda y nomenclatura</title>
+  <link rel="icon" type="image/png" href="images/PedigrAPP_icono_small.png">
+  <link rel="stylesheet" href="help.css?v=100-online1">
+</head>
+<body>
+  <div class="help-shell">
+    <header class="help-header">
+      <a class="help-brand" href="index.html" aria-label="Volver a PedigrAPP">
+        <img src="images/PedigrAPP_logo.png" alt="PedigrAPP" onerror="this.style.display='none';this.nextElementSibling.hidden=false"><strong class="help-brand-text" hidden>PedigrAPP</strong>
+      </a>
+
+      <div class="help-header-copy">
+        <p class="help-eyebrow">Documentación de usuario</p>
+        <h1>Ayuda y nomenclatura</h1>
+        <p id="helpIntro" class="help-intro"></p>
+        <div class="help-version-row">
+          <span id="helpVersionBadge" class="help-version-badge">PedigrAPP</span>
+          <span id="helpUpdatedBadge" class="help-updated-badge"></span>
+          <span id="helpSyncBadge" class="help-sync-badge" hidden></span>
+        </div>
+      </div>
+
+      <a class="help-back" href="index.html">← Volver a la aplicación</a>
+    </header>
+
+    <div id="helpSyncWarning" class="help-sync-warning" hidden role="status"></div>
+
+    <section class="help-search-card">
+      <label for="helpSearch">Buscar en la ayuda</label>
+      <input id="helpSearch" type="search" autocomplete="off"
+             placeholder="p. ej. consanguinidad, adopción, probando, gestante...">
+      <span id="helpSearchCount" class="help-search-count" aria-live="polite"></span>
+    </section>
+
+    <div class="help-layout">
+      <nav class="help-nav" aria-label="Índice de ayuda">
+        <h2>Contenido</h2>
+        <div id="helpNavLinks"></div>
+      </nav>
+      <main id="helpContent" class="help-content"></main>
+    </div>
+
+    <footer class="help-footer">
+      <p>PedigrAPP · Herramienta de representación de pedigrees clínicos</p>
+      <p>Esta página se genera a partir de un registro de ayuda versionado. Si la versión de la aplicación cambia sin revisar la documentación, la propia página muestra un aviso de sincronización.</p>
+    </footer>
+  </div>
+
+  <script src="help-data.js?v=100-online1"></script>
+  <script src="help.js?v=100-online1"></script>
+</body>
+</html>

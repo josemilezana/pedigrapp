@@ -1,0 +1,80 @@
+{
+  "schema_version": "4.16",
+  "family_id": "T73",
+  "indication": "Reordenación horizontal con pareja y dos donantes",
+  "conditions": [],
+  "people": [
+    {
+      "uid": "P1",
+      "record_type": "person",
+      "gender": "man",
+      "label": "Padre"
+    },
+    {
+      "uid": "P2",
+      "record_type": "person",
+      "gender": "woman",
+      "label": "Madre"
+    },
+    {
+      "uid": "P3",
+      "record_type": "person",
+      "gender": "woman",
+      "label": "Hija 1",
+      "birth_order": 1
+    },
+    {
+      "uid": "P4",
+      "record_type": "person",
+      "gender": "woman",
+      "label": "Hija 2",
+      "birth_order": 2
+    },
+    {
+      "uid": "P5",
+      "record_type": "person",
+      "gender": "woman",
+      "label": "Hija 3",
+      "birth_order": 3,
+      "generation_override": 2
+    },
+    {
+      "uid": "P6",
+      "record_type": "ovum_donor",
+      "gender": "woman",
+      "sex_at_birth": "female",
+      "label": "Donante óvulos",
+      "donation_target": "P5"
+    },
+    {
+      "uid": "P7",
+      "record_type": "sperm_donor",
+      "gender": "man",
+      "sex_at_birth": "male",
+      "label": "Donante esperma",
+      "donation_target": "P5"
+    }
+  ],
+  "relationships": [
+    {
+      "type": "union",
+      "people": [
+        "P1",
+        "P2"
+      ],
+      "relationship_status": "current"
+    },
+    {
+      "type": "parentage",
+      "parents": [
+        "P1",
+        "P2"
+      ],
+      "children": [
+        "P3",
+        "P4"
+      ],
+      "descent_type": "biological"
+    }
+  ]
+}

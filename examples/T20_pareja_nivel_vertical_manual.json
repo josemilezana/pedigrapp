@@ -1,0 +1,98 @@
+{
+  "schema_version": "4.4",
+  "family_id": "T20_PAREJA_NIVEL_VERTICAL_MANUAL",
+  "indication": "Regresión: pareja en generación I con descendiente en III; el control vertical permite bajar la pareja a II sin mover al hijo",
+  "show_pedigree_numbers": true,
+  "layout_overrides": {
+    "branch_order": {}
+  },
+  "conditions": [],
+  "people": [
+    {
+      "uid": "P1",
+      "record_type": "person",
+      "label": "Padre",
+      "brief_info": "",
+      "gender": "man",
+      "sex_at_birth": "male",
+      "age": null,
+      "birth_order": null,
+      "generation_override": null,
+      "affected": false,
+      "consultand": false,
+      "proband": false,
+      "deceased": false,
+      "family_history_unknown": false,
+      "reproductive_status": "none",
+      "reproductive_reason": "",
+      "condition_states": [],
+      "notes": ""
+    },
+    {
+      "uid": "P2",
+      "record_type": "person",
+      "label": "Madre",
+      "brief_info": "",
+      "gender": "woman",
+      "sex_at_birth": "female",
+      "age": null,
+      "birth_order": null,
+      "generation_override": null,
+      "affected": false,
+      "consultand": false,
+      "proband": false,
+      "deceased": false,
+      "family_history_unknown": false,
+      "reproductive_status": "none",
+      "reproductive_reason": "",
+      "condition_states": [],
+      "notes": ""
+    },
+    {
+      "uid": "P3",
+      "record_type": "person",
+      "label": "Hijo en nivel III",
+      "brief_info": "",
+      "gender": "man",
+      "sex_at_birth": "male",
+      "age": null,
+      "birth_order": 1,
+      "generation_override": 3,
+      "affected": false,
+      "consultand": false,
+      "proband": false,
+      "deceased": false,
+      "family_history_unknown": false,
+      "reproductive_status": "none",
+      "reproductive_reason": "",
+      "condition_states": [],
+      "notes": ""
+    }
+  ],
+  "relationships": [
+    {
+      "type": "union",
+      "people": [
+        "P1",
+        "P2"
+      ],
+      "consanguineous": false,
+      "consanguinity_degree": "",
+      "relationship_status": "current",
+      "reproductive_status": "none",
+      "reproductive_attribution": "union",
+      "reproductive_reason": ""
+    },
+    {
+      "type": "parentage",
+      "parents": [
+        "P1",
+        "P2"
+      ],
+      "children": [
+        "P3"
+      ],
+      "descent_type": "biological"
+    }
+  ]
+}

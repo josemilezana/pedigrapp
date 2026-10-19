@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "Si utiliza PedigrAPP en su trabajo, cite la versión concreta del software utilizada."
+title: "PedigrAPP"
+type: software
+version: "1.0.0"
+authors:
+  - family-names: "Lezana Rosales"
+    given-names: "José Miguel"
+    orcid: "https://orcid.org/0000-0003-3510-2077"
+    affiliation: "Servicio de Genética, Hospital Universitario 12 de Octubre, Madrid, Spain"
+    email: "josemiguel.lezana@salud.madrid.org"
+repository-code: "https://github.com/josemilezana/pedigrapp"
+keywords:
+  - pedigree
+  - clinical genetics
+  - genetic counseling
+  - family history
+  - human genetics
+  - pedigree nomenclature
+abstract: >-
+  PedigrAPP es una aplicación para la construcción, edición y exportación
+  de árboles genealógicos orientados a genética clínica. La edición online
+  se ejecuta íntegramente en el navegador y no almacena los datos clínicos
+  en un servidor de PedigrAPP.

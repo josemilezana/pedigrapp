@@ -1,0 +1,6163 @@
+* { box-sizing: border-box; }
+
+:root {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #111;
+  background: #f4f5f7;
+}
+
+body { margin: 0; min-height: 100vh; }
+button, input, select { font: inherit; }
+
+.app-shell {
+  width: min(1500px, calc(100% - 32px));
+  margin: 28px auto 40px;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 26px;
+  margin-bottom: 18px;
+}
+
+.pedigrapp-header {
+  padding: 18px 20px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / .05);
+}
+
+.brand-block {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  min-width: 0;
+}
+
+.brand-text {
+  min-width: 0;
+}
+
+.app-branding {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  min-width: 0;
+  flex: 0 1 auto;
+}
+
+.app-logo {
+  display: block;
+  width: 230px;
+  max-width: 100%;
+  max-height: 86px;
+  object-fit: contain;
+}
+
+/* Marca de texto visible si no se ha instalado el logotipo opcional. */
+.app-name-fallback { font-size:clamp(1.65rem, 3vw, 2.3rem); font-weight:750; line-height:1; letter-spacing:-.03em; }
+.app-name-fallback[hidden] { display:none !important; }
+
+.app-version {
+  margin: 0;
+  color: #888;
+  font-size: .72rem;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: .02em;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.brand-text h1 {
+  margin: 0 0 5px;
+  font-size: clamp(1.75rem, 3vw, 2.35rem);
+  line-height: 1;
+  letter-spacing: .01em;
+}
+
+.brand-text .eyebrow {
+  margin-bottom: 7px;
+}
+
+.brand-text .family-meta {
+  line-height: 1.35;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  font-size: .82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: #666;
+}
+
+h1, h2 { margin-top: 0; }
+h1 { margin-bottom: 8px; font-size: clamp(1.6rem, 3vw, 2.3rem); }
+h2 { margin-bottom: 14px; font-size: 1.05rem; }
+.family-meta { margin: 0; color: #555; }
+
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+button, .button-like {
+  border: 1px solid #bbb;
+  border-radius: 8px;
+  background: #fff;
+  padding: 9px 12px;
+  cursor: pointer;
+  text-decoration: none;
+  color: #111;
+}
+
+button:hover, .button-like:hover { background: #f0f0f0; }
+
+button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+  background: #f5f5f5;
+}
+
+button.primary {
+  background: #111;
+  color: #fff;
+  border-color: #111;
+}
+
+button.primary:hover { background: #333; }
+
+button.danger {
+  color: #8f1111;
+  border-color: #cda4a4;
+  background: #fff;
+}
+
+button.danger:hover {
+  background: #fff1f1;
+}
+
+.case-bar {
+  display: grid;
+  grid-template-columns: 1fr 2fr minmax(300px, 1fr);
+  gap: 14px;
+  padding: 15px;
+  margin-bottom: 10px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: .82rem;
+  font-weight: 700;
+  color: #555;
+}
+
+.case-id-label-row {
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.case-id-label-row > label {
+  margin: 0;
+}
+
+.unsaved-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  color: #9a5a00;
+  font-size: .72rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.unsaved-indicator[hidden] {
+  display: none !important;
+}
+
+.unsaved-indicator-dot {
+  color: #d47b00;
+  font-size: .72rem;
+  line-height: 1;
+}
+
+.field input, .field select, .field textarea {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid #c9c9c9;
+  border-radius: 7px;
+  background: #fff;
+  padding: 8px 10px;
+}
+
+
+.field textarea {
+  min-height: 62px;
+  height: 62px;
+  max-height: 120px;
+  resize: vertical;
+  font: inherit;
+  line-height: 1.3;
+}
+
+.field-help {
+  margin-top: -1px;
+  color: #777;
+  font-size: .76rem;
+  line-height: 1.25;
+}
+
+.multi-person-list {
+  max-height: 190px;
+  overflow: auto;
+  border: 1px solid #c9c9c9;
+  border-radius: 7px;
+  background: #fff;
+  padding: 5px;
+}
+
+.multi-person-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 5px 7px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: .88rem;
+}
+
+.multi-person-option:hover {
+  background: #f3f3f3;
+}
+
+.multi-person-option input {
+  width: auto;
+  min-height: auto;
+  margin: 0;
+}
+
+.multi-person-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.mini-button {
+  padding: 5px 8px;
+  font-size: .78rem;
+}
+
+.inline { display: flex; gap: 8px; }
+.inline select { flex: 1; min-width: 0; }
+
+.app-message {
+  min-height: 24px;
+  padding: 4px 2px 8px;
+  font-size: .92rem;
+  color: #555;
+}
+
+.app-message.error { color: #a40000; font-weight: 700; }
+.app-message.success { color: #146b2e; }
+
+.workspace {
+  display: grid;
+  grid-template-columns: 350px minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+/* 0.8.21 — el panel de edición puede retirarse sin reorganizar su contenido. */
+.workspace.editor-collapsed {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+}
+
+.workspace.editor-collapsed .editor-panel {
+  display: none;
+}
+
+.editor-panel, .pedigree-card, .legend-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / .04);
+}
+
+.editor-panel {
+  padding: 18px;
+  position: sticky;
+  top: 12px;
+  max-height: calc(100vh - 24px);
+  overflow: auto;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.separator {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e3e3e3;
+}
+
+.form-grid { display: grid; gap: 11px; }
+
+.checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 15px 0;
+  font-size: .92rem;
+}
+
+/* 0.8.37 — checkbox visible + símbolo al lado, todo en una sola línea. */
+.person-status-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin: 11px 0 10px;
+}
+
+.person-status-row.hidden {
+  display: none !important;
+}
+
+.person-status-option {
+  min-width: 0;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 3px 5px;
+  border: 1px solid #d8dce0;
+  border-radius: 6px;
+  background: #fff;
+  color: #222;
+  cursor: pointer;
+  user-select: none;
+}
+
+.person-status-option:hover {
+  border-color: #aeb7bf;
+  background: #f7f8f9;
+}
+
+.person-status-option:has(input:checked) {
+  border-color: #71889d;
+  background: #f0f5f8;
+}
+
+.person-status-option input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  min-height: 0;
+  margin: 0;
+  flex: 0 0 auto;
+  accent-color: #315f88;
+  cursor: pointer;
+}
+
+.person-status-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #111;
+  line-height: 1;
+}
+
+.person-status-consultand {
+  width: 22px;
+  font-size: 22px;
+  font-weight: 700;
+  transform: translateY(1px);
+}
+
+.person-status-proband {
+  width: 30px;
+  gap: 1px;
+}
+
+.person-status-proband-p {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  transform: translateY(-5px);
+}
+
+.person-status-proband-arrow {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  transform: translateY(1px);
+}
+
+.person-status-deceased {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  overflow: visible;
+}
+
+.person-status-deceased rect,
+.person-status-deceased line {
+  fill: #fff;
+  stroke: #111;
+  stroke-width: 1.6;
+  vector-effect: non-scaling-stroke;
+}
+
+.person-status-family-history {
+  min-width: 43px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.person-status-family-question {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.person-status-mini-pedigree {
+  width: 28px;
+  height: 19px;
+  flex: 0 0 28px;
+  overflow: visible;
+}
+
+.person-status-mini-pedigree rect,
+.person-status-mini-pedigree circle,
+.person-status-mini-pedigree line {
+  fill: #fff;
+  stroke: #111;
+  stroke-width: 1.15;
+  stroke-linecap: square;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Desplegables laterales: lo infrecuente no ocupa espacio permanente. */
+.person-form-disclosure,
+.editor-disclosure {
+  border: 1px solid #dde1e4;
+  border-radius: 8px;
+  background: #fbfcfd;
+}
+
+.person-form-disclosure {
+  margin: 8px 0;
+}
+
+.person-form-disclosure.hidden,
+.editor-disclosure.hidden {
+  display: none !important;
+}
+
+.person-form-disclosure > summary,
+.editor-disclosure > summary {
+  list-style: none;
+}
+
+.person-form-disclosure > summary::-webkit-details-marker,
+.editor-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.person-form-disclosure > summary {
+  position: relative;
+  padding: 9px 30px 9px 10px;
+  color: #4b555d;
+  font-size: .8rem;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+}
+
+.person-form-disclosure > summary::after {
+  content: "▸";
+  position: absolute;
+  top: 50%;
+  right: 11px;
+  transform: translateY(-50%);
+  color: #77818a;
+}
+
+.person-form-disclosure[open] > summary::after {
+  content: "▾";
+}
+
+.person-form-disclosure-body {
+  padding: 0 10px 10px;
+}
+
+.advanced-reproductive-grid {
+  padding-top: 2px;
+  border-top: 1px solid #e7eaed;
+}
+
+.editor-disclosure {
+  overflow: clip;
+}
+
+.editor-disclosure.separator {
+  margin-top: 18px;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.editor-disclosure-summary {
+  position: relative;
+  padding: 11px 34px 11px 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.editor-disclosure-summary::after {
+  content: "▸";
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  color: #66727c;
+  font-size: .9rem;
+}
+
+.editor-disclosure[open] > .editor-disclosure-summary::after {
+  content: "▾";
+}
+
+.editor-disclosure-summary > span {
+  display: grid;
+  gap: 2px;
+}
+
+.editor-disclosure-summary strong {
+  color: #303940;
+  font-size: .9rem;
+}
+
+.editor-disclosure-summary small {
+  color: #7a838a;
+  font-size: .72rem;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.editor-disclosure-body {
+  padding: 4px 12px 12px;
+  border-top: 1px solid #e4e7e9;
+  background: #fff;
+}
+
+.compact-panel-header {
+  margin: 8px 0 10px;
+}
+
+.compact-panel-header h2 {
+  margin: 0;
+  font-size: .95rem;
+}
+
+.editor-lists-body {
+  display: grid;
+  gap: 16px;
+}
+
+.editor-list-section + .editor-list-section {
+  padding-top: 14px;
+  border-top: 1px solid #e5e8ea;
+}
+
+.editor-list-section h3 {
+  margin: 0 0 8px;
+  color: #40494f;
+  font-size: .84rem;
+}
+
+.full { width: 100%; }
+
+#personForm > #submitPersonBtn {
+  margin-top: 10px;
+}
+
+.link-button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #555;
+  text-decoration: underline;
+}
+
+.table-wrap { overflow: auto; }
+
+.people-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .88rem;
+}
+
+.people-table th,
+.people-table td {
+  padding: 8px 5px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.people-table th {
+  color: #666;
+  font-size: .78rem;
+}
+
+.person-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.person-actions button,
+.relation-row button {
+  border: 0;
+  padding: 4px 6px;
+  background: transparent;
+  text-decoration: underline;
+  font-size: .82rem;
+}
+
+.relations-list {
+  display: grid;
+  gap: 7px;
+}
+
+.relation-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #eee;
+  padding: 5px 0 8px;
+  font-size: .84rem;
+}
+
+.viewer-column { min-width: 0; }
+
+.pedigree-card {
+  min-height: 500px;
+  overflow: hidden;
+}
+
+
+/* 0.8.5 — visor interactivo: zoom, pan, ajuste y centrado. */
+.pedigree-viewport-shell {
+  position: relative;
+  width: 100%;
+}
+
+.pedigree-search-controls {
+  position: absolute;
+  top: auto;
+  bottom: 10px;
+  left: 12px;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: min(245px, calc(100% - 410px));
+  min-width: 170px;
+  padding: 5px;
+  border: 1px solid rgba(0,0,0,.14);
+  border-radius: 9px;
+  background: rgba(255,255,255,.94);
+  box-shadow: 0 2px 10px rgba(0,0,0,.08);
+  backdrop-filter: blur(3px);
+}
+
+.pedigree-person-search {
+  min-width: 0;
+  width: 100%;
+  height: 29px;
+  padding: 0 8px;
+  border: 1px solid #d6dbe1;
+  border-radius: 6px;
+  background: #fff;
+  color: #25313c;
+  font: 12px/1.2 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.pedigree-person-search:focus {
+  outline: 2px solid #5c91c9;
+  outline-offset: 1px;
+  border-color: #bfc7cf;
+}
+
+.pedigree-person-search.is-not-found {
+  border-color: #b56b6b;
+}
+
+.pedigree-search-button {
+  flex: 0 0 auto;
+  width: 31px;
+  height: 29px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d6dbe1;
+  border-radius: 6px;
+  background: #fff;
+  color: #25313c;
+  font: 600 16px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  cursor: pointer;
+}
+
+.pedigree-search-button:hover {
+  background: #f3f6f8;
+  border-color: #bfc7cf;
+}
+
+.pedigree-search-button:focus-visible {
+  outline: 2px solid #5c91c9;
+  outline-offset: 1px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.pedigree-viewer-controls {
+  position: absolute;
+  top: auto;
+  bottom: 10px;
+  right: 12px;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px;
+  border: 1px solid rgba(0,0,0,.14);
+  border-radius: 9px;
+  background: rgba(255,255,255,.94);
+  box-shadow: 0 2px 10px rgba(0,0,0,.10);
+  backdrop-filter: blur(3px);
+  user-select: none;
+}
+
+.pedigree-viewer-button {
+  min-width: 31px;
+  height: 29px;
+  padding: 0 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d6dbe1;
+  border-radius: 6px;
+  background: #fff;
+  color: #25313c;
+  font: 600 15px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  cursor: pointer;
+}
+
+.pedigree-viewer-button:hover {
+  background: #f3f6f8;
+  border-color: #bfc7cf;
+}
+
+.pedigree-viewer-button:focus-visible {
+  outline: 2px solid #5c91c9;
+  outline-offset: 1px;
+}
+
+.pedigree-viewer-button-wide {
+  min-width: 37px;
+  font-size: 12px;
+}
+
+.pedigree-viewer-separator {
+  width: 1px;
+  height: 22px;
+  margin: 0 2px;
+  background: #dde2e7;
+}
+
+.pedigree-zoom-indicator {
+  min-width: 48px;
+  text-align: center;
+  color: #5c6670;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 900px) {
+  .pedigree-search-controls {
+    width: min(220px, calc(100% - 24px));
+  }
+
+  .pedigree-viewer-controls {
+    bottom: 54px;
+  }
+}
+
+.pedigree-container {
+  width: 100%;
+  /*
+   * 0.8.21 — el pedigree pasa a ser el área de trabajo principal.
+   * En escritorio gana aproximadamente un 15 % de altura útil respecto
+   * a la configuración anterior, sin convertir la tarjeta en un bloque
+   * desproporcionado en pantallas pequeñas.
+   */
+  height: clamp(560px, 72vh, 920px);
+  min-height: 560px;
+  overflow: auto;
+  scrollbar-gutter: stable;
+  overscroll-behavior: contain;
+  background: #fff;
+  cursor: grab;
+}
+
+
+/* 0.8.21 — modo foco: toda la ventana se convierte en visor del pedigree. */
+body.pedigree-focus-mode {
+  overflow: hidden;
+  background: #fff;
+}
+
+body.pedigree-focus-mode .app-shell {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+body.pedigree-focus-mode .app-header,
+body.pedigree-focus-mode .case-bar,
+body.pedigree-focus-mode .quick-add-card,
+body.pedigree-focus-mode .app-message,
+body.pedigree-focus-mode .editor-panel,
+body.pedigree-focus-mode .viewer-column > :not(.pedigree-card) {
+  display: none !important;
+}
+
+body.pedigree-focus-mode .workspace {
+  display: block;
+  margin: 0;
+}
+
+body.pedigree-focus-mode .viewer-column {
+  width: 100%;
+  min-width: 0;
+}
+
+body.pedigree-focus-mode .pedigree-card {
+  position: fixed;
+  inset: 10px;
+  z-index: 1000;
+  width: auto;
+  height: calc(100vh - 20px);
+  min-height: 0;
+  margin: 0;
+  border-radius: 10px;
+}
+
+body.pedigree-focus-mode .pedigree-card > .status {
+  display: none;
+}
+
+body.pedigree-focus-mode .pedigree-viewport-shell {
+  height: 100%;
+}
+
+body.pedigree-focus-mode .pedigree-container {
+  height: 100%;
+  min-height: 0;
+}
+
+body.pedigree-focus-mode #pedigreeToggleEditorBtn {
+  display: none;
+}
+
+body.pedigree-focus-mode #pedigreeFocusModeBtn {
+  background: #25313c;
+  border-color: #25313c;
+  color: #fff;
+}
+
+.pedigree-focus-button {
+  font-size: 16px;
+}
+
+@media (max-width: 1000px) {
+  .pedigree-container {
+    height: clamp(520px, 68vh, 760px);
+    min-height: 520px;
+  }
+}
+
+@media (max-width: 720px) {
+  .pedigree-container {
+    height: 62vh;
+    min-height: 440px;
+  }
+}
+
+.pedigree-container.is-panning {
+  cursor: grabbing;
+  user-select: none;
+}
+
+.pedigree-container svg {
+  display: block;
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  height: auto;
+  margin: 0 auto;
+  transform-origin: 0 0;
+}
+
+.pedigree-container .person {
+  cursor: pointer;
+}
+
+
+.status { padding: 16px 18px 0; color: #666; }
+.status.error { color: #a40000; font-weight: 700; }
+
+.legend-card { margin-top: 18px; padding: 18px 20px; }
+
+.legend-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px 20px;
+}
+
+.legend-grid > div {
+  display: flex;
+  align-items: center;
+  min-height: 30px;
+  font-size: .82rem;
+  line-height: 1.25;
+}
+
+.legend-grid > div[hidden] {
+  display: none !important;
+}
+
+.legend-symbol {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  margin-right: 10px;
+  border: 2px solid #111;
+  background: #fff;
+  flex: 0 0 auto;
+}
+
+.legend-symbol.circle { border-radius: 50%; }
+.legend-symbol.diamond { transform: rotate(45deg) scale(.78); }
+.legend-symbol.affected { background: #111; }
+
+.legend-line.deceased {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  margin-right: 10px;
+}
+
+.legend-line.deceased::after {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 12px;
+  width: 24px;
+  height: 2px;
+  background: #111;
+  transform: rotate(-45deg);
+}
+
+.legend-arrow {
+  display: inline-block;
+  width: 42px;
+  margin-right: 8px;
+  font-weight: 700;
+}
+
+.pedigree-svg text {
+  fill: #111;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.pedigree-svg .pedigree-line {
+  fill: none;
+  stroke: #111;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.pedigree-svg .person-shape {
+  stroke: #111;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.pedigree-svg .person-shape.unaffected { fill: #fff; }
+.pedigree-svg .person-shape.affected { fill: #111; }
+
+.pedigree-svg .person-label {
+  font-size: 9.9px;
+  text-anchor: middle;
+}
+
+.pedigree-svg .person-alias {
+  font-size: 9px;
+  fill: #555;
+  text-anchor: middle;
+}
+
+.pedigree-svg .person-brief-info {
+  font-size: 8.1px;
+  fill: #555;
+  text-anchor: middle;
+}
+
+.pedigree-svg .person-subtext {
+  font-size: 8.1px;
+  fill: #555;
+  text-anchor: middle;
+}
+
+.pedigree-svg .pregnancy-loss-label {
+  font-size: 8.1px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+.pedigree-svg .generation-label {
+  font-size: 12.6px;
+  font-weight: 700;
+  text-anchor: end;
+}
+
+.pedigree-svg .proband-arrow {
+  fill: none;
+  stroke: #111;
+  stroke-width: 2;
+  marker-end: url(#arrowhead);
+  vector-effect: non-scaling-stroke;
+}
+
+.pedigree-svg .proband-p {
+  font-size: 10.8px;
+  font-weight: 700;
+}
+
+.pedigree-svg .deceased-mark {
+  stroke: #111;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+@media (max-width: 1000px) {
+  .workspace { grid-template-columns: 1fr; }
+  .editor-panel { position: static; max-height: none; }
+  .case-bar { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 720px) {
+  .app-header { flex-direction: column; }
+}
+
+
+.hidden {
+  display: none !important;
+}
+
+
+.pedigree-svg .twin-zygosity-mark {
+  fill: none;
+  stroke: #111;
+  stroke-width: 1.7;
+  vector-effect: non-scaling-stroke;
+}
+
+.pedigree-svg .twin-question {
+  font-size: 9.9px;
+  font-weight: 700;
+  text-anchor: middle;
+  fill: #111;
+}
+
+
+.notes-card {
+  margin-top: 18px;
+  padding: 18px 20px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / .04);
+}
+
+.notes-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.notes-header h2 {
+  margin-bottom: 5px;
+}
+
+.notes-person-title {
+  margin: 0 0 13px;
+  color: #666;
+  font-size: .9rem;
+}
+
+.notes-card textarea {
+  display: block;
+  width: 100%;
+  min-height: 135px;
+  resize: vertical;
+  border: 1px solid #c9c9c9;
+  border-radius: 8px;
+  padding: 10px 11px;
+  font: inherit;
+  line-height: 1.4;
+  background: #fff;
+}
+
+.notes-card textarea:disabled {
+  background: #f5f5f5;
+  color: #888;
+}
+
+.notes-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.notes-status {
+  color: #666;
+  font-size: .84rem;
+}
+
+.pedigree-svg .person {
+  cursor: pointer;
+}
+
+.pedigree-svg .person .person-shape {
+  transition: stroke-width .12s ease, stroke .12s ease, filter .12s ease;
+}
+
+.pedigree-svg .person.selected-person .person-shape {
+  stroke: #2f6f9f;
+  stroke-width: 3.4;
+  filter: drop-shadow(0 0 3px rgba(47,111,159,.38));
+}
+
+.pedigree-svg .person.selected-person .pregnancy-loss-label,
+.pedigree-svg .person.selected-person .person-label {
+  font-weight: 700;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pedigree-svg .person:hover .person-shape {
+    stroke-width: 3;
+  }
+}
+
+
+.comment-dot-legend {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background: #777;
+  flex: 0 0 auto;
+}
+
+.legend-note-ui {
+  margin: 12px 0 0;
+  color: #777;
+  font-size: .73rem;
+  line-height: 1.3;
+}
+
+.pedigree-svg .comment-indicator {
+  fill: #777;
+  stroke: #fff;
+  stroke-width: 1.2;
+  pointer-events: none;
+}
+
+.pedigree-svg .person:hover .comment-indicator {
+  fill: #555;
+}
+
+
+.pedigrapp-header .actions {
+  justify-content: flex-end;
+  align-items: center;
+  max-width: 720px;
+}
+
+.pedigrapp-header .actions button,
+.pedigrapp-header .actions .button-like {
+  white-space: nowrap;
+}
+
+@media (max-width: 1180px) {
+  .pedigrapp-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .pedigrapp-header .actions {
+    max-width: none;
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 620px) {
+  .brand-block {
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .app-logo {
+    width: 180px;
+    max-height: 64px;
+  }
+
+  .pedigrapp-header {
+    padding: 15px;
+  }
+}
+
+
+.clinical-fieldset { margin:0 0 16px; padding:14px; border:1px solid #ddd; border-radius:9px; }
+.clinical-fieldset legend { padding:0 7px; font-size:.86rem; font-weight:700; color:#444; }
+.clinical-fieldset:disabled { opacity:.62; }
+.clinical-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 14px; }
+.clinical-span-2 { grid-column:span 2; }
+.clinical-grid textarea,.clinical-grid input,.clinical-grid select { width:100%; min-height:40px; border:1px solid #c9c9c9; border-radius:7px; background:#fff; padding:8px 10px; font:inherit; }
+.clinical-grid textarea { resize:vertical; }
+.checkbox-row { display:flex !important; flex-direction:row !important; align-items:center; gap:8px; min-height:40px; padding-top:17px; cursor:pointer; }
+.checkbox-row input { width:auto; min-height:auto; }
+.notes-free-text { margin-top:2px; }
+.clinical-guidance { margin:12px 0 0; color:#777; font-size:.78rem; line-height:1.4; }
+.pedigree-svg .documented-evaluation-mark { font-size:10.8px; font-weight:700; fill:#111; pointer-events:none; }
+.pedigree-svg .presymptomatic-mark { stroke:#111; stroke-width:1.6; vector-effect:non-scaling-stroke; pointer-events:none; }
+@media (max-width:760px) { .clinical-grid { grid-template-columns:1fr; } .clinical-span-2 { grid-column:span 1; } }
+
+
+.conditions-card {
+  margin-bottom: 18px; padding: 18px 20px; background: #fff;
+  border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 2px 8px rgb(0 0 0 / .04);
+}
+.section-heading-row,.assignment-header { display:flex; align-items:flex-start; justify-content:space-between; gap:14px; }
+.section-heading-row h2,.assignment-header h3 { margin:0 0 4px; }
+.section-help { margin:0; color:#777; font-size:.8rem; line-height:1.35; }
+.conditions-empty { margin-top:12px; padding:10px 12px; border:1px dashed #ccc; border-radius:8px; color:#777; font-size:.84rem; background:#fafafa; }
+.conditions-list,.condition-assignments { display:grid; gap:10px; margin-top:12px; }
+.condition-row { display:grid; grid-template-columns:minmax(150px,1.25fr) minmax(85px,.65fr) minmax(155px,1fr) minmax(180px,1.05fr) minmax(190px,1.05fr) auto; gap:10px; align-items:end; padding:12px; border:1px solid #e0e0e0; border-radius:9px; background:#fafafa; }
+.condition-row .field { margin:0; }
+.condition-row-actions { display:flex; gap:6px; align-items:center; }
+.condition-assignments-panel { margin:16px 0; padding:14px; border:1px solid #ddd; border-radius:9px; }
+.person-condition-row { display:grid; grid-template-columns:minmax(190px,1.25fr) minmax(190px,1fr) minmax(160px,.9fr); gap:10px; align-items:end; padding:10px; border:1px solid #e3e3e3; border-radius:8px; background:#fafafa; }
+.person-condition-name { font-weight:700; font-size:.9rem; }
+.person-condition-meta { margin-top:2px; color:#777; font-size:.76rem; }
+.auto-legend { display:grid; gap:7px; margin-top:12px; padding-top:10px; border-top:1px solid #eee; }
+.auto-legend-title { font-weight:700; font-size:.80rem; }
+.auto-legend-item { display:flex; align-items:center; gap:8px; font-size:.82rem; }
+.legend-pattern-swatch { width:22px; height:22px; border:1px solid #222; flex:0 0 auto; }
+.pattern-solid { background:#111; }
+.pattern-diagonal { background:repeating-linear-gradient(135deg,transparent 0 4px,#777 4px 6px); }
+.pattern-crosshatch { background:repeating-linear-gradient(45deg,transparent 0 5px,#777 5px 6px),repeating-linear-gradient(135deg,transparent 0 5px,#777 5px 6px); }
+.pattern-dots { background-image:radial-gradient(#777 1px,transparent 1px); background-size:5px 5px; }
+.pedigree-svg .condition-overlay { pointer-events:none; }
+@media (max-width:1000px) { .condition-row,.person-condition-row { grid-template-columns:1fr; } }
+
+
+.person-condition-row {
+  grid-template-columns: minmax(180px, 1.15fr) minmax(150px, .85fr) minmax(150px, .85fr);
+}
+
+.person-condition-details {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.condition-validation {
+  grid-column: 1 / -1;
+  display: none;
+  margin-top: 2px;
+  padding: 8px 10px;
+  border-radius: 7px;
+  border: 1px solid #d8c98b;
+  background: #fffbe8;
+  color: #665a25;
+  font-size: .78rem;
+  line-height: 1.35;
+}
+
+.condition-validation.visible {
+  display: block;
+}
+
+.condition-validation strong {
+  font-weight: 700;
+}
+
+.condition-status-good {
+  color: #35623d;
+}
+
+.condition-status-warning {
+  color: #725d1f;
+}
+
+@media (max-width: 900px) {
+  .person-condition-details {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+.clinical-context-help {
+  margin: 0 0 12px;
+}
+
+
+.legend-pregnancy-loss {
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 26px;
+  margin-right: 10px;
+  flex: 0 0 auto;
+}
+
+.legend-pregnancy-loss::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 18px solid #111;
+}
+
+.legend-pregnancy-loss::after {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 7px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 14px solid #fff;
+}
+
+.legend-pregnancy-loss.top .top-slash {
+  display: none;
+}
+
+.legend-pregnancy-loss.top {
+  overflow: visible;
+}
+
+.legend-pregnancy-loss.top::marker {
+  content: "";
+}
+
+.legend-pregnancy-loss.top > span {
+  display: none;
+}
+
+.legend-pregnancy-loss.top {
+  background:
+    linear-gradient(
+      135deg,
+      transparent 47%,
+      #111 48%,
+      #111 52%,
+      transparent 53%
+    );
+  background-size: 28px 28px;
+  background-position: 2px -1px;
+  background-repeat: no-repeat;
+}
+
+.auto-legend-condition {
+  display: grid;
+  gap: 5px;
+  padding: 8px 0 9px;
+  border-bottom: 1px solid #eee;
+}
+
+.auto-legend-condition:last-child {
+  border-bottom: 0;
+}
+
+.auto-legend-condition-title {
+  font-weight: 700;
+  font-size: .78rem;
+}
+
+.auto-legend-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 25px;
+  font-size: .75rem;
+  color: #444;
+}
+
+.legend-status-swatch {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  border: 1px solid #222;
+  background: #fff;
+  flex: 0 0 auto;
+  overflow: hidden;
+}
+
+.legend-status-swatch .status-fill {
+  position: absolute;
+  inset: 0;
+}
+
+.legend-status-swatch.carrier .status-fill {
+  left: 0;
+  right: 0;
+}
+
+.legend-status-swatch.presymptomatic::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 50%;
+  width: 1.5px;
+  transform: translateX(-50%);
+  background: #111;
+}
+
+.legend-status-swatch.pattern-solid .status-fill {
+  background: #111;
+}
+
+.legend-status-swatch.pattern-diagonal .status-fill {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      transparent 0 4px,
+      #666 4px 6px
+    );
+}
+
+.legend-status-swatch.pattern-crosshatch .status-fill {
+  background:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0 5px,
+      #666 5px 6px
+    ),
+    repeating-linear-gradient(
+      135deg,
+      transparent 0 5px,
+      #666 5px 6px
+    );
+}
+
+.legend-status-swatch.pattern-dots .status-fill {
+  background-image: radial-gradient(#666 1px, transparent 1px);
+  background-size: 5px 5px;
+}
+
+.auto-legend-help {
+  margin-top: 8px;
+  color: #777;
+  font-size: .71rem;
+  line-height: 1.3;
+}
+
+
+.pedigree-svg .unknown-condition-mark {
+  font-size: 10.8px;
+  font-weight: 700;
+  fill: #111;
+  pointer-events: none;
+}
+
+.legend-status-swatch.unknown::after {
+  content: "?";
+  position: absolute;
+  right: 3px;
+  bottom: 1px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  color: #111;
+}
+
+.auto-legend-help + .auto-legend-help {
+  margin-top: 4px;
+}
+
+
+.pedigree-svg .consanguinity-line {
+  fill: none;
+  stroke: #111;
+  stroke-width: 1.6;
+  vector-effect: non-scaling-stroke;
+}
+
+.pedigree-svg .consanguinity-label {
+  font-size: 9px;
+  fill: #444;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+
+.legend-adoption-brackets {
+  position: relative;
+  display: inline-flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 34px;
+  height: 30px;
+  margin-right: 8px;
+  flex: 0 0 auto;
+}
+
+.legend-adoption-brackets::before,
+.legend-adoption-brackets::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  bottom: 0;
+  width: 6px;
+  border-top: 1.6px solid #111;
+  border-bottom: 1.6px solid #111;
+}
+
+.legend-adoption-brackets::before {
+  left: 0;
+  border-left: 1.6px solid #111;
+}
+
+.legend-adoption-brackets::after {
+  right: 0;
+  border-right: 1.6px solid #111;
+}
+
+.legend-adoption-brackets .legend-symbol.inner {
+  width: 16px;
+  height: 16px;
+  margin: 0 0 4px;
+}
+
+.legend-adoption-stem {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 0;
+  height: 8px;
+  border-left: 1.7px solid #111;
+  transform: translateX(-50%);
+}
+
+.legend-adoption-brackets.adopted-in .legend-adoption-stem {
+  border-left-style: dashed;
+}
+
+.legend-adoption-brackets.adopted-out .legend-adoption-stem {
+  border-left-style: solid;
+}
+
+.legend-dashed-line {
+  display: inline-block;
+  width: 32px;
+  height: 0;
+  margin-right: 8px;
+  border-top: 2px dashed #111;
+  transform: translateY(-1px);
+}
+
+.pedigree-svg .adoptive-line {
+  fill: none;
+  stroke: #111;
+  stroke-width: 1.6;
+  stroke-dasharray: 7 5;
+  vector-effect: non-scaling-stroke;
+}
+
+.pedigree-svg .adoption-bracket {
+  fill: none;
+  stroke: #111;
+  stroke-width: 1.4;
+  vector-effect: non-scaling-stroke;
+}
+
+
+.pedigree-svg .relationship-end-mark {
+  fill: none;
+  stroke: #111;
+  stroke-width: 1.7;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.legend-ended-union {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 24px;
+  margin-right: 8px;
+  flex: 0 0 auto;
+}
+
+.legend-ended-union::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 11px;
+  height: 2px;
+  background:
+    linear-gradient(to right,
+      #111 0 39%,
+      transparent 39% 61%,
+      #111 61% 100%);
+}
+
+.legend-ended-union::after {
+  content: "//";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%) skewX(-8deg);
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 700;
+  color: #111;
+  letter-spacing: -2px;
+}
+
+
+.pedigree-svg .relationship-route-line {
+  fill: none;
+  stroke: #111;
+  stroke-width: 1.6;
+  vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
+  stroke-linecap: square;
+}
+
+.pedigree-svg .relationship-route-mask {
+  fill: #fff;
+  stroke: #fff;
+  stroke-width: 10px;
+  stroke-linecap: butt;
+  pointer-events: none;
+}
+
+.pedigree-svg .relationship-route-note {
+  font-size: 8.1px;
+  fill: #666;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+
+/* 0.6.14: el patrón es explícito y no codifica "densidad" de estado. */
+.legend-status-swatch.pattern-solid .status-fill {
+  background: #111;
+}
+
+.legend-status-swatch.pattern-diagonal .status-fill {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      transparent 0 4px,
+      #666 4px 6px
+    );
+}
+
+.legend-status-swatch.pattern-crosshatch .status-fill {
+  background:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0 5px,
+      #666 5px 6px
+    ),
+    repeating-linear-gradient(
+      135deg,
+      transparent 0 5px,
+      #666 5px 6px
+    );
+}
+
+.legend-status-swatch.pattern-dots .status-fill {
+  background-image: radial-gradient(#666 1px, transparent 1px);
+  background-size: 5px 5px;
+}
+
+.legend-status-swatch.pattern-horizontal .status-fill {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 5px,
+      #666 5px 6px
+    );
+}
+
+.legend-status-swatch.pattern-vertical .status-fill {
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 5px,
+      #666 5px 6px
+    );
+}
+
+
+.pedigree-svg .pedigree-crossing-gap {
+  fill: #fff;
+  stroke: none;
+  pointer-events: none;
+}
+
+/* 0.8.13 — pequeño puente visual en cruces de fratrías. */
+.pedigree-svg .pedigree-crossing-bridge {
+  pointer-events: none;
+}
+
+
+/* 0.6.33 — Historia familiar no disponible/desconocida */
+.family-history-unknown-mark {
+  font-size: 15.3px;
+  font-weight: 700;
+  text-anchor: middle;
+  fill: #111;
+  pointer-events: none;
+}
+
+.family-history-unknown-legend {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+
+/* 0.6.35 — No descendencia / infertilidad */
+.relation-form-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reproductive-status-line,
+.reproductive-status-bar {
+  stroke: #111;
+  stroke-width: 2;
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.reproductive-status-reason {
+  font-size: 8.1px;
+  text-anchor: middle;
+  fill: #444;
+}
+
+.legend-reproductive-status {
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+  flex: 0 0 auto;
+}
+
+.legend-reproductive-status::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 3px;
+  width: 2px;
+  height: 17px;
+  background: #111;
+}
+
+.legend-reproductive-status::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 20px;
+  width: 18px;
+  height: 2px;
+  background: #111;
+}
+
+.legend-reproductive-status.infertility {
+  background:
+    linear-gradient(#111,#111) 6px 25px / 18px 2px no-repeat;
+}
+
+
+/* 0.6.36 — Situación reproductiva atribuida directamente a individuo */
+.individual-reproductive-status-line,
+.individual-reproductive-status-bar {
+  stroke: #111;
+  stroke-width: 2;
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.individual-reproductive-status-reason {
+  font-size: 8.1px;
+  text-anchor: middle;
+  fill: #444;
+}
+
+
+/* 0.6.39 — trillizos tricigóticos */
+.legend-trizygotic {
+  width: 38px;
+  height: 30px;
+  margin-right: 8px;
+  vertical-align: middle;
+  overflow: visible;
+}
+
+.legend-trizygotic line,
+.legend-trizygotic rect {
+  stroke: #111;
+  stroke-width: 1.4;
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+
+
+/* 0.6.40 — varios individuos */
+.multiple-count-mark {
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  fill: #111;
+  pointer-events: none;
+}
+
+.legend-multiple-individuals {
+  width: 32px;
+  height: 32px;
+  margin-right: 10px;
+  vertical-align: middle;
+  overflow: visible;
+}
+
+.legend-multiple-individuals rect {
+  fill: #fff;
+  stroke: #111;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.legend-multiple-individuals text {
+  font-size: 13px;
+  font-weight: 700;
+  text-anchor: middle;
+  fill: #111;
+}
+
+
+/* 0.8.40 — tarjeta contextual por clic con información por condición */
+/* 0.7.94 — anchura adaptable al contenido, con margen de seguridad de viewport. */
+.condition-hover-card {
+  position: fixed;
+  z-index: 9999;
+  width: max-content;
+  max-width: min(520px, calc(100vw - 24px));
+  min-width: 240px;
+  padding: 10px 12px;
+  border: 1px solid #cfcfcf;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(0,0,0,.16);
+  font-size: 12px;
+  line-height: 1.35;
+  color: #222;
+  pointer-events: auto;
+}
+
+.condition-hover-card[hidden] {
+  display: none !important;
+}
+
+/* 0.7.58 — cierre manual del tooltip; el autocierre sigue activo. */
+.condition-hover-close {
+  position: absolute;
+  top: 5px;
+  right: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 25px;
+  height: 25px;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #777;
+  font: inherit;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.condition-hover-close:hover,
+.condition-hover-close:focus-visible {
+  background: #f1f1f1;
+  color: #222;
+  outline: none;
+}
+
+.condition-hover-person {
+  padding-right: 24px;
+}
+
+.condition-hover-person {
+  margin-bottom: 8px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid #e3e3e3;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+
+/* 0.8.13 — edición compacta de nombre/alias, breve información y edad. */
+.condition-hover-quick-edit {
+  width: 292px;
+  max-width: 100%;
+  display: grid;
+  gap: 4px;
+  margin: -1px 0 8px;
+}
+
+.condition-hover-quick-edit-row {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.condition-hover-quick-edit-top {
+  grid-template-columns: minmax(0, 1fr) 58px;
+}
+
+.condition-hover-quick-edit-top.no-aux {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.condition-hover-quick-edit-top.wide-aux {
+  grid-template-columns: minmax(0, 1fr) 72px;
+}
+
+.condition-hover-quick-edit-bottom {
+  grid-template-columns: minmax(0, 1fr) 30px;
+}
+
+.condition-hover-quick-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: 26px;
+  padding: 3px 6px;
+  border: 1px solid #d6d6d6;
+  border-radius: 5px;
+  background: #fff;
+  color: #222;
+  font: inherit;
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.condition-hover-quick-input:focus {
+  border-color: #9aa9b8;
+  outline: 2px solid rgba(70,105,140,.12);
+  outline-offset: 0;
+}
+
+.condition-hover-quick-age,
+.condition-hover-quick-meta {
+  text-align: center;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.condition-hover-quick-save {
+  width: 30px;
+  min-width: 30px;
+  height: 26px;
+  min-height: 0;
+  padding: 0;
+  border: 1px solid #bfc7cf;
+  border-radius: 5px;
+  background: #f8f9fa;
+  color: #31465a;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.condition-hover-quick-save:hover,
+.condition-hover-quick-save:focus-visible {
+  background: #eef2f5;
+  outline: none;
+}
+
+.condition-hover-section + .condition-hover-section {
+  margin-top: 9px;
+  padding-top: 8px;
+  border-top: 1px solid #ededed;
+}
+
+.condition-hover-title {
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.condition-hover-meta {
+  margin-bottom: 5px;
+  color: #666;
+  font-size: 11px;
+}
+
+.condition-hover-row {
+  display: grid;
+  grid-template-columns: minmax(105px, auto) 1fr;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.condition-hover-key {
+  color: #666;
+}
+
+.condition-hover-value {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.condition-hover-empty {
+  color: #777;
+  font-style: italic;
+}
+
+
+/* 0.6.51 — feto / embarazo con P interior */
+.fetus-p-mark {
+  fill: #111;
+  stroke: #fff;
+  stroke-width: 2.5px;
+  paint-order: stroke fill;
+  font-size: 15px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+}
+
+.legend-fetus {
+  width: 32px;
+  height: 32px;
+  margin-right: 10px;
+  vertical-align: middle;
+  overflow: visible;
+}
+
+.legend-fetus polygon {
+  fill: #fff;
+  stroke: #111;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.legend-fetus text {
+  fill: #111;
+  font-size: 13px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+
+/* 0.6.52 — bloque informativo dentro del SVG exportado */
+.export-report-separator {
+  stroke: #bbb;
+  stroke-width: 1;
+}
+
+.export-report-title {
+  font-size: 20px;
+  font-weight: 700;
+  fill: #111;
+}
+
+.export-report-section-title {
+  font-size: 15px;
+  font-weight: 700;
+  fill: #111;
+}
+
+.export-report-text {
+  font-size: 12px;
+  fill: #222;
+}
+
+.export-report-label {
+  font-size: 12px;
+  font-weight: 700;
+  fill: #333;
+}
+
+.export-report-muted {
+  font-size: 11px;
+  fill: #666;
+}
+
+.export-report-person-title {
+  font-size: 13px;
+  font-weight: 700;
+  fill: #111;
+}
+
+.export-report-condition-title {
+  font-size: 12px;
+  font-weight: 700;
+  fill: #222;
+}
+
+.export-report-icon {
+  stroke: #111;
+  stroke-width: 1.4;
+  fill: #fff;
+}
+
+.export-report-icon-filled {
+  stroke: #111;
+  stroke-width: 1.4;
+  fill: #111;
+}
+
+.export-report-icon-line {
+  stroke: #111;
+  stroke-width: 1.4;
+  fill: none;
+}
+
+.export-report-icon-text {
+  font-size: 10px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  fill: #111;
+}
+
+
+/* 0.6.55 — donantes como tipos de registro */
+.donor-d-mark {
+  fill: #111;
+  stroke: #fff;
+  stroke-width: 2.5px;
+  paint-order: stroke fill;
+  font-size: 13.5px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+}
+
+.donor-link-line {
+  stroke: #111;
+  stroke-width: 1.8;
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.legend-donor {
+  width: 32px;
+  height: 32px;
+  margin-right: 10px;
+  vertical-align: middle;
+  overflow: visible;
+}
+
+.legend-donor circle,
+.legend-donor rect,
+.legend-donor polygon {
+  fill: #fff;
+  stroke: #111;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.legend-donor line {
+  stroke: #111;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.legend-donor text {
+  fill: #111;
+  font-size: 13px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+.legend-donor .legend-surrogate-p {
+  font-size: 8px;
+}
+
+
+/* 0.6.72 — mortinato (SB) */
+.legend-stillbirth {
+  width: 32px;
+  height: 32px;
+  margin-right: 10px;
+  vertical-align: middle;
+  overflow: visible;
+}
+
+.legend-stillbirth rect {
+  fill: #fff;
+  stroke: #111;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.legend-stillbirth line {
+  stroke: #111;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+
+/* 0.6.73 — consultante / probando */
+.legend-proband-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 28px;
+}
+
+.legend-proband-p {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+
+/* 0.6.75 — gestante / gestational carrier */
+.gestational-carrier-g-mark {
+  font-size: 14.4px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+}
+
+.legend-gestational-carrier {
+  width: 32px;
+  height: 32px;
+  margin-right: 10px;
+  vertical-align: middle;
+  overflow: visible;
+}
+
+.legend-gestational-carrier circle {
+  fill: #fff;
+  stroke: #111;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.legend-gestational-carrier text {
+  font-size: 14px;
+  font-weight: 700;
+  text-anchor: middle;
+  fill: #111;
+}
+
+
+/* 0.6.77 — evaluación documentada por condición */
+.person-condition-documented {
+  grid-column: 1 / -1;
+  margin-top: 1px;
+  padding-top: 2px;
+}
+
+.person-condition-documented .checkbox-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  font-size: .82rem;
+  font-weight: 600;
+}
+
+.person-condition-documented input[type="checkbox"] {
+  margin: 0;
+  flex: 0 0 auto;
+}
+
+
+/* 0.7.00 — selector múltiple de resultados de donante de esperma */
+.donation-target-checkboxes {
+  display: grid;
+  gap: 6px;
+  max-height: 230px;
+  overflow-y: auto;
+  padding: 8px 10px;
+  border: 1px solid #cfcfcf;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.donation-target-checkboxes.hidden {
+  display: none;
+}
+
+.donation-target-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 26px;
+  line-height: 1.3;
+}
+
+.field .donation-target-checkbox-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  border-radius: 3px;
+  flex: 0 0 16px;
+  cursor: pointer;
+}
+
+.donation-target-checkbox-item label {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  cursor: pointer;
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+
+/* 0.7.03 — buscador de casos guardados */
+.saved-cases-field {
+  min-width: 0;
+}
+
+.saved-case-picker {
+  position: relative;
+  min-width: 0;
+}
+
+.saved-case-picker > input[type="search"] {
+  width: 100%;
+}
+
+.saved-case-results {
+  position: absolute;
+  z-index: 50;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 5px;
+  border: 1px solid #c9c9c9;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 8px 22px rgb(0 0 0 / .14);
+}
+
+.saved-case-results.hidden {
+  display: none;
+}
+
+.saved-case-result,
+.saved-case-empty {
+  width: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 8px 9px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  text-align: left;
+}
+
+.saved-case-result {
+  display: grid;
+  gap: 2px;
+  cursor: pointer;
+}
+
+.saved-case-result:hover,
+.saved-case-result:focus {
+  background: #f2f3f5;
+  outline: none;
+}
+
+.saved-case-result[aria-selected="true"] {
+  background: #e9edf2;
+}
+
+.saved-case-result-id {
+  font-size: .86rem;
+  font-weight: 700;
+  color: #222;
+}
+
+.saved-case-result-meta {
+  overflow: hidden;
+  color: #666;
+  font-size: .75rem;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.saved-case-empty {
+  color: #777;
+  font-size: .8rem;
+}
+
+.saved-case-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.saved-case-actions button {
+  flex: 0 0 auto;
+}
+
+
+/* 0.7.06 — opción de mostrar/ocultar numeración I-1, II-1... */
+.pedigree-numbering-toggle {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+  margin-top: 2px;
+  cursor: pointer;
+  font-size: .78rem !important;
+  font-weight: 600 !important;
+  color: #555;
+}
+
+.field .pedigree-numbering-toggle input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  flex: 0 0 16px;
+  cursor: pointer;
+}
+
+.pedigree-numbering-toggle span {
+  min-width: 0;
+  line-height: 1.25;
+}
+
+
+/* 0.7.15 — orden manual de ramas */
+.manual-branch-order-panel {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 14px;
+  padding: 12px;
+  border: 1px solid #d7d7d7;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.manual-branch-order-header h3 {
+  margin: 0 0 4px;
+  font-size: .94rem;
+}
+
+.manual-branch-order-header p {
+  margin: 0;
+}
+
+.manual-branch-order-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.manual-branch-order-actions button {
+  flex: 0 0 auto;
+}
+
+.manual-branch-order-help {
+  margin: 0;
+  color: #666;
+  font-size: .76rem;
+  line-height: 1.35;
+}
+
+
+/* 0.7.16 — ajuste vertical manual de una pareja simple */
+.manual-layout-divider {
+  height: 1px;
+  margin: 2px 0;
+  background: #dedede;
+}
+
+.manual-couple-level-section {
+  display: grid;
+  gap: 9px;
+}
+
+.manual-couple-level-section h4 {
+  margin: 0 0 4px;
+  font-size: .88rem;
+  color: #333;
+}
+
+
+/* 0.7.18 — color por condición: afectado sólido + portador rayado cruzado */
+.condition-pattern-field {
+  min-width: 0;
+}
+
+.condition-pattern-editor,
+.condition-pattern-fixed {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+}
+
+.condition-pattern-editor select {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.condition-pattern-fixed {
+  padding: 8px 9px;
+  border: 1px solid #d1d1d1;
+  border-radius: 7px;
+  background: #fff;
+  color: #555;
+  font-size: .8rem;
+  line-height: 1.25;
+}
+
+.condition-pattern-preview {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  border: 1px solid #222;
+  background-color: #fff;
+  box-sizing: border-box;
+}
+
+.condition-pattern-preview.affected {
+  background: var(--condition-color, #111111);
+}
+
+.condition-pattern-preview.carrier.pattern-crosshatch {
+  background:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0 5px,
+      var(--condition-color, #111111) 5px 6.5px
+    ),
+    repeating-linear-gradient(
+      135deg,
+      transparent 0 5px,
+      var(--condition-color, #111111) 5px 6.5px
+    ),
+    #fff;
+}
+
+.condition-pattern-preview.carrier.pattern-diagonal {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      transparent 0 5px,
+      var(--condition-color, #111111) 5px 6.5px
+    ),
+    #fff;
+}
+
+.condition-pattern-preview.carrier.pattern-horizontal {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 5px,
+      var(--condition-color, #111111) 5px 6.5px
+    ),
+    #fff;
+}
+
+.condition-pattern-preview.carrier.pattern-vertical {
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 5px,
+      var(--condition-color, #111111) 5px 6.5px
+    ),
+    #fff;
+}
+
+.condition-pattern-preview.carrier.pattern-dots {
+  background-color:#fff;
+  background-image:
+    radial-gradient(
+      var(--condition-color, #111111) 1.15px,
+      transparent 1.15px
+    );
+  background-size:6px 6px;
+}
+
+/* Las leyendas clínicas comparten exactamente el color de la condición. */
+.legend-status-swatch.pattern-solid .status-fill {
+  background: var(--condition-color, #111111);
+}
+
+.legend-status-swatch.pattern-crosshatch .status-fill {
+  background:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0 5px,
+      var(--condition-color, #111111) 5px 6px
+    ),
+    repeating-linear-gradient(
+      135deg,
+      transparent 0 5px,
+      var(--condition-color, #111111) 5px 6px
+    );
+}
+
+.legend-status-swatch.pattern-diagonal .status-fill {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      transparent 0 5px,
+      var(--condition-color, #111111) 5px 6px
+    );
+}
+
+.legend-status-swatch.pattern-horizontal .status-fill {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 5px,
+      var(--condition-color, #111111) 5px 6px
+    );
+}
+
+.legend-status-swatch.pattern-vertical .status-fill {
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 5px,
+      var(--condition-color, #111111) 5px 6px
+    );
+}
+
+.legend-status-swatch.pattern-dots .status-fill {
+  background-image:
+    radial-gradient(
+      var(--condition-color, #111111) 1px,
+      transparent 1px
+    );
+  background-size:5px 5px;
+}
+
+
+/* 0.7.25 — altas rápidas de registros frecuentes */
+.quick-add-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 2px 0 15px;
+}
+
+.quick-add-button {
+  min-width: 0;
+  min-height: 62px;
+  padding: 7px 4px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: #fafafa;
+}
+
+.quick-add-button:hover {
+  background: #f0f0f0;
+}
+
+.quick-add-caption {
+  font-size: .70rem;
+  line-height: 1;
+  color: #444;
+  white-space: nowrap;
+}
+
+.quick-add-symbol {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #111;
+  background: #fff;
+  flex: 0 0 auto;
+}
+
+.quick-add-circle {
+  border-radius: 50%;
+}
+
+.quick-add-couple-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.quick-add-couple-icon .quick-add-symbol {
+  width: 17px;
+  height: 17px;
+}
+
+.quick-add-couple-line {
+  display: inline-block;
+  width: 13px;
+  height: 2px;
+  background: #111;
+  flex: 0 0 auto;
+}
+
+
+/* 0.7.26 — símbolos adicionales del alta rápida */
+.quick-add-diamond {
+  transform: rotate(45deg) scale(.80);
+}
+
+.quick-add-marked {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quick-add-marked > span {
+  display: block;
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.quick-add-diamond.quick-add-marked > span {
+  transform: rotate(-45deg) scale(1.10);
+}
+
+.quick-add-deceased {
+  position: relative;
+}
+
+.quick-add-deceased::after {
+  content: "";
+  position: absolute;
+  left: -4px;
+  top: 10px;
+  width: 31px;
+  height: 2px;
+  background: #111;
+  transform: rotate(-45deg);
+  transform-origin: center;
+}
+
+.quick-add-triangle {
+  position: relative;
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-left: 13px solid transparent;
+  border-right: 13px solid transparent;
+  border-bottom: 24px solid #111;
+}
+
+.quick-add-triangle::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 4px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 18px solid #fff;
+}
+
+.quick-add-event-deceased::after {
+  content: "";
+  position: absolute;
+  left: -16px;
+  top: 10px;
+  width: 32px;
+  height: 2px;
+  background: #111;
+  transform: rotate(-45deg);
+  transform-origin: center;
+}
+
+
+/* 0.7.27 — tarjeta horizontal de altas rápidas */
+.quick-add-card {
+  margin-bottom: 10px;
+  padding: 11px 8px 12px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / .04);
+  overflow-x: auto;
+}
+
+.quick-add-card-title {
+  margin: 0 0 8px;
+  color: #555;
+  font-size: .78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.quick-add-inline {
+  margin: 0;
+}
+
+.quick-add-inline h2 {
+  margin: 0 0 10px;
+}
+
+.quick-add-inline .quick-add-strip-wide {
+  gap: 7px;
+}
+
+.quick-add-inline-divider {
+  height: 1px;
+  margin: 13px 0 15px;
+  background: #e3e3e3;
+}
+
+
+.quick-add-strip-wide {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 0 auto;
+  min-width: 0;
+}
+
+.quick-add-strip-wide .quick-add-button {
+  width: 62px;
+  min-width: 62px;
+  min-height: 58px;
+  padding: 6px;
+  gap: 0;
+}
+
+.quick-add-template-button {
+  width: 96px !important;
+  min-width: 96px !important;
+  min-height: 64px !important;
+  gap: 0;
+}
+
+.quick-add-template-wide {
+  width: 132px !important;
+  min-width: 132px !important;
+  min-height: 68px !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+.quick-add-pedigree-icon {
+  display: block;
+  overflow: visible;
+  flex: 0 0 auto;
+}
+
+.quick-add-pedigree-icon rect,
+.quick-add-pedigree-icon circle,
+.quick-add-pedigree-icon polygon,
+.quick-add-pedigree-icon line {
+  fill: #fff;
+  stroke: #111;
+  stroke-width: 1.6;
+  vector-effect: non-scaling-stroke;
+}
+
+.quick-add-pedigree-icon line {
+  fill: none;
+}
+
+.quick-add-family-icon {
+  width: 70px;
+  height: 40px;
+}
+
+.quick-add-three-generation-icon {
+  width: 102px;
+  height: 54px;
+}
+
+.quick-add-person-with-arrow {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 28px;
+}
+
+.quick-add-person-with-arrow .quick-add-symbol {
+  width: 22px;
+  height: 22px;
+}
+
+.quick-add-arrow {
+  position: absolute;
+  left: -2px;
+  bottom: 1px;
+  width: 19px;
+  height: 2px;
+  background: #111;
+  transform: rotate(-34deg);
+  transform-origin: left center;
+}
+
+.quick-add-arrow::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  top: -3px;
+  width: 7px;
+  height: 7px;
+  border-top: 2px solid #111;
+  border-right: 2px solid #111;
+  transform: rotate(45deg);
+}
+
+.quick-add-p-mark {
+  position: absolute;
+  left: -7px;
+  bottom: -3px;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+
+
+
+
+/* 0.7.29 — acciones interactivas en el hover del pedigree */
+.condition-hover-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px solid #e3e3e3;
+}
+
+.condition-hover-delete {
+  min-height: 30px;
+  padding: 5px 9px;
+  border: 1px solid #b42318;
+  border-radius: 6px;
+  background: #fff;
+  color: #b42318;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.condition-hover-delete:hover,
+.condition-hover-delete:focus-visible {
+  background: #fff1f0;
+  outline: none;
+}
+
+.condition-hover-delete:active {
+  transform: translateY(1px);
+}
+
+
+/* 0.7.30 — relación rápida dentro del tooltip del pedigree */
+.condition-hover-relation {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px solid #e3e3e3;
+}
+
+.condition-hover-relation-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: #333;
+}
+
+.condition-hover-relation select {
+  width: 100%;
+  min-height: 30px;
+  padding: 4px 6px;
+  border: 1px solid #cfcfcf;
+  border-radius: 6px;
+  background: #fff;
+  color: #222;
+  font: inherit;
+  font-size: 11px;
+}
+
+.condition-hover-relation-add {
+  min-height: 30px;
+  padding: 5px 9px;
+  border: 1px solid #333;
+  border-radius: 6px;
+  background: #f7f7f7;
+  color: #222;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.condition-hover-relation-add:hover,
+.condition-hover-relation-add:focus-visible {
+  background: #ededed;
+  outline: none;
+}
+
+.condition-hover-twin-type[hidden] {
+  display: none;
+}
+
+
+/* 0.7.31 — estabilidad de interacción del tooltip */
+.condition-hover-card select,
+.condition-hover-card button {
+  touch-action: manipulation;
+}
+
+.condition-hover-card:focus-within {
+  box-shadow: 0 4px 18px rgb(0 0 0 / .18);
+}
+
+
+/* 0.7.32 — selección múltiple de relaciones en el tooltip */
+.condition-hover-relation-targets {
+  display: grid;
+  gap: 5px;
+}
+
+.condition-hover-relation-help {
+  color: #666;
+  font-size: 10px;
+  line-height: 1.25;
+}
+
+.condition-hover-relation-list {
+  display: grid;
+  gap: 2px;
+  max-height: 150px;
+  overflow-y: auto;
+  padding: 4px;
+  border: 1px solid #d6d6d6;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.condition-hover-target-option {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  min-height: 25px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.condition-hover-target-option:hover {
+  background: #f3f3f3;
+}
+
+.condition-hover-target-option input {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+}
+
+.condition-hover-relation-list-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.condition-hover-relation-list-actions button {
+  min-height: 24px;
+  padding: 2px 7px;
+  border: 1px solid #d0d0d0;
+  border-radius: 5px;
+  background: #fafafa;
+  color: #444;
+  font: inherit;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.condition-hover-relation-list-actions button:disabled {
+  opacity: .45;
+  cursor: default;
+}
+
+.condition-hover-relation-empty {
+  padding: 5px;
+  color: #777;
+  font-size: 10px;
+}
+
+#conditionAssignmentsCard {
+  scroll-margin-top: 12px;
+}
+
+
+/* 0.7.34 — edición directa desde el tooltip */
+.condition-hover-edit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 30px;
+  padding: 5px 9px;
+  border: 1px solid #555;
+  border-radius: 6px;
+  background: #fff;
+  color: #222;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.condition-hover-edit:hover,
+.condition-hover-edit:focus-visible {
+  background: #f1f1f1;
+  outline: none;
+}
+
+.condition-hover-edit:active {
+  transform: translateY(1px);
+}
+
+.condition-hover-edit-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+
+/* 0.8.40 — acceso principal desde el tooltip a la sección clínica. */
+.condition-hover-clinical {
+  width: 100%;
+  min-height: 36px;
+  margin-top: 8px;
+  padding: 7px 11px;
+  border: 1px solid #8fb5d3;
+  border-radius: 7px;
+  background: #edf5fb;
+  color: #234d6d;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: center;
+  cursor: pointer;
+}
+
+.condition-hover-clinical:hover,
+.condition-hover-clinical:focus-visible {
+  border-color: #648fad;
+  background: #e1eef8;
+  color: #173d59;
+  outline: none;
+}
+
+.condition-hover-clinical:active {
+  transform: translateY(1px);
+}
+
+
+/* 0.7.35 — atajos mínimos debajo de "Añadir" en el tooltip */
+/* 0.7.95 — máximo 6 atajos por fila para evitar ensanchar el tooltip. */
+.condition-hover-create-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: fit-content;
+  max-width: 221px; /* 6 × 31 px + 5 × 7 px */
+  min-height: 27px;
+  margin: 7px auto 2px;
+}
+
+.condition-hover-create-shortcut {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 31px;
+  height: 25px;
+  min-height: 0;
+  padding: 0;
+  border: 1px solid #d2d2d2;
+  border-radius: 5px;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+}
+
+.condition-hover-create-shortcut:hover,
+.condition-hover-create-shortcut:focus-visible {
+  background: #f3f3f3;
+  border-color: #999;
+  outline: none;
+}
+
+.condition-hover-create-icon {
+  position: relative;
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border: 1.5px solid #222;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.condition-hover-create-icon.female {
+  border-radius: 50%;
+}
+
+.condition-hover-create-icon.partner {
+  margin-left: 2px;
+}
+
+.condition-hover-create-icon.partner::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  right: 12px;
+  width: 7px;
+  height: 1.5px;
+  background: #222;
+}
+
+.condition-hover-create-plus {
+  position: absolute;
+  right: 2px;
+  top: 0;
+  color: #555;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+
+/* 0.8.75 — acciones individuales; una y dos barras Bennett. */
+.condition-hover-create-shortcut.reproductive-individual {
+  flex: 0 0 31px;
+}
+.condition-hover-create-shortcut.reproductive-individual.is-active {
+  background: #e7f3e9;
+  border-color: #35845e;
+}
+.condition-hover-create-shortcut.reproductive-individual:disabled {
+  opacity: .40;
+  cursor: not-allowed;
+}
+.condition-hover-reproductive-icon {
+  display: block;
+  position: relative;
+  width: 19px;
+  height: 19px;
+  background: transparent;
+}
+.condition-hover-reproductive-icon::before {
+  content: "";
+  position: absolute;
+  height: 11px;
+  width: 1.5px;
+  background: currentColor;
+  top: 1px;
+  left: 9px;
+}
+.condition-hover-reproductive-icon::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 1.5px;
+  background: currentColor;
+  left: 1.5px;
+  top: 12px;
+}
+.condition-hover-reproductive-icon.infertility {
+  background: linear-gradient(currentColor,currentColor)
+    no-repeat 1.5px 17px / 16px 1.5px;
+}
+
+/* 0.7.36 — atajos hijo / hija de la pareja */
+.condition-hover-create-icon.child {
+  margin-top: 4px;
+  transform: scale(.92);
+}
+
+.condition-hover-create-icon.child::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  width: 1.5px;
+  height: 5px;
+  background: #222;
+  transform: translateX(-50%);
+}
+
+
+/* 0.7.93 — hijo con género y sexo desconocidos desde el tooltip */
+.condition-hover-create-icon.child.unspecified {
+  border: 0;
+  background: transparent;
+}
+
+.condition-hover-create-icon.child.unspecified::after {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 9px;
+  height: 9px;
+  border: 1.5px solid #222;
+  background: #fff;
+  box-sizing: border-box;
+  transform: rotate(45deg);
+}
+
+
+/* 0.7.37 — cambio rápido de género desde el tooltip */
+.condition-hover-gender {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  min-width: 30px;
+  height: 30px;
+  min-height: 30px;
+  padding: 0;
+  border: 1px solid #555;
+  border-radius: 6px;
+  background: #fff;
+  color: #222;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.condition-hover-gender:hover,
+.condition-hover-gender:focus-visible {
+  background: #f1f1f1;
+  outline: none;
+}
+
+.condition-hover-gender:active {
+  transform: translateY(1px);
+}
+
+.condition-hover-gender-icon {
+  font-size: 15px;
+  line-height: 1;
+}
+
+
+/* 0.7.51 — atajos parentales, múltiples y eventos gestacionales */
+.condition-hover-create-icon.multiple {
+  font-size: 8px;
+  font-weight: 800;
+  line-height: 10px;
+  text-align: center;
+}
+
+.condition-hover-create-icon.pregnancy-event {
+  width: 15px;
+  height: 13px;
+  border: 0;
+  background: transparent;
+  font-size: 6px;
+  font-weight: 800;
+  line-height: 13px;
+  text-align: center;
+}
+
+.condition-hover-create-icon.parents {
+  width: 27px;
+  height: 13px;
+  border: 0;
+  background: transparent;
+}
+
+.condition-hover-create-icon.parents::before,
+.condition-hover-create-icon.parents::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 13px;
+  height: 13px;
+  border: 1.5px solid #222;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.condition-hover-create-icon.parents::before {
+  left: 0;
+}
+
+.condition-hover-create-icon.parents::after {
+  right: 0;
+  border-radius: 50%;
+}
+
+
+/* 0.7.55 — barra principal compacta, visual y en una sola fila */
+.pedigrapp-header .actions {
+  flex-wrap: nowrap;
+  gap: 5px;
+  max-width: none;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding: 2px 0;
+}
+.pedigrapp-header .actions .action-icon {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  padding: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+}
+.pedigrapp-header .actions .action-icon svg {
+  width: 25px;
+  height: 25px;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.65;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.pedigrapp-header .actions .file-action svg { width: 29px; height: 29px; }
+.pedigrapp-header .actions .file-action svg text {
+  fill: currentColor;
+  stroke: none;
+  font: 700 6.2px Arial, Helvetica, sans-serif;
+  text-anchor: middle;
+  letter-spacing: -.15px;
+}
+.pedigrapp-header .actions .file-action svg .mini-arrow { stroke-width: 1.5; }
+.pedigrapp-header .actions .export-only svg text { font-size: 7px; }
+
+.pedigrapp-header .actions .help-action {
+  text-decoration: none;
+  color: #315f88;
+  border-color: #aebfcd;
+  background: #f7fbfe;
+}
+
+.pedigrapp-header .actions .help-action:hover {
+  color: #234d6d;
+  border-color: #8fa9bc;
+  background: #edf5fb;
+}
+
+.pedigrapp-header .actions .help-action svg {
+  width: 29px;
+  height: 29px;
+}
+
+.pedigrapp-header .actions .action-separator {
+  width: 1px;
+  height: 28px;
+  min-width: 1px;
+  background: #d8d8d8;
+  margin: 7px 2px;
+}
+@media (max-width: 1180px) {
+  .pedigrapp-header .actions { flex-wrap: nowrap; overflow-x: auto; }
+}
+
+/* 0.7.56 — iconos principales mayores, trazo fino y código de color */
+.pedigrapp-header .actions {
+  gap: 6px;
+}
+.pedigrapp-header .actions .action-icon {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  padding: 7px;
+  border-width: 1px;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease, transform .08s ease;
+}
+.pedigrapp-header .actions .action-icon svg {
+  width: 30px;
+  height: 30px;
+  stroke-width: 1.25;
+}
+.pedigrapp-header .actions .file-action svg {
+  width: 33px;
+  height: 33px;
+}
+.pedigrapp-header .actions .file-action svg text {
+  font-size: 6.4px;
+}
+.pedigrapp-header .actions .file-action svg .mini-arrow {
+  stroke-width: 1.15;
+}
+.pedigrapp-header .actions .export-only svg text {
+  font-size: 7.2px;
+}
+.pedigrapp-header .actions .action-icon:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+/* Acciones generales */
+#newFamilyBtn { color:#2563a6; border-color:#b9cee5; background:#f5f9fd; }
+#newFamilyBtn:hover { background:#eaf3fb; }
+#resetTreeBtn { color:#b33a3a; border-color:#e2bcbc; background:#fff8f8; }
+#resetTreeBtn:hover { background:#fdeeee; }
+#undoBtn, #redoBtn { color:#626b78; border-color:#cbd0d6; background:#fafbfc; }
+#undoBtn:hover, #redoBtn:hover { background:#f0f2f4; }
+#saveFamilyBtn { color:#23734b; border-color:#afd2bf; background:#f3faf6; }
+#saveFamilyBtn:hover { background:#e7f5ed; }
+
+/* Formatos de intercambio */
+#exportJsonBtn, label[for="importJsonInput"] { color:#b26a00; border-color:#e2c18d; background:#fffaf1; }
+#exportJsonBtn:hover, label[for="importJsonInput"]:hover { background:#fff2dc; }
+#exportPedBtn, label[for="importPedInput"] { color:#087c78; border-color:#9bcfcd; background:#f1fbfa; }
+#exportPedBtn:hover, label[for="importPedInput"]:hover { background:#e3f6f5; }
+#exportSvgBtn { color:#7552a5; border-color:#cbbce0; background:#faf7fd; }
+#exportSvgBtn:hover { background:#f1eafa; }
+#exportPngBtn { color:#2875a8; border-color:#afd0e4; background:#f4fafe; }
+#exportPngBtn:hover { background:#e8f4fb; }
+#exportPdfBtn { color:#b52f3d; border-color:#e3b2b8; background:#fff6f7; }
+#exportPdfBtn:hover { background:#fde9ec; }
+
+.pedigrapp-header .actions .action-separator {
+  height: 32px;
+  margin: 8px 2px;
+  background:#d7dce1;
+}
+
+/* 0.7.57 — estados rápidos en el tooltip */
+.condition-hover-actions {
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  gap: 5px;
+}
+
+.condition-hover-state {
+  width: 30px;
+  min-width: 30px;
+  height: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #a7a7a7;
+  border-radius: 6px;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+  transition: background .12s ease, border-color .12s ease, transform .06s ease;
+}
+.condition-hover-state:hover,
+.condition-hover-state:focus-visible {
+  background: #f3f5f7;
+  border-color: #555;
+  outline: none;
+}
+.condition-hover-state:active { transform: translateY(1px); }
+.condition-hover-state.is-active {
+  background: #e8f0f8;
+  border-color: #53789d;
+  color: #183b5b;
+}
+.condition-hover-state:disabled,
+.condition-hover-state.is-clinical {
+  opacity: .38;
+  cursor: default;
+}
+.condition-hover-state-icon {
+  font-size: 15px;
+  line-height: 1;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.condition-hover-deceased .condition-hover-state-icon { font-size: 16px; }
+.condition-hover-proband .condition-hover-state-icon { font-size: 11px; letter-spacing: -2px; }
+.condition-hover-affected .condition-hover-state-icon { font-size: 16px; }
+.condition-hover-delete { margin-left: auto; }
+
+/* 0.8.22 — las acciones menos frecuentes viven bajo el botón ⋯. */
+.condition-hover-more-button {
+  width: 30px;
+  min-width: 30px;
+  height: 30px;
+  min-height: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #a7a7a7;
+  border-radius: 6px;
+  background: #fff;
+  color: #333;
+  font: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+.condition-hover-more-button:hover,
+.condition-hover-more-button:focus-visible,
+.condition-hover-more-button[aria-expanded="true"] {
+  background: #f3f5f7;
+  border-color: #555;
+  outline: none;
+}
+
+.condition-hover-more-content[hidden] {
+  display: none !important;
+}
+
+
+/* 0.7.59 — posición manual directamente en el tooltip */
+.condition-hover-layout {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px solid #e3e3e3;
+}
+
+.condition-hover-layout-title {
+  color: #333;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.condition-hover-layout-actions {
+  display: grid;
+  grid-template-columns: repeat(5, 34px);
+  gap: 6px;
+  justify-content: start;
+}
+
+.condition-hover-layout-button {
+  width: 34px;
+  height: 31px;
+  padding: 0;
+  border: 1px solid #c9d1d9;
+  border-radius: 7px;
+  background: #f8fafc;
+  color: #334155;
+  font: inherit;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.condition-hover-layout-button:hover:not(:disabled),
+.condition-hover-layout-button:focus-visible:not(:disabled) {
+  border-color: #7c8da3;
+  background: #eef3f8;
+  outline: none;
+}
+
+.condition-hover-layout-button.is-reset {
+  color: #2563a6;
+}
+
+.condition-hover-layout-button:disabled {
+  opacity: .28;
+  cursor: default;
+}
+
+
+/* 0.8.8 — clic directo sobre líneas de relación. */
+.pedigree-svg .relationship-hit-target {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 14;
+  vector-effect: non-scaling-stroke;
+  pointer-events: stroke;
+  cursor: pointer;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pedigree-svg .relationship-hit-target:hover,
+.pedigree-svg .relationship-hit-target:focus-visible {
+  stroke: rgba(52, 99, 145, .10);
+  outline: none;
+}
+
+
+/* 0.8.24 — opciones al pulsar directamente sobre una línea de pareja. */
+.relationship-action-menu {
+  position: fixed;
+  z-index: 10020;
+  min-width: 218px;
+  max-width: min(330px, calc(100vw - 20px));
+  padding: 9px 10px 10px;
+  border: 1px solid #c7cdd3;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 7px 22px rgba(0,0,0,.18);
+  color: #222;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.relationship-action-menu[hidden] {
+  display: none !important;
+}
+
+.relationship-action-title {
+  margin: 0 0 2px;
+  font-weight: 700;
+  color: #26323c;
+}
+
+.relationship-action-couple {
+  max-width: 300px;
+  margin: 0 0 7px;
+  overflow: hidden;
+  color: #6a737b;
+  font-size: 11px;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.relationship-action-row {
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 -3px;
+  padding: 4px 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.relationship-action-row:hover {
+  background: #f3f6f8;
+}
+
+.relationship-action-row + .relationship-action-row {
+  margin-top: 2px;
+}
+
+.relationship-action-row input {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  flex: 0 0 auto;
+  accent-color: #315f88;
+  cursor: pointer;
+}
+
+.relationship-action-row span {
+  flex: 1 1 auto;
+}
+
+
+
+/* ============================================================
+   0.8.43 — interfaz a ancho completo
+   ============================================================ */
+
+.app-shell {
+  width: calc(100% - 20px);
+  max-width: none;
+  margin: 12px auto 32px;
+}
+
+.workspace {
+  display: block;
+  width: 100%;
+}
+
+.viewer-column {
+  width: 100%;
+  min-width: 0;
+}
+
+.creation-card,
+.conditions-card,
+.wide-disclosure,
+.notes-card,
+.legend-card {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.creation-card {
+  margin-top: 18px;
+  margin-bottom: 18px;
+  padding: 18px 20px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / .04);
+}
+
+/* La leyenda ocupa menos altura y aprovecha mejor el ancho recuperado. */
+.legend-card {
+  padding: 13px 16px;
+}
+
+.legend-card h2 {
+  margin-bottom: 9px;
+}
+
+.legend-grid {
+  grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+  gap: 8px 16px;
+}
+
+.legend-grid > div {
+  min-height: 26px;
+  font-size: .78rem;
+}
+
+/* Altas rápidas: una línea visual compacta en pantallas anchas. */
+.creation-card .quick-add-inline {
+  display: grid;
+  grid-template-columns: 165px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+}
+
+.creation-card .quick-add-inline h2 {
+  margin: 0;
+}
+
+.creation-card .quick-add-strip-wide {
+  justify-content: flex-start;
+  margin: 0;
+}
+
+.creation-card .quick-add-inline-divider {
+  margin: 13px 0 15px;
+}
+
+/* Formulario principal: 3 columnas reales en escritorio. */
+.creation-card #personForm > .form-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 16px;
+  row-gap: 11px;
+}
+
+.creation-card .person-status-row {
+  width: min(100%, 620px);
+  grid-template-columns: repeat(4, minmax(105px, 1fr));
+  margin: 12px 0 10px;
+}
+
+.creation-card .person-form-disclosure {
+  margin-top: 10px;
+}
+
+.creation-card .person-form-disclosure-body.form-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 16px;
+}
+
+.creation-card .advanced-reproductive-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-column: span 2;
+}
+
+.creation-card #submitPersonBtn {
+  width: auto;
+  min-width: 190px;
+  display: block;
+  margin: 14px 0 0 auto;
+  padding-left: 22px;
+  padding-right: 22px;
+}
+
+/* Las tarjetas que antes vivían en la barra lateral pasan a ser full-width. */
+.wide-disclosure {
+  margin: 0 0 18px !important;
+  padding-top: 0 !important;
+  border: 1px solid #dde1e4 !important;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgb(0 0 0 / .03);
+}
+
+.wide-disclosure .editor-disclosure-summary {
+  padding: 13px 42px 13px 16px;
+}
+
+.wide-disclosure .editor-disclosure-body {
+  padding: 12px 16px 16px;
+}
+
+.wide-disclosure .form-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 16px;
+  row-gap: 11px;
+}
+
+/* El visor ocupa siempre el ancho disponible. */
+.pedigree-card {
+  width: 100%;
+}
+
+.pedigree-search-controls {
+  width: min(285px, calc(100% - 430px));
+}
+
+/* Ya no existe panel lateral ni botón para plegarlo. */
+#pedigreeToggleEditorBtn {
+  display: none !important;
+}
+
+@media (max-width: 1100px) {
+  .creation-card #personForm > .form-grid,
+  .creation-card .person-form-disclosure-body.form-grid,
+  .wide-disclosure .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .creation-card .advanced-reproductive-grid {
+    grid-column: span 2;
+  }
+
+  .creation-card .quick-add-inline {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell {
+    width: calc(100% - 12px);
+    margin-top: 6px;
+  }
+
+  .creation-card,
+  .conditions-card,
+  .legend-card,
+  .notes-card {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .creation-card #personForm > .form-grid,
+  .creation-card .person-form-disclosure-body.form-grid,
+  .wide-disclosure .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .creation-card .advanced-reproductive-grid {
+    grid-template-columns: 1fr;
+    grid-column: span 1;
+  }
+
+  .creation-card .person-status-row {
+    width: 100%;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .creation-card .quick-add-strip-wide {
+    justify-content: center;
+  }
+
+  .creation-card #submitPersonBtn {
+    width: 100%;
+  }
+}
+
+
+/* ============================================================
+   0.8.44 — distribución corregida
+   ============================================================ */
+
+/* Ancho general solicitado: 90% del viewport y centrado. */
+.app-shell {
+  width: 90%;
+  max-width: none;
+  margin: 18px auto 34px;
+}
+
+/* Condiciones del pedigree inmediatamente bajo los datos de familia. */
+.top-conditions-card {
+  margin: 0 0 12px;
+}
+
+/* Altas rápidas en tarjeta independiente encima del visor. */
+.quick-add-card {
+  width: 100%;
+  margin: 0 0 18px;
+  padding: 15px 18px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / .04);
+}
+
+.quick-add-card .quick-add-inline {
+  display: block;
+  text-align: center;
+}
+
+.quick-add-card .quick-add-inline h2 {
+  margin: 0 0 11px;
+  text-align: center;
+}
+
+.quick-add-card .quick-add-strip-wide {
+  width: 100%;
+  justify-content: center;
+  margin: 0 auto;
+  gap: 10px;
+}
+
+/* Añadir individuo: todos los campos principales en una sola línea. */
+.creation-card #personForm > .form-grid {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: end;
+  gap: 12px;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 1px 1px 7px;
+  scrollbar-width: thin;
+}
+
+.creation-card #personForm > .form-grid > .field {
+  flex: 1 0 155px;
+  min-width: 155px;
+  margin: 0;
+}
+
+.creation-card #personForm > .form-grid > .field:first-child {
+  flex-basis: 190px;
+  min-width: 190px;
+}
+
+.creation-card #personForm > .form-grid > .person-label-field {
+  flex-basis: 185px;
+  min-width: 185px;
+}
+
+.creation-card #personForm > .form-grid > .brief-info-field {
+  flex-basis: 225px;
+  min-width: 225px;
+}
+
+.creation-card #personForm > .form-grid > .person-or-multiple-field {
+  flex-basis: 175px;
+  min-width: 175px;
+}
+
+.creation-card #personForm > .form-grid > .person-basic-field,
+.creation-card #personForm > .form-grid > .pregnancy-loss-only-field {
+  flex: 0 0 105px;
+  min-width: 105px;
+}
+
+.creation-card #personForm > .form-grid > .donor-only-field,
+.creation-card #personForm > .form-grid > .gestational-carrier-only-field,
+.creation-card #personForm > .form-grid > .multiple-only-field,
+.creation-card #personForm > .form-grid > .fetus-only-field {
+  flex-basis: 230px;
+  min-width: 230px;
+}
+
+/* Los estados rápidos siguen debajo, sin mezclarse con los campos. */
+.creation-card .person-status-row {
+  margin-top: 10px;
+}
+
+/* Condiciones se ha movido fuera del workspace: ocultarla también en modo foco. */
+body.pedigree-focus-mode .top-conditions-card {
+  display: none !important;
+}
+
+/* En móvil se mantiene el 90% y la fila de campos se desplaza horizontalmente. */
+@media (max-width: 720px) {
+  .app-shell {
+    width: 90%;
+    margin-top: 8px;
+  }
+
+  .creation-card #personForm > .form-grid {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .quick-add-card {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
+
+/* ============================================================
+   0.8.45 — tarjetas de gestión al mismo nivel
+   ============================================================ */
+
+/*
+ * En escritorio, Añadir individuo, Relaciones avanzadas y Listados
+ * comparten la misma fila. El formulario principal recibe más espacio;
+ * los dos desplegables quedan equilibrados a su derecha.
+ */
+.management-row {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 2.15fr)
+    minmax(250px, .95fr)
+    minmax(230px, .85fr);
+  gap: 14px;
+  align-items: start;
+  width: 100%;
+  margin: 18px 0;
+}
+
+.management-row > .creation-card,
+.management-row > .wide-disclosure {
+  min-width: 0;
+  width: 100%;
+  margin: 0 !important;
+  box-sizing: border-box;
+}
+
+/* Mismo lenguaje visual y alineación superior de las tres tarjetas. */
+.management-row > .creation-card {
+  padding: 15px 16px;
+}
+
+.management-row > .wide-disclosure {
+  border-radius: 12px;
+}
+
+.management-row > .wide-disclosure > .editor-disclosure-summary {
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  padding: 11px 38px 11px 14px;
+}
+
+.management-row > .wide-disclosure > .editor-disclosure-summary > span {
+  width: 100%;
+}
+
+.management-row > .wide-disclosure .editor-disclosure-body {
+  padding: 11px 13px 14px;
+}
+
+/*
+ * Los desplegables ya no heredan la rejilla de 3 columnas pensada
+ * para ancho completo. Dentro de sus tarjetas estrechas se distribuyen
+ * en una sola columna legible.
+ */
+.management-row > .wide-disclosure .form-grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+}
+
+.management-row > .wide-disclosure .field,
+.management-row > .wide-disclosure select,
+.management-row > .wide-disclosure input,
+.management-row > .wide-disclosure textarea {
+  min-width: 0;
+  width: 100%;
+}
+
+/* Listados: aprovechar toda la anchura de su propia tarjeta. */
+.management-row #editorListsDisclosure .editor-lists-body {
+  gap: 13px;
+}
+
+.management-row #editorListsDisclosure .table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.management-row #editorListsDisclosure .people-table {
+  min-width: 330px;
+}
+
+/*
+ * La fila básica de Añadir individuo sigue siendo una sola línea,
+ * pero reducimos ligeramente sus anchos base para que el contenido
+ * quede mejor repartido en la tarjeta principal.
+ */
+.management-row .creation-card #personForm > .form-grid > .field {
+  flex-basis: 135px;
+  min-width: 135px;
+}
+
+.management-row .creation-card #personForm > .form-grid > .field:first-child {
+  flex-basis: 165px;
+  min-width: 165px;
+}
+
+.management-row .creation-card #personForm > .form-grid > .person-label-field {
+  flex-basis: 150px;
+  min-width: 150px;
+}
+
+.management-row .creation-card #personForm > .form-grid > .brief-info-field {
+  flex-basis: 185px;
+  min-width: 185px;
+}
+
+.management-row .creation-card #personForm > .form-grid > .person-or-multiple-field {
+  flex-basis: 150px;
+  min-width: 150px;
+}
+
+.management-row .creation-card #personForm > .form-grid > .person-basic-field,
+.management-row .creation-card #personForm > .form-grid > .pregnancy-loss-only-field {
+  flex: 0 0 90px;
+  min-width: 90px;
+}
+
+/* Estados rápidos centrados dentro de la tarjeta principal. */
+.management-row .creation-card .person-status-row {
+  width: min(100%, 560px);
+}
+
+/*
+ * En anchuras medias, Añadir individuo usa toda la primera fila y
+ * los dos desplegables se reparten la segunda.
+ */
+@media (max-width: 1320px) {
+  .management-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .management-row > .creation-card {
+    grid-column: 1 / -1;
+  }
+}
+
+/* En móvil/tablet estrecha, las tres tarjetas se apilan. */
+@media (max-width: 820px) {
+  .management-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .management-row > .creation-card {
+    grid-column: auto;
+  }
+}
+
+
+/* ============================================================
+   0.8.46 — formulario de individuo en dos filas
+   ============================================================ */
+
+/*
+ * Recuperamos la distribución en dos líneas para el formulario normal:
+ * 3 columnas x 2 filas para Tipo, Alias, Breve información,
+ * Género, Sexo asignado al nacimiento y Edad.
+ *
+ * Los campos contextuales de otros tipos de registro siguen entrando
+ * en la misma rejilla y se redistribuyen automáticamente.
+ */
+.management-row .creation-card #personForm > .form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 14px;
+  row-gap: 11px;
+  width: 100%;
+  overflow: visible;
+  padding: 0;
+}
+
+.management-row .creation-card #personForm > .form-grid > .field,
+.management-row .creation-card #personForm > .form-grid > .field:first-child,
+.management-row .creation-card #personForm > .form-grid > .person-label-field,
+.management-row .creation-card #personForm > .form-grid > .brief-info-field,
+.management-row .creation-card #personForm > .form-grid > .person-or-multiple-field,
+.management-row .creation-card #personForm > .form-grid > .person-basic-field,
+.management-row .creation-card #personForm > .form-grid > .pregnancy-loss-only-field,
+.management-row .creation-card #personForm > .form-grid > .donor-only-field,
+.management-row .creation-card #personForm > .form-grid > .gestational-carrier-only-field,
+.management-row .creation-card #personForm > .form-grid > .multiple-only-field,
+.management-row .creation-card #personForm > .form-grid > .fetus-only-field {
+  min-width: 0;
+  width: 100%;
+  flex: initial;
+}
+
+/* Botón principal centrado. */
+.management-row .creation-card #submitPersonBtn {
+  width: auto;
+  min-width: 190px;
+  display: block;
+  margin: 14px auto 0;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+/* Pantallas intermedias: 2 columnas. */
+@media (max-width: 1050px) {
+  .management-row .creation-card #personForm > .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Móvil: una sola columna. */
+@media (max-width: 650px) {
+  .management-row .creation-card #personForm > .form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .management-row .creation-card #submitPersonBtn {
+    width: min(100%, 280px);
+  }
+}
+
+
+/* ============================================================
+   0.8.47 — estados centrados y nuevos atajos rápidos
+   ============================================================ */
+
+/* Centrar el bloque completo de checkboxes/estados rápidos. */
+.management-row .creation-card .person-status-row {
+  margin: 10px auto 10px;
+  justify-content: center;
+}
+
+/* Consultante: mismo lenguaje que el probando, con C. */
+.quick-add-c-mark {
+  position: absolute;
+  left: 0;
+  top: -5px;
+  color: #111;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.quick-add-arrow-consultand {
+  transform: rotate(-34deg);
+}
+
+/* Plantillas pareja + un único hijo/a. */
+.quick-add-one-child-icon {
+  width: 70px;
+  height: 40px;
+}
+
+.quick-add-one-child-button {
+  width: 86px !important;
+  min-width: 86px !important;
+}
+
+
+/* ============================================================
+   0.8.49 — atajos rápidos + acciones principales
+   ============================================================ */
+
+/* Ambas tarjetas quedan en una sola fila en escritorio. */
+.top-tool-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 14px;
+  align-items: stretch;
+  width: 100%;
+  margin: 0 0 18px;
+}
+
+.top-tool-row > .quick-add-card,
+.top-tool-row > .action-card {
+  min-width: 0;
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* La tarjeta de altas rápidas queda deliberadamente sin título. */
+.top-tool-row .quick-add-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 13px 16px;
+}
+
+.top-tool-row .quick-add-inline {
+  width: 100%;
+}
+
+.top-tool-row .quick-add-strip-wide {
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 0;
+}
+
+/*
+ * La toolbar principal sale de la cabecera y conserva el mismo lenguaje
+ * visual al vivir dentro de su nueva tarjeta.
+ */
+.action-card.pedigrapp-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 13px 14px;
+  margin: 0;
+}
+
+.action-card .actions {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  overflow: visible;
+  padding: 0;
+}
+
+/* Reutilizar tamaños/estilo de iconos fuera de la cabecera original. */
+.action-card .actions .action-icon {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  padding: 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  border-width: 1px;
+  transition:
+    background-color .15s ease,
+    border-color .15s ease,
+    color .15s ease,
+    transform .08s ease;
+}
+
+.action-card .actions .action-icon svg {
+  width: 30px;
+  height: 30px;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.action-card .actions .file-action svg {
+  width: 33px;
+  height: 33px;
+}
+
+.action-card .actions .file-action svg text {
+  fill: currentColor;
+  stroke: none;
+  font: 700 6.4px Arial, Helvetica, sans-serif;
+  text-anchor: middle;
+  letter-spacing: -.15px;
+}
+
+.action-card .actions .file-action svg .mini-arrow {
+  stroke-width: 1.15;
+}
+
+.action-card .actions .export-only svg text {
+  font-size: 7px;
+}
+
+.action-card .actions .action-separator {
+  width: 1px;
+  height: 28px;
+  min-width: 1px;
+  background: #d8d8d8;
+  margin: 7px 2px;
+}
+
+/* El icono de ayuda conserva su tratamiento visual. */
+.action-card .actions .help-action {
+  text-decoration: none;
+  color: #315f88;
+  border-color: #aebfcd;
+  background: #f7fbfe;
+}
+
+.action-card .actions .help-action:hover {
+  color: #234d6d;
+  border-color: #8fa9bc;
+  background: #edf5fb;
+}
+
+/* Cabecera de la aplicación sin identidad institucional. */
+.app-header.pedigrapp-header {
+  justify-content: flex-start;
+}
+
+/* En pantallas medianas se apilan las dos tarjetas. */
+@media (max-width: 1250px) {
+  .top-tool-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+
+/* ============================================================
+   0.8.51 — Información clínica en panel lateral superpuesto
+   ============================================================ */
+
+.clinical-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1190;
+  background: rgb(18 28 38 / .10);
+  backdrop-filter: blur(.35px);
+}
+
+.clinical-drawer-backdrop[hidden] {
+  display: none !important;
+}
+
+.notes-card.clinical-drawer {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  bottom: 14px;
+  z-index: 1200;
+  width: min(540px, calc(100vw - 28px));
+  max-width: 540px;
+  min-width: 0;
+  margin: 0;
+  padding: 18px 20px 20px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid #cfd6dc;
+  border-radius: 12px;
+  box-shadow:
+    0 18px 50px rgb(0 0 0 / .22),
+    0 3px 12px rgb(0 0 0 / .10);
+  transform: translateX(calc(100% + 32px));
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    transform .20s ease,
+    opacity .16s ease,
+    visibility 0s linear .20s;
+}
+
+body.clinical-drawer-open .notes-card.clinical-drawer {
+  transform: translateX(0);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    transform .20s ease,
+    opacity .16s ease;
+}
+
+.clinical-drawer .notes-header {
+  position: sticky;
+  top: -18px;
+  z-index: 3;
+  margin: -18px -20px 12px;
+  padding: 17px 18px 13px 20px;
+  background: rgb(255 255 255 / .97);
+  border-bottom: 1px solid #e2e5e8;
+  backdrop-filter: blur(6px);
+}
+
+.clinical-drawer .notes-header h2 {
+  margin: 0 0 4px;
+}
+
+.clinical-drawer .notes-person-title {
+  margin-bottom: 0;
+}
+
+.clinical-drawer-close {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d2d8dd;
+  border-radius: 7px;
+  background: #fff;
+  color: #45515b;
+  font: 500 25px/1 Arial, Helvetica, sans-serif;
+  cursor: pointer;
+}
+
+.clinical-drawer-close:hover {
+  background: #f3f6f8;
+  border-color: #b8c1c9;
+  color: #25313c;
+}
+
+.clinical-drawer-close:focus-visible {
+  outline: 2px solid #5c91c9;
+  outline-offset: 2px;
+}
+
+/*
+ * El drawer es más estrecho que la antigua tarjeta completa:
+ * todos los campos de condición pasan a una sola columna clara.
+ */
+.clinical-drawer .person-condition-row {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.clinical-drawer .person-condition-details {
+  grid-column: 1;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.clinical-drawer .condition-validation {
+  grid-column: 1;
+}
+
+.clinical-drawer .condition-assignments-panel {
+  margin-top: 10px;
+}
+
+/* En modo foco el drawer debe seguir siendo visible sobre el pedigree. */
+body.pedigree-focus-mode .viewer-column > .clinical-drawer,
+body.pedigree-focus-mode .viewer-column > .clinical-drawer-backdrop {
+  display: block !important;
+}
+
+body.pedigree-focus-mode .viewer-column > .clinical-drawer-backdrop[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 700px) {
+  .notes-card.clinical-drawer {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    max-width: none;
+    border-radius: 0;
+    border-top: 0;
+    border-right: 0;
+    border-bottom: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notes-card.clinical-drawer {
+    transition: none;
+  }
+}
+
+
+/* ============================================================
+   0.8.52 — contexto clínico permanente + navegación
+   ============================================================ */
+
+.clinical-drawer-heading {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.clinical-selected-indicator {
+  display: inline-flex;
+  max-width: 100%;
+  margin: 4px 0 10px;
+  padding: 6px 9px;
+  border: 1px solid #d4dce2;
+  border-radius: 7px;
+  background: #f5f8fa;
+  color: #33424f;
+  font-size: .84rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.clinical-navigation {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto
+    minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.clinical-nav-button {
+  min-width: 0;
+  min-height: 34px;
+  padding: 6px 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid #cdd5db;
+  border-radius: 7px;
+  background: #fff;
+  color: #315f88;
+  font-size: .78rem;
+  font-weight: 700;
+  line-height: 1.1;
+  cursor: pointer;
+}
+
+.clinical-nav-button:hover:not(:disabled) {
+  border-color: #9eafbd;
+  background: #f4f8fb;
+}
+
+.clinical-nav-button:disabled {
+  color: #a1a8ad;
+  background: #f5f5f5;
+  border-color: #e0e3e5;
+  cursor: default;
+}
+
+.clinical-nav-position {
+  min-width: 54px;
+  color: #747d84;
+  font-size: .72rem;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  .clinical-navigation {
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(0, 1fr);
+  }
+
+  .clinical-nav-position {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    order: 3;
+  }
+}
+
+
+/* ============================================================
+   0.8.53 — tooltip como ficha operativa estructurada
+   ============================================================ */
+
+.condition-hover-card {
+  width: min(330px, calc(100vw - 24px));
+  min-width: 280px;
+  max-width: min(360px, calc(100vw - 24px));
+  padding: 12px 13px;
+}
+
+.condition-hover-identity {
+  padding-right: 26px;
+}
+
+.condition-hover-identity .condition-hover-person {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.condition-hover-person-meta {
+  margin-top: 3px;
+  color: #727b82;
+  font-size: 10.5px;
+  line-height: 1.3;
+}
+
+.condition-hover-quick-edit {
+  width: 100%;
+  margin: 10px 0 0;
+  padding-top: 9px;
+  border-top: 1px solid #eceff1;
+}
+
+.condition-hover-block {
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px solid #e5e8ea;
+}
+
+.condition-hover-block-label {
+  margin-bottom: 7px;
+  color: #58636c;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .035em;
+  text-transform: uppercase;
+}
+
+.condition-hover-state-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: 7px;
+}
+
+.condition-hover-state-actions .condition-hover-gender,
+.condition-hover-state-actions .condition-hover-state {
+  flex: 0 0 auto;
+}
+
+/* Acción clínica: visualmente principal y separada de los estados. */
+.condition-hover-clinical-block {
+  padding-top: 10px;
+}
+
+.condition-hover-clinical {
+  min-height: 38px;
+  margin: 0;
+  font-size: 11px;
+}
+
+/* Atajos familiares: centrados y claramente agrupados. */
+.condition-hover-family-block {
+  text-align: left;
+}
+
+.condition-hover-family-shortcut-host {
+  display: flex;
+  justify-content: center;
+}
+
+.condition-hover-family-shortcut-host .condition-hover-create-shortcuts {
+  width: 100%;
+  max-width: 252px;
+  margin: 0 auto;
+  justify-content: center;
+}
+
+/* Resumen clínico: conserva toda la información ya existente. */
+.condition-hover-clinical-summary .condition-hover-section {
+  margin: 0;
+  padding: 8px 0 0;
+  border: 0;
+}
+
+.condition-hover-clinical-summary .condition-hover-section +
+.condition-hover-section {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed #e1e4e6;
+}
+
+.condition-hover-clinical-summary .condition-hover-title {
+  font-size: 11px;
+}
+
+.condition-hover-clinical-summary .condition-hover-row {
+  grid-template-columns: minmax(92px, auto) 1fr;
+  gap: 7px;
+  font-size: 10.5px;
+}
+
+/* Más opciones ya no compite con los accesos frecuentes. */
+.condition-hover-more-block {
+  text-align: center;
+}
+
+.condition-hover-more-button {
+  width: auto;
+  min-width: 82px;
+  height: 29px;
+  min-height: 29px;
+  padding: 4px 11px;
+  gap: 5px;
+  font-size: 11px;
+  letter-spacing: 0;
+}
+
+.condition-hover-more-button span {
+  font-size: 17px;
+  line-height: .7;
+}
+
+.condition-hover-more-content {
+  margin-top: 4px;
+  text-align: left;
+}
+
+.condition-hover-more-content .condition-hover-layout,
+.condition-hover-more-content .condition-hover-relation {
+  margin-top: 8px;
+}
+
+/* Editar y Eliminar quedan deliberadamente aislados al final. */
+.condition-hover-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 11px;
+  padding-top: 10px;
+  border-top: 1px solid #d9dde0;
+}
+
+.condition-hover-footer .condition-hover-edit {
+  min-width: 86px;
+}
+
+.condition-hover-footer .condition-hover-delete {
+  margin-left: auto;
+  min-width: 78px;
+}
+
+/*
+ * La antigua barra horizontal mezclaba estados, Más, Editar y Eliminar.
+ * Se mantiene la clase por compatibilidad, pero ya no se usa en 0.8.53.
+ */
+.condition-hover-actions {
+  display: none;
+}
+
+@media (max-width: 420px) {
+  .condition-hover-card {
+    min-width: 0;
+    width: calc(100vw - 20px);
+    max-width: calc(100vw - 20px);
+  }
+
+  .condition-hover-state-actions {
+    gap: 5px;
+  }
+}
+
+
+/* ============================================================
+   0.8.54 — barra compacta de acciones al hacer scroll
+   ============================================================ */
+
+.sticky-pedigree-actions {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  max-width: calc(100vw - 24px);
+  padding: 6px 7px;
+  border: 1px solid rgb(190 199 207 / .95);
+  border-radius: 10px;
+  background: rgb(255 255 255 / .95);
+  box-shadow:
+    0 7px 22px rgb(0 0 0 / .14),
+    0 1px 4px rgb(0 0 0 / .08);
+  backdrop-filter: blur(7px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate(-50%, -14px);
+  transition:
+    opacity .16s ease,
+    transform .16s ease,
+    visibility 0s linear .16s;
+}
+
+.sticky-pedigree-actions.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+  transition:
+    opacity .16s ease,
+    transform .16s ease;
+}
+
+.sticky-action-button {
+  min-height: 34px;
+  padding: 5px 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 1px solid #cbd3da;
+  border-radius: 7px;
+  background: #fff;
+  color: #44515c;
+  font: 700 11px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.sticky-action-button svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.55;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sticky-action-button:hover:not(:disabled) {
+  background: #f3f6f8;
+  border-color: #aeb9c2;
+}
+
+.sticky-action-button:focus-visible {
+  outline: 2px solid #5c91c9;
+  outline-offset: 2px;
+}
+
+.sticky-action-button:disabled {
+  color: #abb1b6;
+  background: #f5f6f7;
+  border-color: #e0e3e5;
+  cursor: default;
+}
+
+.sticky-save-button {
+  position: relative;
+  color: #23734b;
+  border-color: #afd2bf;
+  background: #f3faf6;
+}
+
+.sticky-save-button:hover:not(:disabled) {
+  background: #e7f5ed;
+  border-color: #8ebca2;
+}
+
+.sticky-dirty-dot {
+  display: none;
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #c73535;
+}
+
+.sticky-save-button.is-dirty .sticky-dirty-dot {
+  display: inline-block;
+}
+
+.sticky-save-button.is-dirty {
+  box-shadow: inset 0 0 0 1px rgb(35 115 75 / .05);
+}
+
+.sticky-tree-button {
+  color: #315f88;
+  border-color: #b7c8d6;
+  background: #f5f9fc;
+}
+
+.sticky-tree-button:hover:not(:disabled) {
+  background: #eaf3f9;
+}
+
+.sticky-action-separator {
+  width: 1px;
+  height: 24px;
+  flex: 0 0 1px;
+  margin: 0 1px;
+  background: #d8dde1;
+}
+
+.pedigree-card {
+  scroll-margin-top: 62px;
+}
+
+/* El modo foco ya tiene sus propios controles dentro del visor. */
+body.pedigree-focus-mode .sticky-pedigree-actions {
+  display: none !important;
+}
+
+@media (max-width: 620px) {
+  .sticky-pedigree-actions {
+    top: 7px;
+    gap: 4px;
+    padding: 5px;
+  }
+
+  .sticky-action-button {
+    min-height: 32px;
+    padding: 4px 7px;
+    font-size: 10px;
+  }
+
+  .sticky-action-button svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .sticky-action-button span:not(.sticky-dirty-dot) {
+    display: none;
+  }
+
+  .sticky-save-button .sticky-save-label,
+  .sticky-tree-button span {
+    display: inline !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sticky-pedigree-actions {
+    transition: none;
+  }
+}
+
+
+/* ============================================================
+   0.8.55 — acordeón de gestión + foco de teclado
+   ============================================================ */
+
+.management-row > .creation-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.management-row > .creation-card > .editor-disclosure-summary {
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  padding: 11px 38px 11px 14px;
+}
+
+.management-row > .creation-card > .editor-disclosure-summary > span {
+  width: 100%;
+}
+
+.management-row > .creation-card > .creation-card-body {
+  padding: 13px 16px 16px;
+}
+
+.management-row > details > .editor-disclosure-summary strong {
+  display: block;
+  line-height: 1.2;
+}
+
+.management-row > details > .editor-disclosure-summary small {
+  display: block;
+  margin-top: 3px;
+  color: #777;
+  font-size: .74rem;
+  line-height: 1.25;
+}
+
+.management-row > details[open] {
+  border-color: #c8d2da;
+  box-shadow: 0 3px 10px rgb(0 0 0 / .055);
+}
+
+.management-row > details[open] > .editor-disclosure-summary {
+  border-bottom-color: #e6e9eb;
+}
+
+.management-row .creation-card .panel-header {
+  margin-top: 0;
+}
+
+.management-row > details > .editor-disclosure-summary:focus-visible {
+  outline: 2px solid #5c91c9;
+  outline-offset: -2px;
+  border-radius: 9px;
+}
+
+
+/* ============================================================
+   0.8.56 — toasts y modo de revisión clínica
+   ============================================================ */
+
+/* Confirmaciones no intrusivas */
+.toast-container {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 12000;
+  display: grid;
+  gap: 8px;
+  width: min(360px, calc(100vw - 32px));
+  pointer-events: none;
+}
+
+.app-toast {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 9px 11px;
+  border: 1px solid #d5dce2;
+  border-radius: 9px;
+  background: rgb(255 255 255 / .97);
+  color: #35424d;
+  box-shadow:
+    0 8px 26px rgb(0 0 0 / .16),
+    0 2px 7px rgb(0 0 0 / .08);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity .16s ease,
+    transform .16s ease;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.app-toast.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.app-toast.is-leaving {
+  opacity: 0;
+  transform: translateY(5px);
+}
+
+.app-toast-icon {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #edf3f7;
+  color: #315f88;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.app-toast.success .app-toast-icon {
+  background: #eaf6ef;
+  color: #23734b;
+}
+
+.app-toast-text {
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+body.clinical-drawer-open .toast-container {
+  right: auto;
+  left: 16px;
+}
+
+/* Acción principal para iniciar/finalizar revisión */
+#clinicalReviewBtn {
+  color: #566a39;
+  border-color: #c7d3b1;
+  background: #f8fbf3;
+}
+
+#clinicalReviewBtn:hover {
+  background: #eef6e4;
+}
+
+#clinicalReviewBtn.is-active,
+#clinicalReviewBtn[aria-pressed="true"] {
+  color: #35511d;
+  border-color: #9fb67d;
+  background: #eaf4dc;
+  box-shadow: inset 0 0 0 1px rgb(53 81 29 / .07);
+}
+
+/* Controles dentro del panel clínico */
+.clinical-review-bar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 7px;
+  margin-top: 9px;
+  padding-top: 9px;
+  border-top: 1px solid #e2e5e8;
+}
+
+.clinical-review-toggle,
+.clinical-review-mark {
+  min-height: 32px;
+  padding: 6px 9px;
+  border-radius: 7px;
+  font: 700 11px/1.15 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  cursor: pointer;
+}
+
+.clinical-review-toggle {
+  border: 1px solid #b8c7a3;
+  background: #f7faf2;
+  color: #45602b;
+}
+
+.clinical-review-toggle:hover {
+  background: #eef5e5;
+}
+
+.clinical-review-bar.is-active .clinical-review-toggle {
+  border-color: #b7bfc6;
+  background: #f5f6f7;
+  color: #5b6268;
+}
+
+.clinical-review-progress {
+  justify-self: end;
+  color: #657078;
+  font-size: 10.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.clinical-review-mark {
+  grid-column: 1 / -1;
+  width: 100%;
+  border: 1px solid #9fc6ad;
+  background: #edf8f1;
+  color: #24643d;
+}
+
+.clinical-review-mark:hover:not(:disabled) {
+  background: #e0f2e7;
+  border-color: #80af91;
+}
+
+.clinical-review-mark:disabled {
+  color: #708078;
+  background: #f3f6f4;
+  border-color: #d7dfda;
+  cursor: default;
+}
+
+.clinical-review-bar.is-complete .clinical-review-progress {
+  color: #23734b;
+}
+
+.clinical-review-bar.is-complete .clinical-review-progress::before {
+  content: "✓ ";
+}
+
+/* Marca temporal visible exclusivamente en pantalla */
+.pedigree-svg .clinical-review-marker {
+  pointer-events: none;
+}
+
+.pedigree-svg .clinical-review-marker circle {
+  fill: #fff;
+  stroke: #2f7a4d;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.pedigree-svg .clinical-review-marker text {
+  fill: #2f7a4d;
+  stroke: none;
+  font-size: 9px;
+  font-weight: 900;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+.pedigree-svg .person.reviewed-in-session > .person-shape {
+  filter: drop-shadow(0 0 1px rgb(47 122 77 / .28));
+}
+
+@media (max-width: 700px) {
+  .toast-container,
+  body.clinical-drawer-open .toast-container {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    width: auto;
+  }
+
+  .clinical-review-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .clinical-review-progress {
+    justify-self: start;
+  }
+
+  .clinical-review-mark {
+    grid-column: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-toast {
+    transition: none;
+  }
+}
+
+
+/* ============================================================
+   0.8.57 — ajustes finales de usabilidad
+   ============================================================ */
+
+/* Las tres tarjetas inferiores parten plegadas; el acordeón sigue activo. */
+.management-row > details {
+  scroll-margin-top: 60px;
+}
+
+/*
+ * 0.8.55 convirtió "Añadir individuo" en .wide-disclosure.
+ * Esa clase aplica width:100% a todos los input y terminaba ensanchando
+ * también los checkbox, separándolos visualmente de sus símbolos.
+ */
+.management-row > .creation-card
+.person-status-option input[type="checkbox"] {
+  width: 14px !important;
+  min-width: 14px !important;
+  max-width: 14px !important;
+  height: 14px !important;
+  min-height: 14px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  flex: 0 0 14px;
+}
+
+.management-row > .creation-card
+.person-status-option {
+  gap: 4px;
+}
+
+/* En los selectores múltiples, checkbox y etiqueta quedan más próximos. */
+.multi-person-option {
+  gap: 5px;
+}
+
+.multi-person-option input[type="checkbox"] {
+  width: 14px !important;
+  min-width: 14px !important;
+  height: 14px !important;
+  min-height: 14px !important;
+  flex: 0 0 14px;
+}
+
+/* Estado persistente de revisión general. */
+.reviewed-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 7px;
+  padding: 2px 7px;
+  border: 1px solid #a9c995;
+  border-radius: 999px;
+  background: #eff7e9;
+  color: #3d6928;
+  font-size: .72rem;
+  font-weight: 800;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.reviewed-indicator[hidden] {
+  display: none !important;
+}
+
+/*
+ * Una sola línea de iconos en la tarjeta de acciones.
+ * Si la anchura baja, las dos tarjetas se apilan antes de permitir wrap.
+ */
+.top-tool-row {
+  grid-template-columns:
+    minmax(0, .82fr)
+    minmax(690px, 1.38fr);
+}
+
+.action-card .actions {
+  flex-wrap: nowrap;
+  gap: 4px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+}
+
+.action-card .actions .action-icon {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  padding: 6px;
+}
+
+.action-card .actions .action-icon svg {
+  width: 27px;
+  height: 27px;
+}
+
+.action-card .actions .file-action svg {
+  width: 30px;
+  height: 30px;
+}
+
+.action-card .actions .action-separator {
+  height: 25px;
+  margin: 6px 1px;
+}
+
+/* El botón de revisión refleja el estado persistente del caso. */
+#clinicalReviewBtn {
+  color: #566a39;
+  border-color: #c7d3b1;
+  background: #f8fbf3;
+}
+
+#clinicalReviewBtn.is-active,
+#clinicalReviewBtn[aria-pressed="true"] {
+  color: #35511d;
+  border-color: #91ad72;
+  background: #e8f3dc;
+}
+
+/* Ya no existe modo de revisión individuo-a-individuo. */
+.clinical-review-bar {
+  display: none !important;
+}
+
+@media (max-width: 1380px) {
+  .top-tool-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .action-card .actions {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 760px) {
+  .case-id-label-row {
+    flex-wrap: wrap;
+    gap: 5px 7px;
+  }
+
+  .reviewed-indicator {
+    margin-left: 0;
+  }
+}
+
+
+/* ============================================================
+   0.8.58 — revisión cancelable + casos revisados + atajos compactos
+   ============================================================ */
+
+/* Estado de revisión directamente en el desplegable de casos. */
+.saved-case-result-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.saved-case-review-badge {
+  flex: 0 0 auto;
+  padding: 2px 6px;
+  border: 1px solid;
+  border-radius: 999px;
+  font-size: .66rem;
+  font-weight: 800;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.saved-case-review-badge.is-reviewed {
+  color: #3d6928;
+  background: #eff7e9;
+  border-color: #a9c995;
+}
+
+.saved-case-review-badge.is-pending {
+  color: #6b7379;
+  background: #f5f6f7;
+  border-color: #d4d9dd;
+}
+
+/*
+ * Altas rápidas: una única línea y botones algo más pequeños.
+ * La tarjeta permite scroll horizontal sólo si la ventana es realmente estrecha.
+ */
+.top-tool-row {
+  grid-template-columns:
+    minmax(720px, 1.08fr)
+    minmax(660px, 1fr);
+}
+
+.top-tool-row .quick-add-card {
+  padding: 10px 12px;
+}
+
+.top-tool-row .quick-add-strip-wide {
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 5px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+}
+
+.top-tool-row .quick-add-strip-wide .quick-add-button {
+  width: 50px;
+  min-width: 50px;
+  min-height: 50px;
+  padding: 4px;
+}
+
+.top-tool-row .quick-add-symbol {
+  width: 20px;
+  height: 20px;
+}
+
+.top-tool-row .quick-add-couple-icon .quick-add-symbol {
+  width: 15px;
+  height: 15px;
+}
+
+.top-tool-row .quick-add-couple-line {
+  width: 11px;
+}
+
+.top-tool-row .quick-add-person-with-arrow {
+  width: 36px;
+  height: 25px;
+}
+
+.top-tool-row .quick-add-person-with-arrow .quick-add-symbol {
+  width: 19px;
+  height: 19px;
+}
+
+.top-tool-row .quick-add-arrow {
+  left: -1px;
+  bottom: 2px;
+  width: 16px;
+}
+
+.top-tool-row .quick-add-arrow::after {
+  width: 6px;
+  height: 6px;
+}
+
+.top-tool-row .quick-add-p-mark,
+.top-tool-row .quick-add-c-mark {
+  font-size: 8px;
+}
+
+.top-tool-row .quick-add-one-child-button {
+  width: 72px !important;
+  min-width: 72px !important;
+  min-height: 52px !important;
+}
+
+.top-tool-row .quick-add-template-button {
+  width: 78px !important;
+  min-width: 78px !important;
+  min-height: 52px !important;
+}
+
+.top-tool-row .quick-add-one-child-icon,
+.top-tool-row .quick-add-family-icon {
+  width: 58px;
+  height: 34px;
+}
+
+/* Los iconos de acciones también permanecen en una sola línea. */
+.action-card .actions {
+  flex-wrap: nowrap;
+}
+
+/*
+ * Cuando no caben cómodamente ambas tarjetas en paralelo se apilan;
+ * dentro de cada tarjeta sus iconos siguen en una sola línea.
+ */
+@media (max-width: 1600px) {
+  .top-tool-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .top-tool-row .quick-add-strip-wide,
+  .action-card .actions {
+    justify-content: center;
+  }
+}
+
+
+/* ============================================================
+   0.8.59 — filtros rápidos de casos + navegación de alta rápida
+   ============================================================ */
+
+.saved-case-review-filters {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 5px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.saved-case-filter-button {
+  flex: 0 0 auto;
+  min-height: 27px;
+  padding: 4px 7px;
+  border: 1px solid #d2d7db;
+  border-radius: 999px;
+  background: #f8f9fa;
+  color: #586169;
+  font-size: .68rem;
+  font-weight: 750;
+  line-height: 1.15;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.saved-case-filter-button:hover {
+  background: #f0f3f5;
+  border-color: #bac3ca;
+}
+
+.saved-case-filter-button.is-active,
+.saved-case-filter-button[aria-pressed="true"] {
+  color: #315f88;
+  background: #edf4f9;
+  border-color: #9fb6c8;
+}
+
+.saved-case-filter-button:focus-visible {
+  outline: 2px solid #5c91c9;
+  outline-offset: 1px;
+}
+
+/* El menú se abre por debajo del buscador + filtros. */
+.saved-case-picker .saved-case-results {
+  top: calc(100% + 4px);
+}
+
+
+/* ============================================================
+   0.8.60 — validador QC del pedigree
+   ============================================================ */
+.pedigree-qc-action.is-active {
+  background: #eaf1f8;
+  border-color: #8aa9c7;
+  color: #224d72;
+}
+.pedigree-qc-action.is-stale { border-color:#c28b33; }
+.pedigree-qc-panel {
+  margin: 12px 0;
+  padding: 18px 20px;
+  background: #fff;
+  border: 1px solid #cbd6df;
+  border-radius: 12px;
+  box-shadow: 0 1px 5px rgba(25, 43, 58, .06);
+}
+.pedigree-qc-panel[hidden], .pedigree-qc-stale[hidden] { display:none !important; }
+.pedigree-qc-header { display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:space-between; gap:10px; }
+.pedigree-qc-header h2 { font-size:1.05rem; margin:0 0 4px; }
+.pedigree-qc-subtitle { margin:0; color:#566571; font-size:.81rem; line-height:1.4; }
+.pedigree-qc-controls { display:flex; gap:6px; flex-wrap:wrap; }
+.pedigree-qc-controls button { padding:7px 10px; min-height:32px; font-size:.78rem; }
+.pedigree-qc-summary { display:flex; flex-wrap:wrap; justify-content:space-between; gap:9px; align-items:center; margin:13px 0; padding:11px 12px; border-radius:7px; border:1px solid #d8e0e7; background:#f8fafb; font-size:.87rem; }
+.pedigree-qc-totals { color:#3f505c; font-size:.8rem; white-space:normal; }
+.pedigree-qc-stale { color:#815500; background:#fff9e9; border:1px solid #e6cf97; border-radius:6px; padding:9px 10px; font-size:.84rem; }
+.pedigree-qc-issues { display:grid; gap:7px; max-height:430px; overflow:auto; padding-right:2px; }
+.pedigree-qc-issue { padding:10px 12px; border:1px solid #dbe1e7; border-left:4px solid #9aabb7; border-radius:7px; background:#fff; }
+.pedigree-qc-issue.qc-error { border-left-color:#a82424; }
+.pedigree-qc-issue.qc-warning { border-left-color:#c18a25; }
+.pedigree-qc-issue.qc-info { border-left-color:#5081b0; }
+.pedigree-qc-issue h3 { font-size:.88rem; margin:0 0 5px; }
+.pedigree-qc-issue p { margin:0; font-size:.82rem; line-height:1.4; }
+.pedigree-qc-issue-footer { display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap; align-items:center; margin-top:7px; }
+.pedigree-qc-source { font-size:.7rem; color:#697681; }
+.pedigree-qc-person-link { background:none; border:none; color:#205a85; font-size:.77rem; font-weight:700; text-decoration:underline; padding:2px 0; min-height:0; }
+.pedigree-qc-person-link:hover { background:none; color:#123e62; }
+.pedigree-qc-empty { font-size:.85rem; margin:6px 0 0; color:#435861; }
+.pedigree-qc-disclaimer { font-size:.74rem; line-height:1.45; color:#67727c; border-top:1px solid #e2e7eb; padding-top:10px; margin:14px 0 0; }
+@media(max-width:650px) { .pedigree-qc-panel { padding:12px; } .pedigree-qc-controls { width:100%; } }
+
+/* 0.8.61 — QC por categorías, firma de revisión y resumen compacto */
+.reviewed-indicator.review-is-outdated { color:#8b5a11; background:#fff7e4; border-color:#d8ad65; }
+.reviewed-indicator.review-is-historical { color:#425d74; background:#f2f5f8; border-color:#ccd7df; }
+.rereview-family-btn,.qc-mini-indicator { font-size:.74rem; line-height:1.35; padding:4px 8px; border-radius:6px; border:1px solid #c4d2dc; background:#f7fafb; color:#35566f; white-space:normal; }
+.rereview-family-btn[hidden],.qc-mini-indicator[hidden] { display:none !important; }
+.rereview-family-btn { border-color:#dcb476; background:#fff7e8; color:#764b0f; }
+.qc-mini-indicator.qc-mini-ok { color:#246349; background:#f3faf6; }
+.qc-mini-indicator.qc-mini-warning, .qc-mini-indicator.qc-mini-stale { color:#805815; background:#fffaf0; }
+.qc-mini-indicator.qc-mini-error { color:#9a3131; background:#fff5f4; }
+.pedigree-qc-category { display:inline-block; font-size:.68rem; color:#596878; margin:0 0 5px; font-weight:600; }
+
+/* 0.8.63 — QC continuo: semáforo de UNA sola luz que cambia de color.
+   Errores rojo > avisos ámbar > información azul > sin incidencias verde.
+   Sin analizar/pedigree vacío: gris. La marca púrpura indica un problema gráfico. */
+.action-card .actions .pedigree-qc-action {
+  position: relative;
+  border-color: #b5c4cc;
+  background: #f7fafb;
+  color: #314452;
+}
+.action-card .actions .pedigree-qc-action svg.qc-traffic-light {
+  width: 27px;
+  height: 27px;
+  flex: 0 0 auto;
+  stroke: none;
+  fill: none;
+  overflow: visible;
+}
+.pedigree-qc-action .qc-traffic-housing {
+  fill: #26323d;
+  stroke: #5f7180;
+  stroke-width: .9;
+}
+.pedigree-qc-action .qc-bulb {
+  fill: #79848e;
+  stroke: #a4acb3;
+  stroke-width: .7;
+  transition: fill .14s ease, stroke .14s ease;
+}
+.pedigree-qc-action .qc-bulb-glint {
+  fill: #fff;
+  opacity: .3;
+  pointer-events: none;
+}
+.pedigree-qc-action[data-qc-state="error"] .qc-bulb { fill: #ec4148; stroke: #ff9da0; }
+.pedigree-qc-action[data-qc-state="warning"] .qc-bulb { fill: #f7ae33; stroke: #ffdb91; }
+.pedigree-qc-action[data-qc-state="info"] .qc-bulb { fill: #449ded; stroke: #a4d5ff; }
+.pedigree-qc-action[data-qc-state="ok"] .qc-bulb { fill: #40b77c; stroke: #9ce8bc; }
+.pedigree-qc-action.qc-has-layout-issues::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1px solid #fff;
+  background: #8d54ad;
+}
+.pedigree-qc-action[data-qc-state="error"] { border-color: #cd9498; }
+.pedigree-qc-action[data-qc-state="warning"] { border-color: #dbb67d; }
+.pedigree-qc-action[data-qc-state="info"] { border-color: #96badc; }
+.pedigree-qc-action[data-qc-state="ok"] { border-color: #9bcfb4; }
+.action-card .actions .pedigree-qc-action.is-active { box-shadow: 0 0 0 2px #d9e7f0; }
+.qc-mini-indicator.qc-mini-info { color:#32618b; background:#f0f7fd; }
+
+/* Ampliamos la zona ID + estados: se prioriza su legibilidad y la indicación
+   y comentarios empiezan ligeramente más a la derecha. La tercera columna
+   mantiene espacio suficiente para el selector de casos guardados. */
+.case-bar {
+  grid-template-columns: minmax(390px, 1.22fr) minmax(215px, 1.7fr) minmax(270px, 1fr);
+}
+.case-bar > .field { min-width: 0; }
+.case-id-label-row {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-content: center;
+  gap: 6px 8px;
+}
+.case-id-label-row .reviewed-indicator { margin-left: 0; }
+@media (max-width: 1000px) {
+  .case-bar { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ============================================================
+   0.8.64 — Estado de revisión y hover sin recorte de botones
+   ============================================================ */
+/* Ámbar cuando la revisión está pendiente, verde cuando se ha marcado.
+   La firma/revisión desactualizada sigue indicándose en la tarjeta familiar. */
+.action-card .actions #clinicalReviewBtn:not(.is-active):not([aria-pressed="true"]) {
+  color: #986300;
+  border-color: #dcc175;
+  background: #fff7da;
+}
+.action-card .actions #clinicalReviewBtn:not(.is-active):not([aria-pressed="true"]):hover {
+  color: #865600;
+  border-color: #cbaa55;
+  background: #fff0b8;
+}
+.action-card .actions #clinicalReviewBtn.is-active,
+.action-card .actions #clinicalReviewBtn[aria-pressed="true"] {
+  color: #1e794b;
+  border-color: #93c7a8;
+  background: #e6f6ec;
+}
+.action-card .actions #clinicalReviewBtn.is-active:hover,
+.action-card .actions #clinicalReviewBtn[aria-pressed="true"]:hover {
+  color: #16603a;
+  border-color: #73b58c;
+  background: #d9f0e3;
+}
+/* La barra necesita holgura vertical para que el translateY(-1px)
+   no quede recortado por overflow-y:hidden del scroll horizontal. */
+.action-card .actions {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  box-sizing: border-box;
+}
+
+/* 0.8.66 — filiación intencional visible sin línea genética */
+.pedigree-svg .intended-parent-title,
+.pedigree-svg .intended-parent-codes {
+  fill: #454545;
+  font-size: 8.6px;
+  text-anchor: middle;
+}
+.pedigree-svg .intended-parent-title { font-style: italic; }
+.pedigree-svg .intended-parent-codes { font-weight: 600; }
+.intended-parent-checkboxes {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+  gap:5px 10px;
+  margin:5px 0 7px;
+  max-height:155px;
+  overflow-y:auto;
+  border:1px solid #d5d5d5;
+  border-radius:6px;
+  padding:7px 9px;
+}
+.intended-parent-item {
+  display:flex;
+  align-items:center;
+  gap:7px;
+  font-size:12px;
+  line-height:1.4;
+  cursor:pointer;
+}
+.intended-parent-item input[type="checkbox"] {
+  width:16px;height:16px; min-height:0; margin:0; flex:0 0 16px;
+}
+
+/* Texto de G/surrogate legible sobre su línea vertical de gestación. */
+.pedigree-svg .pregnancy-carrier-record text {
+  stroke: white;
+  stroke-width: 3px;
+  stroke-linejoin: round;
+  paint-order: stroke fill;
+}
+
+/* 0.8.67: feedback de arrastre horizontal, conservando el clic del tooltip. */
+.pedigree-container .person:hover { cursor: grab; }
+.pedigree-container.is-dragging-person,
+.pedigree-container.is-dragging-person .person { cursor: grabbing !important; user-select:none; }
+.pedigree-container.is-dragging-person .person .person-shape { transition: none; }
+.pedigree-viewer-button:disabled { cursor:default; opacity:.4; }
+
+/* 0.8.69 — atajos de feto y donantes en «Añadir familiar». */
+.condition-hover-create-icon.fetus-symbol {
+  width: 16px;
+  height: 16px;
+  border: 0;
+  margin-top: 3px;
+  background: transparent;
+  color: #222;
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  isolation: isolate;
+}
+.condition-hover-create-icon.fetus-symbol::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  z-index: -1;
+  border: 1.4px solid #222;
+  background: white;
+  transform: rotate(45deg);
+}
+.condition-hover-create-icon.fetus-symbol::after {
+  content: "";
+  position: absolute;
+  bottom: 15px;
+  left: 7px;
+  width: 1.2px;
+  height: 4px;
+  background: #222;
+}
+.condition-hover-create-icon.donor {
+  width: 14px;
+  height: 14px;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 11px;
+  text-align: center;
+}
+.condition-hover-create-icon.donor.ovum { border-radius: 50%; }
+
+/* 0.8.72 — reordenación visual opcional de hermanos. */
+.pedigree-viewer-button.is-active {
+  background:#dfedff; border-color:#648ab8; color:#214e85;
+  box-shadow:inset 0 0 0 1px rgba(63,117,181,.18);
+}
+.pedigree-container.is-sibling-reorder-mode .person {cursor:grab;}
+.pedigree-container.is-sibling-reorder-mode.is-dragging-person .person {cursor:grabbing;}
+.sibling-reorder-drop-marker {
+  stroke:#18865e; stroke-width:3; stroke-dasharray:7 4;
+  paint-order:stroke; opacity:.95;
+}
+
+/* 0.8.73 — modo libre de generación. Conservar el mismo estilo y el feedback del arrastre. */
+
+/* 0.8.74 — edición rápida de situación reproductiva en línea de pareja. */
+.relationship-action-menu {
+  box-sizing: border-box;
+  width: min(330px, calc(100vw - 20px));
+  max-height: calc(100dvh - 20px);
+  overflow-y: auto;
+}
+.relationship-reproductive-section {
+  border-top: 1px solid #e1e5e8;
+  margin-top: 8px;
+  padding-top: 9px;
+}
+.relationship-reproductive-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+  color: #26323c;
+  font-size: 11px;
+  font-weight: 650;
+}
+.relationship-reproductive-select,
+.relationship-reproductive-reason {
+  width: 100%;
+  min-width: 0;
+  min-height: 32px;
+  border: 1px solid #b7c1ca;
+  border-radius: 5px;
+  background: #fff;
+  color: #26323c;
+  padding: 5px 7px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 400;
+}
+.relationship-reproductive-details[hidden] {
+  display: none !important;
+}
+.relationship-reproductive-save {
+  width: 100%;
+  border: 1px solid #315f88;
+  border-radius: 5px;
+  background: #315f88;
+  color: white;
+  padding: 7px 9px;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+}
+.relationship-reproductive-save:hover,
+.relationship-reproductive-save:focus-visible {
+  background: #214764;
+}
