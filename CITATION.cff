@@ -9,9 +9,11 @@ authors:
     given-names: "Carmen"
   - family-names: "Pérez de la Fuente"
     given-names: "Rubén"
-version: "1.0.1"
+version: "1.0.2"
+date-released: 2026-10-20
 license: EUPL-1.2
 repository-code: "https://github.com/josemilezana/pedigrapp"
+url: "https://josemilezana.github.io/pedigrapp/"
 abstract: >-
   Edición estática de PedigrAPP para la construcción, edición y exportación
   de árboles genealógicos orientados a genética clínica. Se ejecuta
@@ -24,6 +26,9 @@ keywords:
   - historia familiar
   - aplicación web
 identifiers:
+  - type: doi
+    value: "10.5281/zenodo.23498335"
+    description: "DOI general de Zenodo para todas las versiones de PedigrAPP."
   - type: other
     value: "2610197365707"
     description: "Registro Safe Creative de la versión depositada v1.0.0"

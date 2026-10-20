@@ -1,5 +1,16 @@
 # Registro de cambios público — PedigrAPP online
 
+## [online-v1.0.2] - 2026-10-20
+
+Actualización exclusivamente documental y de metadatos de publicación.
+
+- Incorporación del DOI general de Zenodo de PedigrAPP: `10.5281/zenodo.23498335`.
+- Documentación del DOI archivado de v1.0.1: `10.5281/zenodo.23498336`.
+- Actualización de `CITATION.cff` y metadatos de citación/publicación.
+- Actualización de la versión visible de la edición online.
+- **Sin cambios funcionales respecto a online-v1.0.1**; se conservan `localStorage`, el modelo JSON 4.16, el QC, el layout y las exportaciones.
+
+
 ## [online-v1.0.1] - 2026-10-20
 
 Actualización exclusivamente legal, documental y de metadatos.

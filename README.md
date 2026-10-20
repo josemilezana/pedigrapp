@@ -1,17 +1,21 @@
 # PedigrAPP online
 
-**Versión 1.0.1** · Editor web de árboles genealógicos para genética clínica.
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23498335.svg)](https://doi.org/10.5281/zenodo.23498335)
+
+**Versión 1.0.2** · Editor web de árboles genealógicos para genética clínica.
 
 PedigrAPP online es la edición estática de PedigrAPP. Se ejecuta íntegramente en el navegador del usuario y no necesita PHP, base de datos ni un backend propio. Los casos guardados mediante la aplicación se almacenan en `localStorage` del navegador.
 
 ## Estado
 
-- **Versión:** 1.0.1
+- **Versión:** 1.0.2
 - **Rama:** `online`
 - **Repositorio:** https://github.com/josemilezana/pedigrapp
 - **Interfaz:** español
 - **Licencia:** European Union Public Licence v1.2 (**EUPL-1.2**)
 - **Registro Safe Creative:** `2610197365707`
+- **DOI general (todas las versiones):** [`10.5281/zenodo.23498335`](https://doi.org/10.5281/zenodo.23498335)
+- **DOI de v1.0.1:** [`10.5281/zenodo.23498336`](https://doi.org/10.5281/zenodo.23498336)
 
 ## Privacidad
 
