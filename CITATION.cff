@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "Si utilizas PedigrAPP, cita el software y su versión; reconoce la autoría registrada y consulta los créditos del proyecto."
+type: software
+title: "PedigrAPP – Aplicación web para la creación y edición de árboles genealógicos en genética clínica"
+authors:
+  - family-names: "Lezana Rosales"
+    given-names: "José Miguel"
+  - family-names: "Palma Milla"
+    given-names: "Carmen"
+  - family-names: "Pérez de la Fuente"
+    given-names: "Rubén"
+version: "1.0.1"
+license: EUPL-1.2
+repository-code: "https://github.com/josemilezana/pedigrapp"
+abstract: "Aplicación web para crear, editar, revisar y exportar árboles genealógicos en genética clínica."
+keywords:
+  - pedigree
+  - genética clínica
+  - historia familiar
+  - asesoramiento genético
+identifiers:
+  - type: other
+    value: "2610197365707"
+    description: "Registro Safe Creative de la versión depositada v1.0.0"

@@ -1,5 +1,13 @@
 # Registro de versiones público
 
+## 1.0.1 — 20/10/2026
+- Adopción documental de **EUPL-1.2**: texto íntegro de licencia y metadatos SPDX.
+- Incorporación de titularidad, datos del registro Safe Creative, autoría registrada y colaboradores del proyecto.
+- Documentación de contribuciones, privacidad, seguridad y avisos de terceros.
+- Actualización de metadatos y de la presentación de créditos en la ayuda.
+- **Sin cambios funcionales respecto a 1.0.0**; se conserva el modelo JSON 4.16, el motor gráfico, el QC, las exportaciones y los datos locales.
+- Se mantienen intactos los tags históricos `v1.0.0` y `online-v1.0.0`.
+
 ## 1.0.0 — 19/10/2026
 - Primera distribución pública de PedigrAPP sin identidad institucional.
 - Eliminación de la imagen institucional de cabecera.

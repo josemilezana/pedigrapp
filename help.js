@@ -122,11 +122,19 @@ function renderBibliography(){
   section.appendChild(list);$("helpContent").appendChild(section);addNav(section.id,"Bibliografía")
 }
 function renderAuthorship(){
-  const section=makeSection("autoria","Autoría y desarrollo","Personas que han contribuido al desarrollo y documentación de PedigrAPP.");
-  const p=document.createElement("p");p.className="help-authorship-lead";p.textContent="Autoría y colaboradores del proyecto:";section.appendChild(p);
-  const grid=document.createElement("div");grid.className="help-author-grid";
-  data.authors.forEach(name=>{const d=document.createElement("div");d.className="help-author-card";d.textContent=name;searchable(d,name);grid.appendChild(d)});
-  section.appendChild(grid);$("helpContent").appendChild(section);addNav(section.id,"Autoría")
+  const section=makeSection("autoria","Autoría y equipo del proyecto","Se diferencia la autoría registrada de v1.0.0 del equipo de colaboradores.");
+  const addText=value=>{const p=document.createElement("p");p.className="help-authorship-lead";p.textContent=value;searchable(p,value);section.appendChild(p)};
+  const addNames=names=>{const grid=document.createElement("div");grid.className="help-author-grid";
+    names.forEach(name=>{const d=document.createElement("div");d.className="help-author-card";d.textContent=name;searchable(d,name);grid.appendChild(d)});
+    section.appendChild(grid)};
+  addText("Autores registrados de PedigrAPP v1.0.0 (Safe Creative)");
+  addNames(data.registeredAuthors);
+  addText("Equipo y colaboradores clínicos y científicos del proyecto");
+  addNames(data.projectTeam);
+  addText(`Titular de todos los derechos de explotación: ${data.exploitationRightsHolder}. Registro: ${data.registry}.`);
+  addText("La colaboración en el proyecto no atribuye automáticamente autoría de futuras versiones ni de publicaciones científicas; esta dependerá de las contribuciones realizadas.");
+  const detail=document.createElement("p");detail.innerHTML='<a href="AUTHORS.md" target="_blank" rel="noopener noreferrer">Créditos y registro completos (AUTHORS.md)</a>';section.appendChild(detail);
+  $("helpContent").appendChild(section);addNav(section.id,"Autoría")
 }
 function renderChangelog(){
   const section=makeSection("actualizaciones","Actualización de esta ayuda","Los cambios de PedigrAPP que afectan a procedimientos, símbolos o relaciones deben reflejarse en este registro.");
