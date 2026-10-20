@@ -1,5 +1,14 @@
 # Registro de versiones público
 
+## 1.0.2 — 20/10/2026
+- Incorporación del DOI general de Zenodo de PedigrAPP: `10.5281/zenodo.23498335`.
+- Documentación del DOI archivado de v1.0.1: `10.5281/zenodo.23498336`.
+- Actualización de `CITATION.cff` y metadatos de citación/publicación.
+- Incorporación de la URL pública de PedigrAPP en GitHub Pages.
+- Simplificación de la referencia al equipo en `README.md`, manteniendo la relación completa en `AUTHORS.md`.
+- **Sin cambios funcionales respecto a 1.0.1**; se conserva el formato JSON 4.16 y toda la funcionalidad.
+
+
 ## 1.0.1 — 20/10/2026
 - Adopción documental de **EUPL-1.2**: texto íntegro de licencia y metadatos SPDX.
 - Incorporación de titularidad, datos del registro Safe Creative, autoría registrada y colaboradores del proyecto.

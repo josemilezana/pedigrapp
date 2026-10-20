@@ -1,10 +1,12 @@
 # PedigrAPP
 
-**Versión 1.0.1** · Aplicación web para la creación y edición de árboles genealógicos en genética clínica.
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23498335.svg)](https://doi.org/10.5281/zenodo.23498335)
+
+**Versión 1.0.2** · Aplicación web para la creación y edición de árboles genealógicos en genética clínica.
 
 PedigrAPP representa pedigrees utilizando las recomendaciones de nomenclatura de Bennett/NSGC (1995, 2008, 2022 y corrección de 2025). Permite registrar relaciones familiares complejas, adopciones, gemelaridad, reproducción asistida, información clínica y condiciones genéticas, generar exportaciones y detectar posibles incoherencias mediante un QC orientativo.
 
-> **v1.0.1 es exclusivamente una actualización legal, documental y de metadatos. No incorpora cambios funcionales respecto a v1.0.0.** El esquema de familias sigue siendo JSON 4.16.
+> **v1.0.2 es exclusivamente una actualización documental y de metadatos de publicación. No incorpora cambios funcionales respecto a v1.0.1.** El esquema de familias sigue siendo JSON 4.16.
 
 ## Licencia, titularidad y registro
 
@@ -26,9 +28,16 @@ PedigrAPP representa pedigrees utilizando las recomendaciones de nomenclatura de
 - **Carmen Palma Milla**
 - **Rubén Pérez de la Fuente**
 
-La relación completa del equipo clínico/científico, incluida **Raquel Castro del Álamo**, se recoge en [`AUTHORS.md`](AUTHORS.md). La participación en el proyecto no confiere automáticamente autoría de futuras versiones ni publicaciones científicas; esta se determinará según las contribuciones realizadas.
+La relación completa del equipo clínico/científico se recoge en [`AUTHORS.md`](AUTHORS.md). La participación en el proyecto no confiere automáticamente autoría de futuras versiones ni publicaciones científicas; esta se determinará según las contribuciones realizadas.
 
-Si vas a citar el programa, consulta [`CITATION.cff`](CITATION.cff). No se ha asignado DOI a esta versión.
+Si vas a citar el programa, consulta [`CITATION.cff`](CITATION.cff).
+
+### DOI y citación
+
+- **DOI general de PedigrAPP (todas las versiones):** [`10.5281/zenodo.23498335`](https://doi.org/10.5281/zenodo.23498335)
+- **DOI de PedigrAPP v1.0.1:** [`10.5281/zenodo.23498336`](https://doi.org/10.5281/zenodo.23498336)
+
+El DOI general representa el conjunto de versiones de PedigrAPP y resuelve a la versión más reciente disponible en Zenodo.
 
 ## Instalación
 
@@ -82,4 +91,4 @@ Consulta [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) para información so
 - [`AUTHORS.md`](AUTHORS.md): autores registrados y equipo del proyecto.
 - [`help.html`](help.html): instrucciones y nomenclatura.
 
-**Historial:** PedigrAPP 1.0.0 deriva de la línea 0.8.75; retiró la identidad institucional de la interfaz/PDF sin modificar el modelo clínico. PedigrAPP 1.0.1 solo añade el marco legal y documental definitivo y actualiza metadatos de versión.
+**Historial:** PedigrAPP 1.0.0 deriva de la línea 0.8.75; retiró la identidad institucional de la interfaz/PDF sin modificar el modelo clínico. PedigrAPP 1.0.1 añadió el marco legal y documental definitivo. PedigrAPP 1.0.2 incorpora DOI/Zenodo y metadatos de publicación, sin cambios funcionales.
