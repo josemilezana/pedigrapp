@@ -1,48 +1,50 @@
-# Autoría y contribuciones
+# Autoría y equipo del proyecto PedigrAPP
 
-## Autor del software
+## Autores registrados de PedigrAPP v1.0.0
 
-### José Miguel Lezana Rosales
+Los **autores registrados de la versión v1.0.0 depositada en Safe Creative** son:
 
-- Servicio de Genética, Hospital Universitario 12 de Octubre, Madrid, Spain
-- ORCID: https://orcid.org/0000-0003-3510-2077
-- Contacto: josemiguel.lezana@salud.madrid.org
+- **José Miguel Lezana Rosales**
+- **Carmen Palma Milla**
+- **Rubén Pérez de la Fuente**
 
-Contribuciones actuales:
+La autoría registrada se refiere a la versión depositada; no debe interpretarse como una relación automática de autoría de todas las versiones posteriores ni de eventuales trabajos científicos.
 
-- concepción de PedigrAPP;
-- diseño funcional;
-- desarrollo e implementación del software;
-- diseño del motor de representación de pedigrees;
-- integración de requisitos de genética clínica;
-- desarrollo de mecanismos de importación y exportación;
-- validación técnica y mantenimiento del proyecto.
+## Titular de los derechos de explotación
 
-## Colaboradores del Servicio de Genética
+**Fundación Investigación Biomédica Hospital 12 de Octubre**.
 
-Han participado en pruebas beta, revisión funcional y asesoramiento durante el desarrollo:
+Según los datos del registro Safe Creative, esta entidad es la titular de **todos los derechos de explotación** de PedigrAPP, con ámbito territorial mundial.
 
-- Juan Francisco Quesada Espinosa
+## Equipo y colaboradores clínicos y científicos
+
+Personas vinculadas al desarrollo, revisión, asesoramiento clínico o colaboración científica del proyecto PedigrAPP, sin que esta enumeración suponga atribuir a todas ellas la misma contribución ni condición de autor registrado:
+
+- José Miguel Lezana Rosales
 - Carmen Palma Milla
 - Rubén Pérez de la Fuente
-- María Teresa Sánchez Cavín
+- Juan Francisco Quesada Espinosa
+- María Teresa Sánchez Calvín
 - Sonia Mayo de Andrés
+- Ana Arteche López
 - Víctor Benito García
-- Roberto Vercher Carrascosa
+- Roberto Vercher Carrascosa (Residente)
+- Raquel Castro del Álamo
 - Miguel Ángel Martín Casanueva
 
-La inclusión en esta sección reconoce contribuciones al desarrollo y evaluación del proyecto. No constituye por sí sola una declaración definitiva de autoría de una futura publicación científica.
+El equipo incluye integrantes del **Servicio de Genética del Hospital Universitario 12 de Octubre (Madrid)** y otras personas colaboradoras del proyecto. La inclusión de un nombre en este apartado no supone, por sí sola, una declaración individual de afiliación, titularidad de derechos ni autoría registrada.
 
-La autoría del futuro manuscrito se determinará en función de las contribuciones efectivamente realizadas al diseño del estudio, metodología, validación, análisis, interpretación, redacción y revisión crítica del trabajo.
+## Autoría de versiones y publicaciones futuras
 
-Consulte [docs/AUTHORSHIP-PLAN.md](docs/AUTHORSHIP-PLAN.md).
+La participación en el equipo o colaboración en PedigrAPP **no implica automáticamente autoría de versiones posteriores ni de futuras publicaciones científicas**. La autoría de cada trabajo se determinará atendiendo a las contribuciones efectivamente realizadas y a los criterios académicos/editoriales que correspondan; los agradecimientos podrán reflejar otras colaboraciones.
 
-## Titularidad de derechos
+## Referencia de registro
 
-La titularidad de los derechos de explotación del software y la licencia aplicable se encuentran pendientes de determinación institucional.
+- **Título registrado:** PedigrAPP – Aplicación web para la creación y edición de árboles genealógicos en genética clínica.
+- **Registro Safe Creative:** `2610197365707`.
+- **Certificado:** `2610197365707-29DQUR`.
+- **Fecha de inscripción:** 20 de octubre de 2026, 08:01 UTC.
+- **Archivo depositado:** `pedigrapp-main-online.zip` (incluye los ZIP de GitHub de `main` y `online` correspondientes a los snapshots registrados).
+- **Tags históricos:** `v1.0.0` y `online-v1.0.0` (inalterables).
 
-No debe confundirse:
-
-- **autoría del software**, atribuida a las personas que lo crean;
-- **titularidad de los derechos de explotación**, que puede corresponder total o parcialmente a una institución;
-- **autoría científica**, que se determinará para cada publicación según las contribuciones realizadas.
+Los datos de este documento reproducen la información registral facilitada por el titular del proyecto.

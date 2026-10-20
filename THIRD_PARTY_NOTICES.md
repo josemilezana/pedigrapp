@@ -2,9 +2,9 @@
 
 ## Código de terceros
 
-En la edición online 0.8.33 actualmente preparada no se han identificado bibliotecas JavaScript de terceros distribuidas como dependencias de ejecución.
+En la edición online v1.0.1, a partir de la inspección de los recursos distribuidos con v1.0.0, no se han identificado bibliotecas JavaScript de terceros distribuidas como dependencias de ejecución.
 
-Esta situación debe revisarse antes de cada publicación pública y actualizarse si se incorporan nuevas dependencias.
+Esta situación debe revisarse antes de cada publicación y actualizarse si se incorporan nuevas dependencias.
 
 ## Nomenclatura científica
 
@@ -30,3 +30,7 @@ Los símbolos y diagramas de la aplicación deben generarse mediante código pro
 La edición online destinada a usuarios externos no incluye logotipos institucionales.
 
 La mención de la afiliación del autor no implica que los logotipos, nombres comerciales o signos distintivos de terceros estén licenciados como parte de PedigrAPP.
+
+## Licencia del proyecto
+
+El software PedigrAPP se distribuye bajo **EUPL-1.2**. El texto íntegro se encuentra en [LICENSE](LICENSE). La titularidad de los derechos de explotación y los créditos del proyecto se detallan en [AUTHORS.md](AUTHORS.md).

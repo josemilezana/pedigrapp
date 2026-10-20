@@ -41,4 +41,4 @@ Utilice únicamente datos sintéticos.
 
 Durante la fase de desarrollo, el soporte de seguridad se concentra en la versión online más reciente.
 
-Esta política se revisará antes de la primera publicación estable.
+Esta política se revisará antes de la apertura pública del repositorio y se mantendrá actualizada para las versiones soportadas.

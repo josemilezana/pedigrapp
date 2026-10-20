@@ -68,3 +68,7 @@ Para cuestiones relacionadas con privacidad:
 
 **José Miguel Lezana Rosales**  
 josemiguel.lezana@salud.madrid.org
+
+## Marco legal del software
+
+PedigrAPP se distribuye bajo **EUPL-1.2**. La licencia del software no sustituye las obligaciones de confidencialidad, seguridad y protección de datos que correspondan al usuario o a la institución que trate información clínica. La titularidad y los datos de registro se detallan en [AUTHORS.md](AUTHORS.md).

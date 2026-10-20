@@ -73,17 +73,19 @@ Para cambios de layout deben evaluarse también escenarios relacionados, especia
 Se recomiendan mensajes descriptivos, por ejemplo:
 
 ```text
-PedigrAPP v0.7.xx - corrección de uniones múltiples
+PedigrAPP v1.x - corrección de uniones múltiples
 ```
 
 o, para la edición web:
 
 ```text
-PedigrAPP online v0.7.xx - mejora de almacenamiento local
+PedigrAPP online v1.x - mejora de almacenamiento local
 ```
 
 ## Licencia de contribuciones
 
-La licencia pública del proyecto está pendiente de autorización institucional.
+PedigrAPP se distribuye bajo la **European Union Public Licence v1.2 (EUPL-1.2)**. Las contribuciones aceptadas deberán poder distribuirse conforme a dicha licencia y respetar los avisos y condiciones aplicables a cualquier material reutilizado.
 
-Hasta que se publique una licencia definitiva, no se aceptarán contribuciones externas que requieran una cesión o relicenciamiento incompatible con la futura política del proyecto.
+La titularidad de los derechos de explotación del programa registrado corresponde a la **Fundación Investigación Biomédica Hospital 12 de Octubre**. Las contribuciones externas que requieran cesión, autorización o condiciones específicas deberán resolverse con la entidad titular antes de integrarse.
+
+La participación en el proyecto no implica automáticamente autoría registrada de versiones anteriores ni autoría de futuras publicaciones científicas. Consulte [AUTHORS.md](AUTHORS.md).

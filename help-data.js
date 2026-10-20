@@ -1,6 +1,6 @@
 window.PEDIGRAPP_HELP_DATA = {
-  helpVersion: "1.0.0",
-  updatedAt: "19/10/2026",
+  helpVersion: "1.0.1",
+  updatedAt: "20/10/2026",
   title: "Ayuda y nomenclatura de PedigrAPP",
   intro: "Guía de uso y referencia de los símbolos, relaciones y convenciones implementadas en PedigrAPP. La aplicación se apoya en la nomenclatura estandarizada de pedigree de la National Society of Genetic Counselors (NSGC), con las revisiones y correcciones indicadas en la bibliografía.",
   notes: [
@@ -123,20 +123,28 @@ window.PEDIGRAPP_HELP_DATA = {
       role:"Corrección de conceptos y figuras de 2022, especialmente gestational carrier/surrogate y embarazo ectópico."
     }
   ],
-  authors:[
+  registeredAuthors:[
     "José Miguel Lezana Rosales",
-    "Juan Francisco Quesada Espinosa",
     "Carmen Palma Milla",
-    "María Teresa Sánchez Calvín",
+    "Rubén Pérez de la Fuente"
+  ],
+  projectTeam:[
+    "José Miguel Lezana Rosales",
+    "Carmen Palma Milla",
     "Rubén Pérez de la Fuente",
+    "Juan Francisco Quesada Espinosa",
+    "María Teresa Sánchez Calvín",
     "Sonia Mayo de Andrés",
     "Ana Arteche López",
     "Víctor Benito García",
-    "Raquel Castro del Álamo",
     "Roberto Vercher Carrascosa (Residente)",
+    "Raquel Castro del Álamo",
     "Miguel Ángel Martín Casanueva"
   ],
+  exploitationRightsHolder:"Fundación Investigación Biomédica Hospital 12 de Octubre",
+  registry:"Safe Creative 2610197365707 (20/10/2026 08:01 UTC)",
   changelog:[
+    {version:"1.0.1",text:"Actualización exclusivamente legal, documental y de metadatos: EUPL-1.2, autoría registrada, equipo clínico/científico y registro Safe Creative. No cambia el funcionamiento, el QC, el layout, las exportaciones ni el esquema JSON 4.16."},
     {version:"1.0.0",text:"Primera versión pública independiente de identidad institucional: cabecera de aplicación simplificada, PDF sin membretes ni logos corporativos y documentación preparada para distribución pública. Sin cambios en el formato JSON, el layout ni las reglas clínicas."},
     {version:"0.8.75",text:"En la ficha de una persona, «Añadir familiar» incluye los accesos directos de situación reproductiva individual: una barra para No descendencia por elección/motivo desconocido y dos para Infertilidad. Se aplican a la persona seleccionada (no a su pareja), muestran estado activo y permiten desmarcarlo. El motivo continúa editándose en Opciones avanzadas. Se excluyen donantes, gestantes, fetos, mortinatos, SAB/TOP/ECT y grupos de múltiples individuos; no se permite No descendencia si ya hay descendientes registrados. Sin cambios en JSON 4.16."},
     {version:"0.8.74",text:"Al pulsar una línea de pareja, el menú permite configurar también No descendencia por elección/motivo desconocido o Infertilidad. Se pueden indicar atribución y motivo opcional, usando exactamente los mismos datos y validaciones que Relaciones avanzadas. Deshacer/Rehacer y guardado habituales."},

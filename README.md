@@ -1,16 +1,17 @@
 # PedigrAPP online
 
-**Versión 1.0.0** · Editor web de árboles genealógicos para genética clínica.
+**Versión 1.0.1** · Editor web de árboles genealógicos para genética clínica.
 
 PedigrAPP online es la edición estática de PedigrAPP. Se ejecuta íntegramente en el navegador del usuario y no necesita PHP, base de datos ni un backend propio. Los casos guardados mediante la aplicación se almacenan en `localStorage` del navegador.
 
 ## Estado
 
-- **Versión:** 1.0.0
+- **Versión:** 1.0.1
 - **Rama:** `online`
 - **Repositorio:** https://github.com/josemilezana/pedigrapp
 - **Interfaz:** español
-- **Licencia:** pendiente de resolución/autorización institucional
+- **Licencia:** European Union Public Licence v1.2 (**EUPL-1.2**)
+- **Registro Safe Creative:** `2610197365707`
 
 ## Privacidad
 
@@ -51,15 +52,27 @@ El almacenamiento `localStorage` depende del origen exacto (protocolo, host y pu
 
 PedigrAPP toma como referencia las recomendaciones estandarizadas de pedigree de Bennett/NSGC (1995, 2008, 2022 y corrección de 2025). Consulte [docs/NOMENCLATURE.md](docs/NOMENCLATURE.md) y la ayuda integrada.
 
-## Autor
+## Autoría y equipo
 
-**José Miguel Lezana Rosales**  
-Servicio de Genética, Hospital Universitario 12 de Octubre, Madrid, Spain  
-ORCID: https://orcid.org/0000-0003-3510-2077  
-Contacto: josemiguel.lezana@salud.madrid.org
+Los **autores registrados de la versión v1.0.0 depositada en Safe Creative** son:
 
-La afiliación identifica al autor y no implica por sí sola aprobación, patrocinio o titularidad institucional del software.
+- José Miguel Lezana Rosales
+- Carmen Palma Milla
+- Rubén Pérez de la Fuente
+
+La composición del equipo clínico y científico del proyecto y la distinción entre autoría registrada, colaboración y futura autoría científica se detallan en [AUTHORS.md](AUTHORS.md).
+
+## Titularidad y registro
+
+La **Fundación Investigación Biomédica Hospital 12 de Octubre** figura como titular de todos los derechos de explotación del software registrado, con ámbito territorial mundial.
+
+- **Título registrado:** PedigrAPP – Aplicación web para la creación y edición de árboles genealógicos en genética clínica.
+- **Registro Safe Creative:** `2610197365707`
+- **Certificado:** `2610197365707-29DQUR`
+- **Fecha de inscripción:** 20/10/2026 08:01 UTC
+
+Los tags históricos `v1.0.0` y `online-v1.0.0` corresponden a los snapshots depositados y se conservan inalterados.
 
 ## Licencia
 
-**Pendiente de resolución/autorización institucional.** Hasta que se incorpore un archivo `LICENSE`, no debe asumirse una licencia open source concreta.
+PedigrAPP se distribuye bajo la **European Union Public Licence v1.2 (EUPL-1.2)**. Consulte el texto íntegro en [LICENSE](LICENSE).
