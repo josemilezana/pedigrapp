@@ -1,74 +1,31 @@
-# Privacidad y tratamiento de datos
+# PedigrAPP online privacy
 
-## Principio general
+## Browser-only persistence
 
-La edición online de PedigrAPP está diseñada para funcionar íntegramente en el navegador del usuario.
+The `online` edition of PedigrAPP is designed to run entirely in the user's browser. It does not provide a PedigrAPP backend for receiving or storing pedigrees.
 
-PedigrAPP no proporciona un backend para recibir o almacenar árboles genealógicos y no pretende actuar como repositorio de información clínica.
+The **Save** function uses browser `localStorage`. Saved cases therefore remain associated with the browser profile and the exact web origin (protocol, host, and port).
 
-## Datos guardados en el navegador
+PedigrAPP online does not send names, family relationships, clinical notes, genetic information, imported family files, or saved pedigree JSON to a PedigrAPP application server.
 
-La opción **Guardar** utiliza almacenamiento local del navegador.
+## Import and export
 
-Esto significa que:
+Imported JSON and PED files are processed in the browser. JSON, PED, SVG, and PNG exports are generated in the browser, and PDF generation uses the browser's print/save-to-PDF workflow.
 
-- los datos permanecen asociados al navegador y al origen web desde el que se ejecuta PedigrAPP;
-- PedigrAPP no recibe una copia de esos datos;
-- borrar los datos del navegador puede eliminar los casos guardados localmente;
-- cambiar de navegador, dispositivo, dominio o puerto puede dar lugar a un almacenamiento local diferente.
+Exported files may contain all information entered into the pedigree and must be treated as sensitive when they contain clinical or identifying information.
 
-Para conservación y traslado de casos se recomienda utilizar la exportación JSON y custodiar el archivo resultante de acuerdo con las políticas locales de protección de datos.
+## Language switching
 
-## Importación y exportación
+Switching Spanish/English changes application labels and generated interface/report scaffolding. User-entered family and clinical content is never sent to an external translation service and is not automatically translated.
 
-Los archivos JSON y PED se leen localmente mediante las capacidades del navegador.
+## User responsibility
 
-Los archivos JSON, PED, SVG y PNG se generan localmente.
+Users and deploying organizations are responsible for deciding what information may be entered, protecting exported files, configuring managed browsers/devices where appropriate, and complying with applicable confidentiality and data-protection requirements.
 
-La generación de PDF se realiza mediante el navegador y su función de impresión/guardado como PDF.
+Clearing browser data can remove locally saved cases. Export important cases as JSON and store those files securely.
 
-## Tráfico de red
+## Development and support
 
-La arquitectura objetivo de la edición online no requiere transmitir a PedigrAPP:
+Never include identifiable clinical data in GitHub issues, pull requests, screenshots, logs, or test fixtures. Use synthetic or properly de-identified examples.
 
-- nombres;
-- identificadores;
-- relaciones familiares;
-- información clínica;
-- información genética;
-- archivos importados;
-- árboles exportados.
-
-Los recursos estáticos de la propia aplicación pueden descargarse desde el servidor que hospede PedigrAPP, como ocurre con cualquier aplicación web.
-
-## Responsabilidad del usuario
-
-PedigrAPP es una herramienta de representación. El usuario o la institución que la utiliza es responsable de:
-
-- determinar qué información puede introducir;
-- aplicar las políticas de confidencialidad correspondientes;
-- custodiar los archivos exportados;
-- aplicar las medidas de seguridad exigidas por su organización y por la normativa aplicable.
-
-## Desarrollo y soporte
-
-No deben enviarse datos clínicos identificables mediante:
-
-- issues de GitHub;
-- pull requests;
-- correos de soporte;
-- capturas de pantalla;
-- archivos de ejemplo.
-
-Los casos necesarios para reproducir un error deben ser sintéticos o estar adecuadamente desidentificados.
-
-## Contacto
-
-Para cuestiones relacionadas con privacidad:
-
-**José Miguel Lezana Rosales**  
-josemiguel.lezana@salud.madrid.org
-
-## Marco legal del software
-
-PedigrAPP se distribuye bajo **EUPL-1.2**. La licencia del software no sustituye las obligaciones de confidencialidad, seguridad y protección de datos que correspondan al usuario o a la institución que trate información clínica. La titularidad y los datos de registro se detallan en [AUTHORS.md](AUTHORS.md).
+The **EUPL-1.2** license governs distribution of the software; it does not replace privacy, confidentiality, professional, or data-protection obligations.

@@ -95,3 +95,22 @@ a{color:#2f628b}
 /* Identidad de texto autosuficiente si no se facilita el logo opcional. */
 .help-brand-text { color:inherit; font-weight:750; font-size:1.65rem; line-height:1.1; text-decoration:none; }
 .help-brand-text[hidden] { display:none !important; }
+
+/* v1.0.5 — Selector de idioma. */
+.app-language-switch {display:inline-flex;align-items:center;gap:3px;margin-left:auto;flex:0 0 auto;border:1px solid #cfd5dc;border-radius:7px;padding:3px;background:#fff;white-space:nowrap;}
+.app-language-switch .language-choice {font:inherit;font-size:11px;font-weight:700;letter-spacing:.02em;min-width:33px;min-height:29px;padding:4px 6px;border:0;border-radius:4px;color:#455465;background:transparent;cursor:pointer;}
+.app-language-switch .language-choice.is-active {background:#e6f0f9;color:#1a4e77;}
+.app-language-switch .language-choice:focus-visible {outline:2px solid #4179ad;outline-offset:1px;}
+@media(max-width:540px){.app-language-switch {margin-left:4px}.app-language-switch .language-choice{min-width:29px;padding:3px 4px}}
+
+/* rc2: flag plus language code, compact enough for the mobile header. */
+.app-language-switch .language-choice {display:inline-flex;align-items:center;justify-content:center;gap:4px;min-width:51px;}
+.language-choice .language-flag {font-family:system-ui, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;font-size:15px;line-height:1;}
+.language-choice .language-code {font-size:10px;font-weight:750;}
+@media (max-width:540px) {.app-language-switch .language-choice {min-width:43px;padding:3px 4px;gap:3px;}}
+
+/* rc2: keep Back and language selection together in the help header. */
+.help-header-actions{align-self:start;display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px;max-width:295px;}
+.help-header-actions .app-language-switch{margin-left:0;}
+@media(max-width:1050px){.help-header-actions{grid-column:1/-1;justify-content:flex-start;max-width:none;}}
+@media(max-width:700px){.help-header-actions{grid-column:auto;gap:8px;justify-content:flex-start;}}

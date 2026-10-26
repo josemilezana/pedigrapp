@@ -1,44 +1,26 @@
-# Seguridad
+# PedigrAPP online security
 
-## Alcance
+## Scope
 
-PedigrAPP online es una aplicación estática que se ejecuta en el navegador y no dispone de un backend propio para almacenar pedigrees.
+PedigrAPP online is a static browser application. It has no PedigrAPP persistence backend and stores saved cases in browser `localStorage`.
 
-Aun así, pueden existir vulnerabilidades relacionadas con:
+Security considerations still include imported files, handling of user-entered text, SVG/HTML generation, browser storage, exported files, browser/device security, hosting configuration, and future dependencies.
 
-- importación de archivos manipulados;
-- tratamiento de texto introducido por el usuario;
-- generación de SVG/HTML;
-- almacenamiento local;
-- exportaciones;
-- dependencias futuras;
-- configuración del sitio que aloje la aplicación.
+## Deployment recommendations
 
-## Comunicación de vulnerabilidades
+- Serve the application over HTTPS when used across a network.
+- Keep browsers and operating systems maintained.
+- Treat browser profiles and devices containing clinical pedigrees as sensitive assets.
+- Protect exported JSON, PED, SVG, PNG, and PDF files appropriately.
+- Use managed authentication/access controls at the hosting layer when organizational policy requires them.
+- Never place real clinical records in the public repository, issues, logs, or fixtures.
 
-No publique inicialmente vulnerabilidades que puedan comprometer confidencialidad, integridad o disponibilidad mediante un issue público.
+## Responsible vulnerability reporting
 
-Contacto:
+If GitHub offers **Private vulnerability reporting / Security Advisories** for the repository, use that feature for sensitive vulnerability reports. Otherwise, agree on a private channel with the maintainers before disclosing exploitable details.
 
-**José Miguel Lezana Rosales**  
-josemiguel.lezana@salud.madrid.org
+Do not attach real patient data or identifiable pedigrees to vulnerability reports. Use synthetic examples only.
 
-Incluya:
+## Legal notice
 
-- versión afectada;
-- navegador y sistema operativo;
-- pasos mínimos para reproducir el problema;
-- impacto esperado;
-- ejemplo sintético, si es necesario.
-
-## Datos clínicos
-
-Nunca adjunte datos de pacientes, identificadores clínicos ni pedigrees reales a un informe de seguridad.
-
-Utilice únicamente datos sintéticos.
-
-## Versiones soportadas
-
-Durante la fase de desarrollo, el soporte de seguridad se concentra en la versión online más reciente.
-
-Esta política se revisará antes de la apertura pública del repositorio y se mantendrá actualizada para las versiones soportadas.
+Distribution is governed by **EUPL-1.2**, including its disclaimer of warranties. See [LICENSE](LICENSE) and [PRIVACY.md](PRIVACY.md).

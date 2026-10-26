@@ -2,81 +2,81 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23498335.svg)](https://doi.org/10.5281/zenodo.23498335)
 
-**Versión 1.0.2** · Editor web de árboles genealógicos para genética clínica.
+**Version 1.0.5** · Static browser edition of PedigrAPP for creating, editing, reviewing, and exporting pedigrees for clinical genetics.
 
-PedigrAPP online es la edición estática de PedigrAPP. Se ejecuta íntegramente en el navegador del usuario y no necesita PHP, base de datos ni un backend propio. Los casos guardados mediante la aplicación se almacenan en `localStorage` del navegador.
+PedigrAPP online runs entirely in the browser and does **not** require PHP, a database, or a PedigrAPP backend. Saved cases are stored in the browser's `localStorage` for the current web origin.
 
-## Estado
+Version **1.0.5** provides complete **English/Spanish internationalization** across the editor, clinical forms, QC, help, tooltips, legends, and generated PDF content. Existing PedigrAPP family files remain compatible; the family schema is still **JSON 4.16** and language switching never translates or alters user-entered clinical data.
 
-- **Versión:** 1.0.2
-- **Rama:** `online`
-- **Repositorio:** https://github.com/josemilezana/pedigrapp
-- **Interfaz:** español
-- **Licencia:** European Union Public Licence v1.2 (**EUPL-1.2**)
-- **Registro Safe Creative:** `2610197365707`
-- **DOI general (todas las versiones):** [`10.5281/zenodo.23498335`](https://doi.org/10.5281/zenodo.23498335)
-- **DOI de v1.0.1:** [`10.5281/zenodo.23498336`](https://doi.org/10.5281/zenodo.23498336)
+**Public application:** https://josemilezana.github.io/pedigrapp/
 
-## Privacidad
+## Privacy model
 
-PedigrAPP online no envía a un servidor de PedigrAPP los datos introducidos en un pedigree. El guardado/carga de casos se realiza en el almacenamiento local del navegador y las importaciones/exportaciones se procesan localmente.
+PedigrAPP online does not send pedigree content to a PedigrAPP application server. Save/load/delete operations use browser `localStorage`; JSON/PED import and JSON/PED/SVG/PNG/PDF export are processed in the browser.
 
-El usuario es responsable de la custodia de los ficheros exportados y del cumplimiento de las normas de protección de datos aplicables en su entorno.
+`localStorage` is tied to the exact browser profile and origin. Clearing browser data, changing browser/profile/device, or using a different domain may make saved cases unavailable. Export important cases as JSON and protect exported clinical files according to applicable policies.
 
-Consulte [PRIVACY.md](PRIVACY.md).
+See [PRIVACY.md](PRIVACY.md) and [SECURITY.md](SECURITY.md).
 
-## Funcionalidades principales
+## License, ownership, and registration
 
-- Creación y edición de pedigrees multigeneracionales.
-- Relaciones familiares complejas, múltiples uniones, consanguinidad y adopción.
-- Gemelos y gestaciones múltiples.
-- Representación de embarazo, SAB, TOP, ECT y mortinato.
-- Infertilidad y ausencia de descendencia.
-- Reproducción asistida, donación de gametos y portadora gestacional.
-- Condiciones clínicas/genéticas múltiples y leyenda dinámica.
-- Reordenación gráfica, Deshacer/Rehacer y controles de calidad orientativos.
-- Guardado/carga/borrado local de casos mediante `localStorage`.
-- Importación/exportación JSON y compatibilidad PED cuando procede.
-- Exportación SVG, PNG y PDF desde el navegador.
-- Ayuda integrada de uso y nomenclatura.
+**License:** [European Union Public Licence v1.2 (EUPL-1.2)](LICENSE). SPDX identifier: `EUPL-1.2`.
 
-## Uso local
+**Holder of all exploitation rights:** **Fundación Investigación Biomédica Hospital 12 de Octubre**, with worldwide territorial scope according to the Safe Creative registration.
 
-Sirva la carpeta mediante HTTP, por ejemplo:
+**Registered title:** *PedigrAPP – Aplicación web para la creación y edición de árboles genealógicos en genética clínica*.
+
+- **Safe Creative registration:** `2610197365707`.
+- **Certificate:** `2610197365707-29DQUR`.
+- **Registration date:** October 20, 2026, 08:01 UTC.
+- **Registered historical snapshots:** `v1.0.0` and `online-v1.0.0`; these tags remain unchanged.
+
+### Registered authors of v1.0.0
+
+- **José Miguel Lezana Rosales**
+- **Carmen Palma Milla**
+- **Rubén Pérez de la Fuente**
+
+The full clinical/scientific project team is listed in [AUTHORS.md](AUTHORS.md).
+
+### DOI and citation
+
+- **Concept DOI covering the PedigrAPP version series:** [`10.5281/zenodo.23498335`](https://doi.org/10.5281/zenodo.23498335).
+- **Archived DOI for PedigrAPP v1.0.1:** [`10.5281/zenodo.23498336`](https://doi.org/10.5281/zenodo.23498336).
+- **Archived DOI for PedigrAPP v1.0.2:** [`10.5281/zenodo.23499180`](https://doi.org/10.5281/zenodo.23499180).
+
+For citation metadata, see [CITATION.cff](CITATION.cff).
+
+## Languages and internationalization
+
+Use the **🇪🇸 ES / 🇬🇧 EN** selector in the header. Spanish is the default and the selected language is stored locally in the browser. User-entered names, aliases, indications, variants, and clinical notes are never translated.
+
+Translations are maintained in `locales/es.json` and `locales/en.json`, with the generated synchronous bundle `locales/catalog.js`. See [I18N.md](I18N.md).
+
+## Key features
+
+- Multigenerational pedigree editing with complex family relationships, multiple unions, half-siblings, consanguinity, adoption, pregnancy losses, twins and multiple gestations.
+- Assisted reproduction, gamete donation, gestational carriers, surrogates, and intended parents.
+- Multiple clinical/genetic conditions, comments, dynamic legends, and advisory QC.
+- Automatic layout, manual horizontal adjustment, same-generation reordering, Undo/Redo.
+- Browser-local save/load/delete using `localStorage`.
+- JSON and PED import/export and browser-side SVG, PNG, and PDF export.
+- Integrated bilingual help and nomenclature references.
+
+## Running locally
+
+Serve the directory over HTTP, for example:
 
 ```bash
-python3 -m http.server 8080 --bind 0.0.0.0
+python3 -m http.server 8080 --bind 127.0.0.1
 ```
 
-Abra después `http://localhost:8080/` o la IP correspondiente del servidor.
+Then open `http://127.0.0.1:8080/`.
 
-El almacenamiento `localStorage` depende del origen exacto (protocolo, host y puerto). Un caso guardado en `localhost:8080` no aparece automáticamente en otro dominio o puerto.
+The saved-case store belongs to that exact origin. A case saved at `http://127.0.0.1:8080` is not automatically available at another domain or port.
 
-## Nomenclatura
+## Scientific nomenclature
 
-PedigrAPP toma como referencia las recomendaciones estandarizadas de pedigree de Bennett/NSGC (1995, 2008, 2022 y corrección de 2025). Consulte [docs/NOMENCLATURE.md](docs/NOMENCLATURE.md) y la ayuda integrada.
+PedigrAPP is informed by the standardized pedigree nomenclature recommendations of Bennett/NSGC (1995, 2008, 2022, and the 2025 correction). These references do not imply endorsement or certification by their authors or the NSGC. PedigrAPP-specific display conventions are identified in the integrated help.
 
-## Autoría y equipo
-
-Los **autores registrados de la versión v1.0.0 depositada en Safe Creative** son:
-
-- José Miguel Lezana Rosales
-- Carmen Palma Milla
-- Rubén Pérez de la Fuente
-
-La composición del equipo clínico y científico del proyecto y la distinción entre autoría registrada, colaboración y futura autoría científica se detallan en [AUTHORS.md](AUTHORS.md).
-
-## Titularidad y registro
-
-La **Fundación Investigación Biomédica Hospital 12 de Octubre** figura como titular de todos los derechos de explotación del software registrado, con ámbito territorial mundial.
-
-- **Título registrado:** PedigrAPP – Aplicación web para la creación y edición de árboles genealógicos en genética clínica.
-- **Registro Safe Creative:** `2610197365707`
-- **Certificado:** `2610197365707-29DQUR`
-- **Fecha de inscripción:** 20/10/2026 08:01 UTC
-
-Los tags históricos `v1.0.0` y `online-v1.0.0` corresponden a los snapshots depositados y se conservan inalterados.
-
-## Licencia
-
-PedigrAPP se distribuye bajo la **European Union Public Licence v1.2 (EUPL-1.2)**. Consulte el texto íntegro en [LICENSE](LICENSE).
+See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for scientific references and third-party notices.

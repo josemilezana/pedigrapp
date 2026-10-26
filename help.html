@@ -1,57 +1,51 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PedigrAPP · Ayuda y nomenclatura</title>
-  <link rel="icon" type="image/png" href="images/PedigrAPP_icono_small.png">
-  <link rel="stylesheet" href="help.css?v=100-online1">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>PedigrAPP · Help and nomenclature / Ayuda y nomenclatura</title>
+<link href="images/PedigrAPP_icono_small.png" rel="icon" type="image/png"/>
+<link href="help.css?v=10058" rel="stylesheet"/>
 </head>
 <body>
-  <div class="help-shell">
-    <header class="help-header">
-      <a class="help-brand" href="index.html" aria-label="Volver a PedigrAPP">
-        <img src="images/PedigrAPP_logo.png" alt="PedigrAPP" onerror="this.style.display='none';this.nextElementSibling.hidden=false"><strong class="help-brand-text" hidden>PedigrAPP</strong>
-      </a>
-
-      <div class="help-header-copy">
-        <p class="help-eyebrow">Documentación de usuario</p>
-        <h1>Ayuda y nomenclatura</h1>
-        <p id="helpIntro" class="help-intro"></p>
-        <div class="help-version-row">
-          <span id="helpVersionBadge" class="help-version-badge">PedigrAPP</span>
-          <span id="helpUpdatedBadge" class="help-updated-badge"></span>
-          <span id="helpSyncBadge" class="help-sync-badge" hidden></span>
-        </div>
-      </div>
-
-      <a class="help-back" href="index.html">← Volver a la aplicación</a>
-    </header>
-
-    <div id="helpSyncWarning" class="help-sync-warning" hidden role="status"></div>
-
-    <section class="help-search-card">
-      <label for="helpSearch">Buscar en la ayuda</label>
-      <input id="helpSearch" type="search" autocomplete="off"
-             placeholder="p. ej. consanguinidad, adopción, probando, gestante...">
-      <span id="helpSearchCount" class="help-search-count" aria-live="polite"></span>
-    </section>
-
-    <div class="help-layout">
-      <nav class="help-nav" aria-label="Índice de ayuda">
-        <h2>Contenido</h2>
-        <div id="helpNavLinks"></div>
-      </nav>
-      <main id="helpContent" class="help-content"></main>
-    </div>
-
-    <footer class="help-footer">
-      <p>PedigrAPP · Herramienta de representación de pedigrees clínicos</p>
-      <p>Esta página se genera a partir de un registro de ayuda versionado. Si la versión de la aplicación cambia sin revisar la documentación, la propia página muestra un aviso de sincronización.</p>
-    </footer>
-  </div>
-
-  <script src="help-data.js?v=102-online2"></script>
-  <script src="help.js?v=102-online2"></script>
+<div class="help-shell">
+<header class="help-header">
+<a aria-label="Volver a PedigrAPP" class="help-brand" href="index.html">
+<img alt="PedigrAPP" onerror="this.style.display='none';this.nextElementSibling.hidden=false" src="images/PedigrAPP_logo.png"/><strong class="help-brand-text" hidden="">PedigrAPP</strong>
+</a>
+<div class="help-header-copy">
+<p class="help-eyebrow" data-i18n="help.body1.div1.header1.div1.p1.text">Documentación de usuario</p>
+<h1 data-i18n="help.body1.div1.header1.div1.h11.text">Ayuda y nomenclatura</h1>
+<p class="help-intro" id="helpIntro"></p>
+<div class="help-version-row">
+<span class="help-version-badge" id="helpVersionBadge">PedigrAPP</span>
+<span class="help-updated-badge" id="helpUpdatedBadge"></span>
+<span class="help-sync-badge" hidden="" id="helpSyncBadge"></span>
+</div>
+</div>
+<div class="help-header-actions"><a class="help-back" data-i18n="help.body1.div1.header1.a2.text" href="index.html">← Volver a la aplicación</a>
+<div aria-label="Language / Idioma" class="app-language-switch" role="group"><button aria-pressed="true" class="language-choice" data-language="es" title="Español" type="button"><span class="language-flag" aria-hidden="true">🇪🇸</span><span class="language-code">ES</span></button><button aria-pressed="false" class="language-choice" data-language="en" title="English" type="button"><span class="language-flag" aria-hidden="true">🇬🇧</span><span class="language-code">EN</span></button></div></div></header>
+<div class="help-sync-warning" hidden="" id="helpSyncWarning" role="status"></div>
+<section class="help-search-card">
+<label data-i18n="help.body1.div1.section1.label1.text" for="helpSearch">Buscar en la ayuda</label>
+<input autocomplete="off" data-i18n-placeholder="help.helpSearch.placeholder" id="helpSearch" placeholder="p. ej. consanguinidad, adopción, probando, gestante..." type="search"/>
+<span aria-live="polite" class="help-search-count" id="helpSearchCount"></span>
+</section>
+<div class="help-layout">
+<nav aria-label="Índice de ayuda" class="help-nav" data-i18n-aria-label="help.body1.div1.div2.nav1.aria_label">
+<h2 data-i18n="help.body1.div1.div2.nav1.h21.text">Contenido</h2>
+<div id="helpNavLinks"></div>
+</nav>
+<main class="help-content" id="helpContent"></main>
+</div>
+<footer class="help-footer">
+<p data-i18n="help.body1.div1.footer1.p1.text">PedigrAPP · Herramienta de representación de pedigrees clínicos</p>
+<p data-i18n="help.body1.div1.footer1.p2.text">Esta página se genera a partir de un registro de ayuda versionado. Si la versión de la aplicación cambia sin revisar la documentación, la propia página muestra un aviso de sincronización.</p>
+</footer>
+</div>
+<script src="locales/catalog.js?v=10058"></script>
+<script src="i18n.js?v=10058"></script><script src="help-data.js?v=10058"></script>
+<script src="help.js?v=10058"></script>
 </body>
 </html>

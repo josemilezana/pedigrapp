@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "Si utilizas PedigrAPP online, cita el software y su versión; reconoce la autoría registrada y consulta los créditos del proyecto."
+message: "If you use PedigrAPP online, cite the software and the version used; acknowledge the registered authorship and consult the project credits."
 type: software
 title: "PedigrAPP online"
 authors:
@@ -9,26 +9,25 @@ authors:
     given-names: "Carmen"
   - family-names: "Pérez de la Fuente"
     given-names: "Rubén"
-version: "1.0.2"
-date-released: 2026-10-20
+version: "1.0.5"
+date-released: 2026-10-26
 license: EUPL-1.2
 repository-code: "https://github.com/josemilezana/pedigrapp"
 url: "https://josemilezana.github.io/pedigrapp/"
 abstract: >-
-  Edición estática de PedigrAPP para la construcción, edición y exportación
-  de árboles genealógicos orientados a genética clínica. Se ejecuta
-  íntegramente en el navegador y no requiere un backend propio para almacenar
-  pedigrees.
+  Static browser edition of PedigrAPP for creating, editing, reviewing, and
+  exporting clinical genetics pedigrees. It runs without a PedigrAPP backend
+  and stores saved cases in browser localStorage.
 keywords:
   - pedigree
-  - genética clínica
-  - asesoramiento genético
-  - historia familiar
-  - aplicación web
+  - clinical genetics
+  - genetic counseling
+  - family history
+  - web application
 identifiers:
   - type: doi
     value: "10.5281/zenodo.23498335"
-    description: "DOI general de Zenodo para todas las versiones de PedigrAPP."
+    description: "Zenodo concept DOI covering all PedigrAPP versions."
   - type: other
     value: "2610197365707"
-    description: "Registro Safe Creative de la versión depositada v1.0.0"
+    description: "Safe Creative registration of the deposited v1.0.0 version"

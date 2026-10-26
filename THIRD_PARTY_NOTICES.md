@@ -1,36 +1,28 @@
-# Software, materiales y referencias de terceros
+# Third-party notices and scientific references
 
-## Código de terceros
+This notice originated with the review of **PedigrAPP v1.0.1 (`main`)** and the assets distributed with v1.0.0. It is carried forward into v1.0.5. It does not replace license review for components added in future releases.
 
-En la edición online v1.0.1, a partir de la inspección de los recursos distribuidos con v1.0.0, no se han identificado bibliotecas JavaScript de terceros distribuidas como dependencias de ejecución.
+## Included software components
 
-Esta situación debe revisarse antes de cada publicación y actualizarse si se incorporan nuevas dependencias.
+No bundled third-party JavaScript library, external stylesheet, framework, or package dependency was identified as part of the reviewed application distribution. JavaScript and CSS are distributed as project files; the application uses standard browser APIs and server-side PHP. The v1.0.5 i18n implementation likewise does not require an external translation service or framework.
 
-## Nomenclatura científica
+Accordingly, **no licenses are listed for third-party dependencies that are not actually bundled**. Any libraries, icons, fonts, or external content added in the future must be recorded here with their applicable notices and terms.
 
-PedigrAPP implementa convenciones de representación inspiradas en la nomenclatura estandarizada de pedigrees de la National Society of Genetic Counselors y sus revisiones.
+## Visual assets
 
-Las publicaciones científicas constituyen referencias metodológicas y no se distribuyen como parte del código de PedigrAPP.
+The repository includes graphic assets in `images/` carrying the PedigrAPP visual identity. Their chain of ownership, permitted uses, and any trademark-related restrictions should be checked before public distribution. EUPL does not independently grant rights to third-party trademarks beyond the rights set out in its terms.
 
-Referencias principales:
+## Scientific publications and pedigree nomenclature
 
-- Bennett RL et al. *Recommendations for Standardized Human Pedigree Nomenclature*. Am J Hum Genet. 1995;56:745–752.
-- Bennett RL, French KS, Resta RG, Doyle DL. *Standardized Human Pedigree Nomenclature: Update and Assessment of the Recommendations of the National Society of Genetic Counselors*. J Genet Couns. 2008;17:424–433. doi:10.1007/s10897-008-9169-9.
-- Bennett RL, French KS, Resta RG, Austin J. *Practice resource-focused revision: Standardized pedigree nomenclature update centered on sex and gender inclusivity*. J Genet Couns. 2022;31:1238–1248. doi:10.1002/jgc4.1621.
-- Steinhaus French K, Bennett R, Resta R. *Correction to: Practice resource-focused revision...*. J Genet Couns. 2025;34:e2020. doi:10.1002/jgc4.2020.
+PedigrAPP is conceptually informed by professional nomenclature recommendations, including:
 
-## Figuras y material gráfico de publicaciones
+- Bennett RL et al. *Recommendations for Standardized Human Pedigree Nomenclature*. **Am J Hum Genet**. 1995;56:745–752.
+- Bennett RL et al. *Standardized Human Pedigree Nomenclature: Update and Assessment*. **J Genet Couns**. 2008;17:424–433.
+- Bennett RL et al. *Practice resource-focused revision: Standardized pedigree nomenclature update centered on sex and gender inclusivity*. **J Genet Couns**. 2022;31:1238–1248. DOI: `10.1002/jgc4.1621`.
+- French KS et al. *Correction to: Practice resource-focused revision*. **J Genet Couns**. 2025;34:e2020. DOI: `10.1002/jgc4.2020`.
 
-PedigrAPP no debe incorporar copias de las figuras publicadas en dichos artículos salvo que exista autorización o una licencia que lo permita expresamente.
+These references document **scientific sources**, not incorporated source code, and do not indicate that the authors or the NSGC endorse or certify PedigrAPP.
 
-Los símbolos y diagramas de la aplicación deben generarse mediante código propio.
+## Project license
 
-## Logotipos institucionales
-
-La edición online destinada a usuarios externos no incluye logotipos institucionales.
-
-La mención de la afiliación del autor no implica que los logotipos, nombres comerciales o signos distintivos de terceros estén licenciados como parte de PedigrAPP.
-
-## Licencia del proyecto
-
-El software PedigrAPP se distribuye bajo **EUPL-1.2**. El texto íntegro se encuentra en [LICENSE](LICENSE). La titularidad de los derechos de explotación y los créditos del proyecto se detallan en [AUTHORS.md](AUTHORS.md).
+PedigrAPP is distributed under **EUPL-1.2**. The unmodified license text is in [LICENSE](LICENSE), and ownership and project credits are detailed in [AUTHORS.md](AUTHORS.md).

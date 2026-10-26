@@ -1,6 +1,43 @@
 (() => {
 "use strict";
-const data=window.PEDIGRAPP_HELP_DATA;
+const baseData=window.PEDIGRAPP_HELP_DATA;
+let data=baseData;
+// Documentation, unlike pedigree data, is static first-party copy.
+// Only explicitly listed helpData.* keys are localized; authors and references remain unchanged.
+function translatedHelpData(){
+  const clone=JSON.parse(JSON.stringify(baseData));
+  const i18n=window.PedigrAPPi18n;
+  if(!i18n?.ready())return clone;
+  function translate(node,path){
+    if(Array.isArray(node)){
+      node.forEach((v,i)=>{
+        let ref=String(i);
+        // Stable nomenclature IDs. Inserting a release or a symbol does not
+        // shift keys for pre-existing entries.
+        if(path==='changelog' && v?.version)ref='v'+v.version.replace(/[.-]/g,'_');
+        else if(path==='symbolGroups' && v?.id)ref=v.id;
+        else if(path.startsWith('symbolGroups.') && path.endsWith('.items') && v?.visual)ref=v.visual;
+        else if(path==='relationships' && v?.visual)ref=v.visual;
+        const itemPath=path+'.'+ref;
+        if(typeof v==='string'){
+          const k='helpData.'+itemPath;
+          if(i18n.has(k))node[i]=i18n.t(k);
+        }else if(v && typeof v==='object')translate(v,itemPath);
+      });return;
+    }
+    for(const [name,v] of Object.entries(node)){
+      const p=path?path+'.'+name:name;
+      if(typeof v==='string'){
+        if(['visual','id','version','registry','key','citation','doi','exploitationRightsHolder','helpVersion','updatedAt'].includes(name))continue;
+        const k='helpData.'+p;
+        const tx=i18n.has(k) ? i18n.t(k) : k;
+        if(tx!==k)node[name]=tx;
+      }else if(v && typeof v==='object')translate(v,p);
+    }
+  }
+  translate(clone,'');
+  return clone;
+}
 if(!data) throw new Error("No se ha podido cargar help-data.js");
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
@@ -64,7 +101,7 @@ function addNav(id,title){
 function searchable(node,text){node.classList.add("help-searchable");node.dataset.search=String(text).toLowerCase()}
 
 function renderQuickStart(){
-  const section=makeSection("primeros-pasos","Primeros pasos","Flujo recomendado para crear, revisar y documentar un pedigree.");
+  const section=makeSection("primeros-pasos",t("help.section.quick.title"),t("help.section.quick.lead"));
   const grid=document.createElement("div");grid.className="help-quick-grid";
   data.quickStart.forEach(item=>{
     const card=document.createElement("article");card.className="help-quick-card";
@@ -78,11 +115,11 @@ function renderQuickStart(){
     data.notes.forEach(note=>{const li=document.createElement("li");li.textContent=note;ul.appendChild(li)});
     section.appendChild(ul)
   }
-  $("helpContent").appendChild(section);addNav(section.id,"Primeros pasos")
+  $("helpContent").appendChild(section);addNav(section.id,t("help.section.quick.title"))
 }
 function renderSymbolGroups(){
   data.symbolGroups.forEach(group=>{
-    const section=makeSection(`simbolos-${group.id}`,group.title,"Los ejemplos reproducen la convención utilizada actualmente por PedigrAPP.");
+    const section=makeSection(`simbolos-${group.id}`,group.title,t("help.section.symbols.lead"));
     const grid=document.createElement("div");grid.className="help-symbol-grid";
     group.items.forEach(item=>{
       const card=document.createElement("article");card.className="help-symbol-card";
@@ -94,7 +131,7 @@ function renderSymbolGroups(){
   })
 }
 function renderRelationships(){
-  const section=makeSection("relaciones","Relaciones y líneas del pedigree","Significado de las líneas de pareja, filiación, fratría, adopción y otras relaciones.");
+  const section=makeSection("relaciones",t("help.section.relationships.title"),t("help.section.relationships.lead"));
   const grid=document.createElement("div");grid.className="help-relations";
   data.relationships.forEach(item=>{
     const card=document.createElement("article");card.className="help-relation-card";
@@ -102,7 +139,7 @@ function renderRelationships(){
     card.innerHTML=`<div class="help-symbol-visual">${visual(item.visual)}</div><div class="help-relation-body"><h4>${esc(item.title)}</h4><span class="help-standard-badge">${esc(item.standard)}</span><p>${esc(item.text)}</p></div>`;
     grid.appendChild(card)
   });
-  section.appendChild(grid);$("helpContent").appendChild(section);addNav(section.id,"Relaciones")
+  section.appendChild(grid);$("helpContent").appendChild(section);addNav(section.id,t("help.section.relationships.title"))
 }
 function renderBulletSection(id,title,lead,items){
   const section=makeSection(id,title,lead),ul=document.createElement("ul");ul.className="help-bullet-list";
@@ -110,41 +147,41 @@ function renderBulletSection(id,title,lead,items){
   section.appendChild(ul);$("helpContent").appendChild(section);addNav(id,title)
 }
 function renderBibliography(){
-  const section=makeSection("bibliografia","Fuentes y referencias bibliográficas","Publicaciones utilizadas como base para la nomenclatura y las decisiones de representación de PedigrAPP.");
+  const section=makeSection("bibliografia",t("help.section.bibliography.title"),t("help.section.bibliography.lead"));
   const list=document.createElement("div");list.className="help-reference-list";
   data.bibliography.forEach(ref=>{
     const card=document.createElement("article");card.className="help-reference-card";
     searchable(card,`${ref.key} ${ref.citation} ${ref.role}`);
-    const link=ref.doi?`<a class="help-reference-link" href="${esc(ref.doi)}" target="_blank" rel="noopener noreferrer">Abrir DOI ↗</a>`:"";
+    const link=ref.doi?`<a class="help-reference-link" href="${esc(ref.doi)}" target="_blank" rel="noopener noreferrer">${t("help.action.openDOI")}</a>`:"";
     card.innerHTML=`<p class="help-reference-role">${esc(ref.role)}</p><p class="help-reference-citation">${esc(ref.citation)}</p>${link}`;
     list.appendChild(card)
   });
-  section.appendChild(list);$("helpContent").appendChild(section);addNav(section.id,"Bibliografía")
+  section.appendChild(list);$("helpContent").appendChild(section);addNav(section.id,t("help.section.bibliography.title"))
 }
 function renderAuthorship(){
-  const section=makeSection("autoria","Autoría y equipo del proyecto","Se diferencia la autoría registrada de v1.0.0 del equipo de colaboradores.");
+  const section=makeSection("autoria",t("help.section.authors.title"),t("help.section.authors.lead"));
   const addText=value=>{const p=document.createElement("p");p.className="help-authorship-lead";p.textContent=value;searchable(p,value);section.appendChild(p)};
   const addNames=names=>{const grid=document.createElement("div");grid.className="help-author-grid";
     names.forEach(name=>{const d=document.createElement("div");d.className="help-author-card";d.textContent=name;searchable(d,name);grid.appendChild(d)});
     section.appendChild(grid)};
-  addText("Autores registrados de PedigrAPP v1.0.0 (Safe Creative)");
+  addText(t("help.credits.registered"));
   addNames(data.registeredAuthors);
-  addText("Equipo y colaboradores clínicos y científicos del proyecto");
+  addText(t("help.credits.team"));
   addNames(data.projectTeam);
-  addText(`Titular de todos los derechos de explotación: ${data.exploitationRightsHolder}. Registro: ${data.registry}.`);
-  addText("La colaboración en el proyecto no atribuye automáticamente autoría de futuras versiones ni de publicaciones científicas; esta dependerá de las contribuciones realizadas.");
-  const detail=document.createElement("p");detail.innerHTML='<a href="AUTHORS.md" target="_blank" rel="noopener noreferrer">Créditos y registro completos (AUTHORS.md)</a>';section.appendChild(detail);
-  $("helpContent").appendChild(section);addNav(section.id,"Autoría")
+  addText(t("help.credits.rights",{holder:data.exploitationRightsHolder,registry:data.registry}));
+  addText(t("help.credits.disclaimer"));
+  const detail=document.createElement("p");detail.innerHTML=`<a href="AUTHORS.md" target="_blank" rel="noopener noreferrer">${t("help.credits.complete")}</a>`;section.appendChild(detail);
+  $("helpContent").appendChild(section);addNav(section.id,t("help.section.authors.title"))
 }
 function renderChangelog(){
-  const section=makeSection("actualizaciones","Actualización de esta ayuda","Los cambios de PedigrAPP que afectan a procedimientos, símbolos o relaciones deben reflejarse en este registro.");
+  const section=makeSection("actualizaciones",t("help.section.changelog.title"),t("help.section.changelog.lead"));
   const list=document.createElement("div");list.className="help-changelog";
   data.changelog.forEach(item=>{
     const row=document.createElement("div");row.className="help-changelog-row";searchable(row,`${item.version} ${item.text}`);
     row.innerHTML=`<div class="help-changelog-version">v${esc(item.version)}</div><div class="help-changelog-text">${esc(item.text)}</div>`;
     list.appendChild(row)
   });
-  section.appendChild(list);$("helpContent").appendChild(section);addNav(section.id,"Actualizaciones")
+  section.appendChild(list);$("helpContent").appendChild(section);addNav(section.id,t("help.section.changelog.title"))
 }
 function applySearch(){
   const q=$("helpSearch").value.trim().toLowerCase();
@@ -156,11 +193,11 @@ function applySearch(){
     const visible=section.querySelectorAll(".help-searchable:not(.help-search-hidden)").length;
     section.classList.toggle("help-search-hidden",visible===0)
   });
-  $("helpSearchCount").textContent=matches===1?"1 coincidencia":`${matches} coincidencias`
+  $("helpSearchCount").textContent=matches===1?t("help.search.oneMatch"):t("help.search.matches",{count:matches})
 }
 async function syncVersion(){
-  $("helpVersionBadge").textContent=`Ayuda v${data.helpVersion}`;
-  $("helpUpdatedBadge").textContent=`Actualizada ${data.updatedAt}`;
+  $("helpVersionBadge").textContent=`${t("help.version")} v${data.helpVersion}`;
+  $("helpUpdatedBadge").textContent=`${t("help.updated")} ${data.updatedAt}`;
   const sync=$("helpSyncBadge"),warning=$("helpSyncWarning");
   try{
     const response=await fetch(`pedigree.js?help-sync=${Date.now()}`,{cache:"no-store"});
@@ -169,23 +206,38 @@ async function syncVersion(){
     const match=text.match(/const\s+APP_VERSION\s*=\s*"([^"]+)"/);
     if(!match)throw new Error("Versión no encontrada");
     const appVersion=match[1];
-    $("helpVersionBadge").textContent=`PedigrAPP v${appVersion} · Ayuda v${data.helpVersion}`;
-    if(appVersion===data.helpVersion){sync.hidden=false;sync.textContent="Ayuda sincronizada";warning.hidden=true}
-    else{sync.hidden=true;warning.hidden=false;warning.textContent=`Aviso de mantenimiento: la aplicación es v${appVersion} y esta ayuda está documentada hasta v${data.helpVersion}. Revise si los cambios posteriores afectan a símbolos, relaciones o procedimientos.`}
+    $("helpVersionBadge").textContent=`PedigrAPP v${appVersion} · ${t("help.version")} v${data.helpVersion}`;
+    if(appVersion===data.helpVersion){sync.hidden=false;sync.textContent=t("help.sync.ok");warning.hidden=true}
+    else{sync.hidden=true;warning.hidden=false;warning.textContent=t("help.sync.warning",{app:appVersion,help:data.helpVersion})}
   }catch(e){
     warning.hidden=false;
-    warning.textContent="No ha sido posible comprobar automáticamente la versión de la aplicación. El contenido mostrado corresponde a la versión de ayuda indicada arriba."
+    warning.textContent=t("help.sync.error")
   }
 }
-function init(){
+function rebuildHelp(){
+  const priorSearch=$("helpSearch").value;
+  const priorScroll=window.scrollY;
+  data=translatedHelpData();
+  $("helpContent").replaceChildren();
+  $("helpNavLinks").replaceChildren();
   document.title=`${data.title} · PedigrAPP`;
   $("helpIntro").textContent=data.intro;
   renderQuickStart();renderSymbolGroups();renderRelationships();
-  renderBulletSection("layout","Reglas de disposición y layout","Criterios generales que utiliza PedigrAPP para mantener el pedigree legible.",data.layoutRules);
-  renderBulletSection("tooltip","Uso del tooltip y edición clínica","Interacción principal con los individuos en la versión actual.",data.tooltip);
+  renderBulletSection("layout",t("help.section.layout.title"),t("help.section.layout.lead"),data.layoutRules);
+  renderBulletSection("tooltip",t("help.section.tooltip.title"),t("help.section.tooltip.lead"),data.tooltip);
   renderBibliography();renderAuthorship();renderChangelog();
+  syncVersion();
+  $("helpSearch").value=priorSearch;
+  applySearch();
+  // Preserve reading position when language is switched in the help view.
+  window.scrollTo(0,priorScroll);
+}
+function init(){
+  rebuildHelp();
   $("helpSearch").addEventListener("input",applySearch);
-  syncVersion()
+  document.addEventListener('pedigrapp:languagechange',rebuildHelp);
+  // i18n may load asynchronously on slow networks; update when ready.
+  window.addEventListener('pedigrapp:i18nready',rebuildHelp);
 }
 init();
 })();

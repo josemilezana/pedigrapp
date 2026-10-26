@@ -1,10 +1,45 @@
-# Local/editor files
-.DS_Store
-Thumbs.db
-*.bak
-*~
-*.zip
+# ============================================================
+# PedigrAPP - archivos que NUNCA deben publicarse
+# ============================================================
+
+# Datos clínicos / familias locales
+/data/**
+!/data/.gitkeep
+!/data/.htaccess
+
+# Credenciales y configuración privada
 .env
 .env.*
+!.env.example
+.htpasswd
+.htpasswd.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.cnf
+*.kdbx
+
+# Bases de datos, volcados y logs
+*.sql
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+*.log
+
+# Cachés y archivos del sistema/editor
+.DS_Store
+Thumbs.db
 __pycache__/
 *.pyc
+*.bak
+*~
+
+# Paquetes y copias locales
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.rar

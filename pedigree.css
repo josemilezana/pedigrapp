@@ -6094,6 +6094,37 @@ body.clinical-drawer-open .toast-container {
 }
 .condition-hover-create-icon.donor.ovum { border-radius: 50%; }
 
+/* v1.0.3 — Mortinato (SB): rombo (sexo desconocido) con barra oblicua. */
+.condition-hover-create-icon.stillbirth-symbol {
+  width: 17px;
+  height: 17px;
+  border: 0;
+  background: transparent;
+  margin-top: 2px;
+}
+.condition-hover-create-icon.stillbirth-symbol::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 11px;
+  height: 11px;
+  border: 1.4px solid #222;
+  background: #fff;
+  box-sizing: border-box;
+  transform: rotate(45deg);
+}
+.condition-hover-create-icon.stillbirth-symbol::after {
+  content: "";
+  position: absolute;
+  left: -3px;
+  top: 8px;
+  width: 23px;
+  height: 1.4px;
+  background: #222;
+  transform: rotate(-45deg);
+}
+
 /* 0.8.72 — reordenación visual opcional de hermanos. */
 .pedigree-viewer-button.is-active {
   background:#dfedff; border-color:#648ab8; color:#214e85;
@@ -6161,3 +6192,16 @@ body.clinical-drawer-open .toast-container {
 .relationship-reproductive-save:focus-visible {
   background: #214764;
 }
+
+/* v1.0.5 — Selector de idioma. */
+.app-language-switch {display:inline-flex;align-items:center;gap:3px;margin-left:auto;flex:0 0 auto;border:1px solid #cfd5dc;border-radius:7px;padding:3px;background:#fff;white-space:nowrap;}
+.app-language-switch .language-choice {font:inherit;font-size:11px;font-weight:700;letter-spacing:.02em;min-width:33px;min-height:29px;padding:4px 6px;border:0;border-radius:4px;color:#455465;background:transparent;cursor:pointer;}
+.app-language-switch .language-choice.is-active {background:#e6f0f9;color:#1a4e77;}
+.app-language-switch .language-choice:focus-visible {outline:2px solid #4179ad;outline-offset:1px;}
+@media(max-width:540px){.app-language-switch {margin-left:4px}.app-language-switch .language-choice{min-width:29px;padding:3px 4px}}
+
+/* rc2: flag plus language code, compact enough for the mobile header. */
+.app-language-switch .language-choice {display:inline-flex;align-items:center;justify-content:center;gap:4px;min-width:51px;}
+.language-choice .language-flag {font-family:system-ui, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;font-size:15px;line-height:1;}
+.language-choice .language-code {font-size:10px;font-weight:750;}
+@media (max-width:540px) {.app-language-switch .language-choice {min-width:43px;padding:3px 4px;gap:3px;}}
