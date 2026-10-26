@@ -2,93 +2,106 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23498335.svg)](https://doi.org/10.5281/zenodo.23498335)
 
-**Versión 1.0.2** · Aplicación web para la creación y edición de árboles genealógicos en genética clínica.
+**Version 1.0.5** · **A bilingual (English/Spanish) web application for creating and editing clinical genetics pedigrees.**
 
-PedigrAPP representa pedigrees utilizando las recomendaciones de nomenclatura de Bennett/NSGC (1995, 2008, 2022 y corrección de 2025). Permite registrar relaciones familiares complejas, adopciones, gemelaridad, reproducción asistida, información clínica y condiciones genéticas, generar exportaciones y detectar posibles incoherencias mediante un QC orientativo.
+PedigrAPP draws pedigrees in accordance with the standardized nomenclature recommendations of Bennett/NSGC (1995, 2008, 2022, and the 2025 correction). It supports complex family relationships, adoption, twins and other multiple births, assisted reproduction, clinical and genetic information, exports, and advisory quality-control (QC) checks.
 
-> **v1.0.2 es exclusivamente una actualización documental y de metadatos de publicación. No incorpora cambios funcionales respecto a v1.0.1.** El esquema de familias sigue siendo JSON 4.16.
+Version **1.0.5** introduces an integrated ES/EN interface, localized QC, interactive help, clinical cards, and PDF reports. Users can switch languages without reloading or altering the family record. The pedigree JSON schema remains **4.16**. Version 1.0.4 restored the PedigrAPP logo in PDF reports and preserved the PDF button icon; 1.0.3 introduced the stillbirth (SB) quick-add shortcut.
 
-## Licencia, titularidad y registro
+> **Release validation:** Automated checks use synthetic data. Deployment-specific access controls, historical clinical cases, and physical-phone testing remain the responsibility of the deploying organization. See [Internationalization](I18N.md) and [Security](SECURITY.md).
 
-**Licencia:** [European Union Public Licence v1.2 (EUPL-1.2)](LICENSE), aprobada para su uso en PedigrAPP por la entidad titular. El texto íntegro y sin modificaciones de la licencia figura en `LICENSE`. Identificador SPDX: `EUPL-1.2`.
+## License, ownership, and registration
 
-**Titular de todos los derechos de explotación:** **Fundación Investigación Biomédica Hospital 12 de Octubre**. Ámbito territorial mundial, según registro Safe Creative.
+**License:** [European Union Public Licence v1.2 (EUPL-1.2)](LICENSE), approved for PedigrAPP by the rights holder. The full, unmodified license is included in `LICENSE`. SPDX identifier: `EUPL-1.2`.
 
-**Título registrado:** *PedigrAPP – Aplicación web para la creación y edición de árboles genealógicos en genética clínica*.
+**Holder of all exploitation rights:** **Fundación Investigación Biomédica Hospital 12 de Octubre** (worldwide territorial scope, as stated in the Safe Creative registration).
 
-- **Registro Safe Creative:** `2610197365707`.
-- **Certificado:** `2610197365707-29DQUR`.
-- **Inscripción:** 20/10/2026, 08:01 UTC.
-- **Archivo depositado:** `pedigrapp-main-online.zip`, que contiene los ZIP de GitHub de `main` y `online` depositados para v1.0.0.
-- **Snapshots registrados:** tags históricos `v1.0.0` y `online-v1.0.0`, que se conservan sin modificaciones.
+**Registered title:** *PedigrAPP – Aplicación web para la creación y edición de árboles genealógicos en genética clínica* (official Spanish title; retained verbatim).
 
-### Autores registrados de v1.0.0
+- **Safe Creative registration:** `2610197365707`.
+- **Certificate:** `2610197365707-29DQUR`.
+- **Registration date:** October 20, 2026, 08:01 UTC.
+- **Deposited archive:** `pedigrapp-main-online.zip`, containing GitHub snapshots of `main` and `online` deposited for v1.0.0.
+- **Registered historical snapshots:** tags `v1.0.0` and `online-v1.0.0`, preserved unchanged.
+
+### Registered authors of v1.0.0
 
 - **José Miguel Lezana Rosales**
 - **Carmen Palma Milla**
 - **Rubén Pérez de la Fuente**
 
-La relación completa del equipo clínico/científico se recoge en [`AUTHORS.md`](AUTHORS.md). La participación en el proyecto no confiere automáticamente autoría de futuras versiones ni publicaciones científicas; esta se determinará según las contribuciones realizadas.
+The complete clinical and scientific project team is listed in [AUTHORS.md](AUTHORS.md). Participation does not automatically imply authorship of later versions or scientific publications; credits depend on actual contributions and applicable criteria.
 
-Si vas a citar el programa, consulta [`CITATION.cff`](CITATION.cff).
+For software citation information, see [CITATION.cff](CITATION.cff).
 
-### DOI y citación
+### DOI and citation
 
-- **DOI general de PedigrAPP (todas las versiones):** [`10.5281/zenodo.23498335`](https://doi.org/10.5281/zenodo.23498335)
-- **DOI de PedigrAPP v1.0.1:** [`10.5281/zenodo.23498336`](https://doi.org/10.5281/zenodo.23498336)
+- **Concept DOI covering the PedigrAPP version series:** [`10.5281/zenodo.23498335`](https://doi.org/10.5281/zenodo.23498335).
+- **Archived DOI for PedigrAPP v1.0.1:** [`10.5281/zenodo.23498336`](https://doi.org/10.5281/zenodo.23498336).
+- **Archived DOI for PedigrAPP v1.0.2:** [`10.5281/zenodo.23499180`](https://doi.org/10.5281/zenodo.23499180).
 
-El DOI general representa el conjunto de versiones de PedigrAPP y resuelve a la versión más reciente disponible en Zenodo.
+The concept DOI represents the PedigrAPP version series and resolves to the latest version available on Zenodo. For citation of a specific archived release, use its version-specific DOI when available.
 
-## Instalación
+## Languages and internationalization
 
-Necesita un servidor web con **PHP** para guardar y recuperar familias mediante `api.php`. La interfaz es HTML/CSS/JavaScript sin proceso de compilación y no requiere MySQL. Para una **prueba local no pública**, desde la carpeta del proyecto:
+Use the **🇪🇸 ES / 🇬🇧 EN** selector in the header. Spanish is the default; your choice is stored in your browser (`localStorage`). You can change the language immediately while editing a pedigree. User-entered names, case details, variants, and clinical notes are never translated.
+
+All interface translations live in `locales/es.json` and `locales/en.json`. A generated `locales/catalog.js` supplies both languages to the browser. New features must include **both Spanish and English** UI strings. See [I18N.md](I18N.md) for translation keys, validation, and testing.
+
+## Installation
+
+PedigrAPP needs a web server with **PHP** for the `api.php` save/load operations. The interface uses HTML, CSS, and JavaScript; it has no build framework and does not require MySQL.
+
+For a **private local demonstration** only, from the application directory:
 
 ```bash
 php -S 127.0.0.1:8080
 ```
 
-Abre `http://127.0.0.1:8080/`. La aplicación permite editar y exportar en el navegador. La carpeta `data/` debe ser escribible por el proceso PHP si deseas usar el guardado de familias.
+Open `http://127.0.0.1:8080/`. Editing and browser-side export work locally. The PHP process must be able to write to `data/` if you wish to save families.
 
-El repositorio incluye recursos gráficos opcionales de identidad visual (`images/PedigrAPP_logo.png` y `images/PedigrAPP_icono_small.png`). Cuando el logotipo no está disponible, la interfaz utiliza un título textual alternativo. La exportación PDF utiliza una cabecera textual y no emplea membretes institucionales.
+**For upgrades, preserve your existing `data/` directory and back it up first.** Release ZIPs contain only `data/.htaccess` and `data/.gitkeep`, not stored family records. Do not expose the application or the PHP API to untrusted networks without additional access controls.
 
-## Principales funcionalidades
+The optional brand assets are `images/PedigrAPP_logo.png` and `images/PedigrAPP_icono_small.png`. A text fallback is used if the logo is unavailable. PDF reports embed the application's own logo and do not contain institutional letterhead.
 
-- Editor de pedigrees con familias multigeneracionales, uniones múltiples, medios hermanos, consanguinidad, adopción, pérdidas gestacionales y gestaciones múltiples.
-- Representación de donación de gametos, gestantes, surrogates y progenitores intencionales, distinguiendo los tipos de relación documentados.
-- Fichas de individuos, condiciones clínicas/genéticas, comentarios y leyenda dinámica.
-- Distribución automática del árbol, ajustes horizontales con ratón, reordenación gráfica dentro de la misma generación y Deshacer/Rehacer.
-- Control de calidad orientativo en directo, separado de la revisión profesional.
-- Guardado por familias mediante API PHP; importación/exportación de JSON y PED; exportación SVG, PNG y PDF desde el navegador.
-- Ayuda integrada con las convenciones y la bibliografía de referencia.
+## Key features
 
-## Exportación PDF
+- Multigenerational pedigree editor with multiple partnerships, half-siblings, consanguinity, adoption, pregnancy losses, and multiple gestations.
+- Representation of gamete donation, gestational carriers, surrogates, and intended parents, with distinct documented relationship types.
+- Individual and clinical/genetic-condition records, annotations, and a dynamic pedigree legend.
+- Automatic layout; mouse-driven horizontal adjustments, same-generation reordering, Undo/Redo.
+- Live advisory QC, separate from professional review.
+- PHP-based family save/load; JSON and PED import/export; browser-side SVG, PNG, and PDF export.
+- Interactive help covering notation conventions and the scientific references.
+- English/Spanish switching across the interface, help, QC, and reports.
 
-Usa **Exportar PDF** en la aplicación y, en el diálogo de impresión, **Guardar como PDF**. Conviene desactivar «Encabezados y pies de página» del navegador. El PDF de PedigrAPP contiene el árbol, la leyenda, los campos del caso y los apartados clínicos pertinentes, sin membretes institucionales.
+## Exporting PDF reports
 
-## Privacidad y seguridad
+Choose **Export PDF** and then **Save as PDF** in the browser's print dialog. Disabling the browser's default *Headers and footers* is recommended. The report contains the pedigree, legend, case metadata, relevant clinical sections, and the embedded PedigrAPP logo. Automatically generated headings and labels follow the selected language; user-entered content remains unchanged.
 
-**No publiques datos personales, historias familiares ni información genética identificable en el repositorio.** Los archivos reales de `data/` deben permanecer fuera del control de versiones. El `.gitignore` de la versión registrada se conserva sin modificaciones.
+## Privacy and security
 
-`data/.htaccess` intenta impedir la descarga directa por HTTP en Apache cuando esas reglas se aplican. **No sustituye autenticación ni autorización**. `api.php` no incorpora control de acceso propio. Antes de usar datos reales, configura protección del servidor y comprueba los requisitos normativos aplicables.
+**Never commit identifiable patient information, family histories, or genetic data to the repository.** Real `data/` records must stay outside version control; the original `.gitignore` rules are retained.
 
-Consulta [`PRIVACY.md`](PRIVACY.md) y [`SECURITY.md`](SECURITY.md) antes de desplegar el software en un entorno accesible por red.
+`data/.htaccess` is intended to block direct HTTP downloads when Apache honors the directive, but **is not a substitute for authentication or authorization**. `api.php` has no built-in access-control system. Protect the server and verify applicable legal and organizational requirements before handling real patient data.
 
-## Nomenclatura y avisos de terceros
+Read [PRIVACY.md](PRIVACY.md) and [SECURITY.md](SECURITY.md) before making the application accessible over a network.
 
-- Bennett RL et al. *Recommendations for Standardized Human Pedigree Nomenclature*. Am J Hum Genet. 1995;56:745–752.
-- Bennett RL et al. *Standardized Human Pedigree Nomenclature*. J Genet Couns. 2008;17:424–433.
-- Bennett RL et al. *Practice resource-focused revision*. J Genet Couns. 2022;31:1238–1248.
-- French KS et al. *Correction to: Practice resource-focused revision*. J Genet Couns. 2025;34:e2020.
+## Nomenclature and third-party acknowledgments
 
-Estas publicaciones son referencias científicas de nomenclatura. PedigrAPP no está avalada ni certificada por sus autores ni por la NSGC. Algunas soluciones gráficas se identifican expresamente en la ayuda como convenciones propias del programa.
+- Bennett RL et al. *Recommendations for Standardized Human Pedigree Nomenclature*. **Am J Hum Genet**. 1995;56:745–752.
+- Bennett RL et al. *Standardized Human Pedigree Nomenclature*. **J Genet Couns**. 2008;17:424–433.
+- Bennett RL et al. *Practice resource-focused revision*. **J Genet Couns**. 2022;31:1238–1248.
+- French KS et al. *Correction to: Practice resource-focused revision*. **J Genet Couns**. 2025;34:e2020.
 
-Consulta [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) para información sobre componentes y recursos ajenos.
+These are scientific nomenclature references, not statements of endorsement or certification by their authors or the NSGC. PedigrAPP-specific display conventions are explicitly identified in the in-app help. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-## Colaboración y versiones
+## Contributing and release history
 
-- [`CONTRIBUTING.md`](CONTRIBUTING.md): propuestas de cambio y reconocimiento de contribuciones.
-- [`CHANGELOG.md`](CHANGELOG.md): historial de versiones.
-- [`AUTHORS.md`](AUTHORS.md): autores registrados y equipo del proyecto.
-- [`help.html`](help.html): instrucciones y nomenclatura.
+- [CONTRIBUTING.md](CONTRIBUTING.md) — proposing improvements and acknowledging contributions.
+- [CHANGELOG.md](CHANGELOG.md) — version history.
+- [AUTHORS.md](AUTHORS.md) — registered authors and project team.
+- [I18N.md](I18N.md) — maintaining both languages.
+- [help.html](help.html) — interactive help and nomenclature.
 
-**Historial:** PedigrAPP 1.0.0 deriva de la línea 0.8.75; retiró la identidad institucional de la interfaz/PDF sin modificar el modelo clínico. PedigrAPP 1.0.1 añadió el marco legal y documental definitivo. PedigrAPP 1.0.2 incorpora DOI/Zenodo y metadatos de publicación, sin cambios funcionales.
+**History:** PedigrAPP 1.0.0 followed the 0.8.75 development line and removed institutional branding without changing the clinical model. Version 1.0.1 established its legal and documentary framework. Version 1.0.2 added DOI/Zenodo and citation metadata without functional changes. Versions 1.0.3 and 1.0.4 were local functional refinements. Version 1.0.5 adds internationalization. For details and release/publication distinctions, see the changelog.

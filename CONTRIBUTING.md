@@ -1,25 +1,26 @@
-# Contribuir a PedigrAPP
+# Contributing to PedigrAPP
 
-Gracias por tu interés en colaborar en PedigrAPP. El proyecto se distribuye bajo la **European Union Public Licence v1.2 (EUPL-1.2)**, cuyo texto íntegro se incluye en [`LICENSE`](LICENSE).
+Thank you for your interest in contributing to PedigrAPP. The project is distributed under the **European Union Public Licence v1.2 (EUPL-1.2)**; the complete license is available in [LICENSE](LICENSE).
 
-## Antes de contribuir
+## Before contributing
 
-- Abre una incidencia o conversa con los responsables del repositorio sobre el cambio propuesto, especialmente si modifica la nomenclatura, el modelo JSON o el motor de layout.
-- No incluyas datos identificables de pacientes, historias familiares reales, secretos, claves de acceso ni credenciales.
-- Aporta casos de prueba ficticios o completamente anonimizados, sin suponer que quitar nombres sea suficiente para anonimizar genealogías singulares.
-- Explica qué reglas clínicas o fuentes justifican cualquier cambio de simbología; distingue las convenciones propias de PedigrAPP de las recomendaciones de Bennett/NSGC.
-- Procura que una contribución funcional acompañe pruebas y no introduzca regresiones en el dibujo, el QC y las exportaciones.
+- Open an issue or discuss the proposed change with the repository maintainers, particularly if it affects nomenclature, the JSON model, or the layout engine.
+- Never submit identifiable patient information, actual family histories, secrets, access keys, or credentials.
+- Provide fictional or properly anonymized test cases. Removing names alone may not anonymize a distinctive family pedigree.
+- Explain the scientific rules and references supporting any change to symbols, distinguishing PedigrAPP-specific conventions from Bennett/NSGC recommendations.
+- Accompany functional changes with appropriate tests and avoid regressions in rendering, QC, and exports.
+- **Develop all new user-facing text in Spanish and English together.** Use stable keys in `locales/es.json` and `locales/en.json`; see [I18N.md](I18N.md). Run the required i18n validation before submitting a change.
 
-## Licencia y derechos
+## Licensing and rights
 
-Las contribuciones aceptadas deberán poder distribuirse conforme a **EUPL-1.2**, respetando las condiciones y avisos legales aplicables a cualquier material reutilizado. La persona que propone un cambio debe contar con las facultades necesarias para aportar el material y declarar expresamente las dependencias de terceros y sus licencias. No se presupone una cesión adicional de derechos ni un acuerdo de licencia de contribuyente (CLA) por el mero hecho de abrir una propuesta.
+Contributions accepted into PedigrAPP must be distributable under **EUPL-1.2**, subject to the legal conditions and notices applying to any reused materials. Contributors must have the right to submit their materials and disclose third-party dependencies and their licenses. Submitting a proposal does not by itself imply any additional transfer of rights or a contributor license agreement (CLA).
 
-La titularidad de los derechos de explotación del programa registrado corresponde a la **Fundación Investigación Biomédica Hospital 12 de Octubre**, conforme al registro referido en [`AUTHORS.md`](AUTHORS.md). Las cuestiones sobre contribuciones externas que requieran cesión, autorización o condiciones específicas deberán resolverse con la entidad titular antes de integrarse.
+Exploitation rights to the registered software belong to **Fundación Investigación Biomédica Hospital 12 de Octubre**, as documented in [AUTHORS.md](AUTHORS.md). Contributions that require assignment, authorization, or specific legal conditions must be agreed with the rights holder before integration.
 
-## Reconocimiento de contribuciones
+## Acknowledgment of contributions
 
-La inclusión en el equipo de proyecto, una incidencia o un cambio de código no confiere automáticamente la condición de autor registrado de v1.0.0 ni de autor de futuras publicaciones científicas. Se reconocerán las contribuciones atendiendo a su naturaleza y a los criterios aplicables en cada caso. Consulta [`AUTHORS.md`](AUTHORS.md).
+Membership in the project team, opening an issue, or contributing code does not automatically confer registered authorship of v1.0.0 or authorship of later scientific publications. Contributions will be acknowledged in accordance with their nature and the applicable criteria; see [AUTHORS.md](AUTHORS.md).
 
-## Seguridad
+## Security
 
-No publiques detalles explotables de vulnerabilidades ni datos sensibles en incidencias abiertas. Consulta [`SECURITY.md`](SECURITY.md) antes de comunicar una incidencia de seguridad.
+Do not disclose exploitable vulnerability details or sensitive data in public issues. See [SECURITY.md](SECURITY.md) for responsible reporting guidance.

@@ -1,0 +1,282 @@
+[
+  {
+    "file": "pedigree.js",
+    "literal": "app-message error",
+    "reason": "False positive: CSS classes, translation keys, source-code comments or regex-adjacent quoted fragments; not user-visible literal."
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "dos fratrías enfrentadas",
+    "reason": "False positive: CSS classes, translation keys, source-code comments or regex-adjacent quoted fragments; not user-visible literal."
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "qc.heading.error",
+    "reason": "False positive: CSS classes, translation keys, source-code comments or regex-adjacent quoted fragments; not user-visible literal."
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "status error",
+    "reason": "False positive: CSS classes, translation keys, source-code comments or regex-adjacent quoted fragments; not user-visible literal."
+  },
+  {
+    "file": "pedigree.js",
+    "literal": ");\n\n    if (!printWindow) {\n      throw new Error(\n        t(",
+    "reason": "False positive: CSS classes, translation keys, source-code comments or regex-adjacent quoted fragments; not user-visible literal."
+  },
+  {
+    "file": "pedigree.js",
+    "literal": ",{error:err.message}),",
+    "reason": "False positive: CSS classes, translation keys, source-code comments or regex-adjacent quoted fragments; not user-visible literal."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "El UID ${uid} corresponde a más de un registro.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${desc}: un mismo UID figura más de una vez.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Hay más de una unión entre ${label(ids[0])} y ${label(ids[1])}. Revisa si procede diferenciar la relación.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Entre ${label(ids[0])} y ${label(ids[1])}, anota el grado de parentesco cuando no sea evidente en el árbol.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(child)} figura como su propio progenitor.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Revisa la relación «${t || '(sin tipo)'}».",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Se ha detectado un circuito de filiación: ${cycle.map(label).join(' → ')}.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(child)} tiene ${parents.size} progenitores registrados como biológicos. Revisa si hay filiaciones sociales o donación de gametos que deban representarse de otra forma.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(child)} aparece en varias relaciones de filiación biológica con conjuntos diferentes de progenitores. Revisa la representación en el contexto de reproducción asistida.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(ids[i])} y ${label(ids[j])} están vinculados como hermanos, pero no comparten los progenitores biológicos registrados. Puede ser correcto si se trata de hermanastros o adopción.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "La pareja ${ids.map(label).join('–')} consta como «sin descendencia» y tiene descendencia vinculada.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(uid)} necesita un registro de descendencia o embarazo al que vincularse.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(uid)} no puede señalarse como resultado de su propia donación o gestación.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Una gestante G debe vincularse al embarazo o pérdida gestacional que lleva. Comprueba ${label(target)}.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(uid)} figura como gestante G y como surrogate/donante. La convención de 2025 distingue la gestante sin aporte de óvulo (G) de quien aporta óvulo y gesta (D).",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(uid)} consta como donante y gestante, pero carece de embarazo vinculado.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(uid)}: conviene registrar los antecedentes familiares disponibles de donantes y gestantes; la ausencia de anotación no significa que no se hayan investigado.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(uid)} consta sin descendencia, pero aparece como progenitor/a de ${descendants.length} registro(s).",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(uid)} figura con infertilidad y descendencia; puede ser correcto por reproducción asistida, historia previa o adopción. Comprueba la anotación.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(uid)} consta como dado/a en adopción. Si se conoce la filiación biológica, puede incorporarse.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "En ${label(uid)}, registra la edad o el año de fallecimiento cuando se conozca.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "En ${label(uid)}, anota la edad o edad de inicio si está disponible y resulta relevante.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(uid)} requiere un número ≥ 2 o «n».",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(uid)} está marcado como probando, pero no consta como afectado. Comprueba si corresponde «consultante» o si falta registrar la afectación.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "El embarazo ${label(target)} está vinculado a ${carriers.length} gestantes/surrogates.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(child.uid)} identifica como progenitor intencional a un registro que ya no existe.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(child.uid)} tiene doble donación y gestante G externa, pero se ha conservado una filiación biológica desde ${conflicting.map(label).join(' y ')}. Revisa si corresponde eliminar esa línea y mantener solo la anotación de progenitores intencionales.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(child)} figura con filiación adoptiva y con el indicador «dado en adopción». Puede ser correcto; comprueba la intención gráfica.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "El ID de condición «${id}» está repetido.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "La condición «${id || '?'}» necesita un nombre para interpretar su relleno en la leyenda.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "La condición «${str(c.name)}» no tiene un patrón de herencia establecido. No siempre se conoce.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(p.uid)} tiene un estado referido a «${id || '(sin ID)'}», que no existe entre las condiciones.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(p.uid)} tiene varias asignaciones para la condición «${id}».",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(p.uid)} tiene una variante consignada para «${cMap.get(id).name}», pero el estudio aparece como no realizado o no indicado.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(p.uid)} tiene cigosis para «${cMap.get(id).name}» sin variante/genotipo asociado.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(p.uid)} tiene resultado positivo para «${cMap.get(id).name}» sin variante/genotipo consignado.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(p.uid)} tiene asterisco de evaluación documentada para «${cMap.get(id).name}», sin datos adicionales.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(p.uid)} figura como portador en «${cMap.get(id).name}»; revisa si resulta más apropiado asintomático/presintomático.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(p.uid)} figura afectado, pero ninguna de las condiciones asignadas consta como afectada.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(a.uid)} y ${label(b.uid)} ocupan posiciones muy próximas en el diagrama. Comprueba su legibilidad.",
+    "reason": "Spanish fallback text inside qci(...) so Node/ES can retain source wording; its EN keyed translation is explicitly checked."
+  },
+  {
+    "file": "help-data.js",
+    "literal": "José Miguel Lezana Rosales",
+    "reason": "Legal name, registered author or rights holder; must remain untranslated."
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Rubén Pérez de la Fuente",
+    "reason": "Legal name, registered author or rights holder; must remain untranslated."
+  },
+  {
+    "file": "help-data.js",
+    "literal": "María Teresa Sánchez Calvín",
+    "reason": "Legal name, registered author or rights holder; must remain untranslated."
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Sonia Mayo de Andrés",
+    "reason": "Legal name, registered author or rights holder; must remain untranslated."
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Ana Arteche López",
+    "reason": "Legal name, registered author or rights holder; must remain untranslated."
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Víctor Benito García",
+    "reason": "Legal name, registered author or rights holder; must remain untranslated."
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Raquel Castro del Álamo",
+    "reason": "Legal name, registered author or rights holder; must remain untranslated."
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Miguel Ángel Martín Casanueva",
+    "reason": "Legal name, registered author or rights holder; must remain untranslated."
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Fundación Investigación Biomédica Hospital 12 de Octubre",
+    "reason": "Legal name, registered author or rights holder; must remain untranslated."
+  },
+  {
+    "file": "help.js",
+    "literal": "/);\n    if(!match)throw new Error(",
+    "reason": "Regex-adjacent source-code fragment, not rendered text."
+  }
+]

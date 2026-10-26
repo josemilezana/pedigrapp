@@ -1,1096 +1,743 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PedigrAPP · 1.0.2</title>
-  <link rel="icon" type="image/png" href="images/PedigrAPP_icono_small.png">
-  <link rel="stylesheet" href="pedigree.css?v=1000">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>PedigrAPP · 1.0.5</title>
+<link href="images/PedigrAPP_icono_small.png" rel="icon" type="image/png"/>
+<link href="pedigree.css?v=10058" rel="stylesheet"/>
 </head>
 <body>
 <main class="app-shell">
-
-  <header class="app-header pedigrapp-header">
-    <div class="brand-block">
-      <div class="app-branding">
-        <img
-          class="app-logo"
-          src="images/PedigrAPP_logo.png"
-          alt="PedigrAPP"
-          onerror="this.style.display='none';this.nextElementSibling.hidden=false"
-        >
-        <strong class="app-name-fallback" hidden>PedigrAPP</strong>
-        <div class="app-version">v1.0.2</div>
-      </div>
-    </div>
-
-    
-  </header>
-
-  <section class="case-bar">
-    <div class="field">
-      <div class="case-id-label-row">
-        <label for="familyId">ID de familia</label>
-        <span
-          id="unsavedIndicator"
-          class="unsaved-indicator"
-          role="status"
-          aria-live="polite"
-          hidden
-        ><span class="unsaved-indicator-dot" aria-hidden="true">●</span> Cambios sin guardar</span>
-        <span
-          id="reviewedIndicator"
-          class="reviewed-indicator"
-          role="status"
-          aria-live="polite"
-          hidden
-        ><span aria-hidden="true">✓</span> Pedigree revisado</span>
-        <button id="rereviewFamilyBtn" class="rereview-family-btn" type="button" hidden>✓ Revisar versión actual</button>
-        <button id="qcMiniIndicator" class="qc-mini-indicator" type="button" title="Abrir incidencias del QC automático" hidden>QC · Comprobando…</button>
-      </div>
-      <input id="familyId" type="text" value="FAM001">
-
-      <label class="pedigree-numbering-toggle" for="showPedigreeNumbers">
-        <input id="showPedigreeNumbers" type="checkbox" checked>
-        <span>Mostrar numeración (I-1, II-1…)</span>
-      </label>
-    </div>
-
-    <div class="field grow-wide">
-      <label for="indication">Indicación</label>
-      <input id="indication" type="text">
-
-      <label for="pedigreeComments">Comentarios del pedigree</label>
-      <textarea
-        id="pedigreeComments"
-        rows="2"
-        placeholder="Comentario libre del pedigree"
-      ></textarea>
-    </div>
-
-    <div class="field saved-cases-field">
-      <label for="savedCaseSearch">Casos guardados</label>
-
-      <div class="saved-case-picker">
-        <input
-          id="savedCaseSearch"
-          type="search"
-          autocomplete="off"
-          placeholder="Buscar por ID o indicación"
-          aria-controls="savedCaseResults"
-          aria-autocomplete="list"
-        >
-
-        <div
-          class="saved-case-review-filters"
-          role="group"
-          aria-label="Filtrar casos por estado de revisión"
-        >
-          <button
-            id="savedCaseFilterAllBtn"
-            type="button"
-            class="saved-case-filter-button is-active"
-            aria-pressed="true"
-          >Todos</button>
-          <button
-            id="savedCaseFilterReviewedBtn"
-            type="button"
-            class="saved-case-filter-button"
-            aria-pressed="false"
-          >✓ Revisados</button>
-          <button
-            id="savedCaseFilterPendingBtn"
-            type="button"
-            class="saved-case-filter-button"
-            aria-pressed="false"
-          >○ No revisados</button>
-        </div>
-
-        <div
-          id="savedCaseResults"
-          class="saved-case-results hidden"
-          role="listbox"
-          aria-label="Resultados de casos guardados"
-        ></div>
-      </div>
-
-      <div class="saved-case-actions">
-        <button id="loadFamilyBtn" type="button" disabled>Cargar</button>
-        <button id="deleteFamilyBtn" class="danger" type="button" disabled>Borrar</button>
-      </div>
-
-      <small id="savedCaseSelection" class="field-help">
+<header class="app-header pedigrapp-header">
+<div class="brand-block">
+<div class="app-branding">
+<img alt="PedigrAPP" class="app-logo" onerror="this.style.display='none';this.nextElementSibling.hidden=false" src="images/PedigrAPP_logo.png"/>
+<strong class="app-name-fallback" hidden="">PedigrAPP</strong>
+<div class="app-version">v1.0.5</div>
+</div>
+</div><div aria-label="Language / Idioma" class="app-language-switch" role="group"><button aria-pressed="true" class="language-choice" data-language="es" title="Español" type="button"><span class="language-flag" aria-hidden="true">🇪🇸</span><span class="language-code">ES</span></button><button aria-pressed="false" class="language-choice" data-language="en" title="English" type="button"><span class="language-flag" aria-hidden="true">🇬🇧</span><span class="language-code">EN</span></button></div>
+</header>
+<section class="case-bar">
+<div class="field">
+<div class="case-id-label-row">
+<label data-i18n="app.body1.main1.section1.div1.div1.label1.text" for="familyId">ID de familia</label>
+<span aria-live="polite" class="unsaved-indicator" hidden="" id="unsavedIndicator" role="status"><span aria-hidden="true" class="unsaved-indicator-dot">●</span> <span data-i18n="app.unsavedIndicator.text">Cambios sin guardar</span></span>
+<span aria-live="polite" class="reviewed-indicator" hidden="" id="reviewedIndicator" role="status"><span aria-hidden="true">✓</span> <span data-i18n="app.reviewedIndicator.text">Pedigree revisado</span></span>
+<button class="rereview-family-btn" data-i18n="app.rereviewFamilyBtn.text" hidden="" id="rereviewFamilyBtn" type="button">✓ Revisar versión actual</button>
+<button class="qc-mini-indicator" data-i18n="app.qcMiniIndicator.text" data-i18n-title="app.qcMiniIndicator.title" hidden="" id="qcMiniIndicator" title="Abrir incidencias del QC automático" type="button">QC · Comprobando…</button>
+</div>
+<input id="familyId" type="text" value="FAM001"/>
+<label class="pedigree-numbering-toggle" for="showPedigreeNumbers">
+<input checked="" id="showPedigreeNumbers" type="checkbox"/>
+<span data-i18n="app.body1.main1.section1.div1.label1.span1.text">Mostrar numeración (I-1, II-1…)</span>
+</label>
+</div>
+<div class="field grow-wide">
+<label data-i18n="app.body1.main1.section1.div2.label1.text" for="indication">Indicación</label>
+<input id="indication" type="text"/>
+<label data-i18n="app.body1.main1.section1.div2.label2.text" for="pedigreeComments">Comentarios del pedigree</label>
+<textarea data-i18n-placeholder="app.pedigreeComments.placeholder" id="pedigreeComments" placeholder="Comentario libre del pedigree" rows="2"></textarea>
+</div>
+<div class="field saved-cases-field">
+<label data-i18n="app.body1.main1.section1.div3.label1.text" for="savedCaseSearch">Casos guardados</label>
+<div class="saved-case-picker">
+<input aria-autocomplete="list" aria-controls="savedCaseResults" autocomplete="off" data-i18n-placeholder="app.savedCaseSearch.placeholder" id="savedCaseSearch" placeholder="Buscar por ID o indicación" type="search"/>
+<div aria-label="Filtrar casos por estado de revisión" class="saved-case-review-filters" data-i18n-aria-label="app.body1.main1.section1.div3.div1.div1.aria_label" role="group">
+<button aria-pressed="true" class="saved-case-filter-button is-active" data-i18n-managed="true" id="savedCaseFilterAllBtn" type="button">Todos</button>
+<button aria-pressed="false" class="saved-case-filter-button" data-i18n-managed="true" id="savedCaseFilterReviewedBtn" type="button">✓ Revisados</button>
+<button aria-pressed="false" class="saved-case-filter-button" data-i18n-managed="true" id="savedCaseFilterPendingBtn" type="button">○ No revisados</button>
+</div>
+<div aria-label="Resultados de casos guardados" class="saved-case-results hidden" id="savedCaseResults" role="listbox"></div>
+</div>
+<div class="saved-case-actions">
+<button data-i18n="app.loadFamilyBtn.text" disabled="" id="loadFamilyBtn" type="button">Cargar</button>
+<button class="danger" data-i18n="app.deleteFamilyBtn.text" disabled="" id="deleteFamilyBtn" type="button">Borrar</button>
+</div>
+<small class="field-help" data-i18n-managed="true" id="savedCaseSelection">
         Escribe para buscar y selecciona un caso.
       </small>
-    </div>
-  </section>
-
-  <section class="conditions-card top-conditions-card">
-        <div class="section-heading-row">
-          <div>
-            <h2>Condiciones del pedigree</h2>
-            <p class="section-help">Define las enfermedades o rasgos y su patrón de herencia.</p>
+</div>
+</section>
+<section class="conditions-card top-conditions-card">
+<div class="section-heading-row">
+<div>
+<h2 data-i18n="app.body1.main1.section2.div1.div1.h21.text">Condiciones del pedigree</h2>
+<p class="section-help" data-i18n="app.body1.main1.section2.div1.div1.p1.text">Define las enfermedades o rasgos y su patrón de herencia.</p>
+</div>
+<button data-i18n="app.addConditionBtn.text" id="addConditionBtn" type="button">Añadir condición</button>
+</div>
+<div class="conditions-empty" data-i18n="app.conditionsEmpty.text" id="conditionsEmpty">Aún no hay condiciones definidas.</div>
+<div class="conditions-list" id="conditionsList"></div>
+</section>
+<div class="app-message" id="appMessage" role="status"></div>
+<div aria-atomic="false" aria-live="polite" class="toast-container" id="toastContainer"></div>
+<nav aria-hidden="true" aria-label="Acciones rápidas del pedigree" class="sticky-pedigree-actions" data-i18n-aria-label="app.stickyPedigreeActions.aria_label" id="stickyPedigreeActions">
+<button aria-label="Deshacer" class="sticky-action-button" disabled="" id="stickyUndoBtn" title="Deshacer" type="button">
+<svg aria-hidden="true" viewbox="0 0 24 24">
+<path d="M9 7 4 12l5 5"></path>
+<path d="M5 12h8a6 6 0 0 1 6 6"></path>
+</svg>
+<span data-i18n="app.stickyUndoBtn.span1.text">Deshacer</span>
+</button>
+<button aria-label="Rehacer" class="sticky-action-button" disabled="" id="stickyRedoBtn" title="Rehacer" type="button">
+<svg aria-hidden="true" viewbox="0 0 24 24">
+<path d="m15 7 5 5-5 5"></path>
+<path d="M19 12h-8a6 6 0 0 0-6 6"></path>
+</svg>
+<span data-i18n="app.stickyRedoBtn.span1.text">Rehacer</span>
+</button>
+<button aria-keyshortcuts="Control+S Meta+S" aria-label="Guardar" class="sticky-action-button sticky-save-button" id="stickySaveBtn" title="Guardar · Ctrl+S" type="button">
+<svg aria-hidden="true" viewbox="0 0 24 24">
+<path d="M4 4h13l3 3v13H4z"></path>
+<path d="M8 4v6h8V4M8 20v-6h8v6"></path>
+</svg>
+<span class="sticky-save-label" data-i18n="app.stickySaveBtn.span1.text">Guardar</span>
+<span aria-hidden="true" class="sticky-dirty-dot"></span>
+</button>
+<span aria-hidden="true" class="sticky-action-separator"></span>
+<button aria-label="Volver al pedigree" class="sticky-action-button sticky-tree-button" id="stickyReturnToTreeBtn" title="Volver al pedigree" type="button" data-i18n-title="toolbar.stickyReturnToTreeBtn.title" data-i18n-aria-label="toolbar.stickyReturnToTreeBtn.ariaLabel">
+<svg aria-hidden="true" viewbox="0 0 24 24">
+<path d="M12 3v4"></path>
+<path d="M5 8h14"></path>
+<path d="M5 8v4M19 8v4"></path>
+<rect height="6" width="6" x="2" y="12"></rect>
+<circle cx="19" cy="15" r="3"></circle>
+<path d="M12 8v5"></path>
+<rect height="6" width="6" x="9" y="13"></rect>
+</svg>
+<span data-i18n="app.stickyReturnToTreeBtn.span1.text">Árbol</span>
+</button>
+</nav>
+<section class="workspace" id="workspace">
+<section class="viewer-column">
+<section aria-label="Acciones rápidas" class="top-tool-row" data-i18n-aria-label="app.workspace.section1.section1.aria_label">
+<section class="quick-add-card">
+<div aria-label="Altas rápidas" class="quick-add-inline" data-i18n-aria-label="app.workspace.section1.section1.section1.div1.aria_label">
+<div class="quick-add-strip quick-add-strip-wide">
+<button aria-label="Añadir hombre" class="quick-add-button" data-i18n-aria-label="app.quickAddManBtn.aria_label" data-i18n-title="app.quickAddManBtn.title" id="quickAddManBtn" title="Añadir hombre" type="button">
+<span aria-hidden="true" class="quick-add-symbol quick-add-square"></span>
+</button>
+<button aria-label="Añadir mujer" class="quick-add-button" data-i18n-aria-label="app.quickAddWomanBtn.aria_label" data-i18n-title="app.quickAddWomanBtn.title" id="quickAddWomanBtn" title="Añadir mujer" type="button">
+<span aria-hidden="true" class="quick-add-symbol quick-add-circle"></span>
+</button>
+<button aria-label="Añadir hombre probando" class="quick-add-button" data-i18n-aria-label="app.quickAddProbandManBtn.aria_label" data-i18n-title="app.quickAddProbandManBtn.title" id="quickAddProbandManBtn" title="Añadir hombre probando" type="button">
+<span aria-hidden="true" class="quick-add-person-with-arrow">
+<span class="quick-add-symbol quick-add-square"></span>
+<span class="quick-add-arrow quick-add-arrow-proband"></span>
+<span class="quick-add-p-mark">P</span>
+</span>
+</button>
+<button aria-label="Añadir mujer probando" class="quick-add-button" data-i18n-aria-label="app.quickAddProbandWomanBtn.aria_label" data-i18n-title="app.quickAddProbandWomanBtn.title" id="quickAddProbandWomanBtn" title="Añadir mujer probando" type="button">
+<span aria-hidden="true" class="quick-add-person-with-arrow">
+<span class="quick-add-symbol quick-add-circle"></span>
+<span class="quick-add-arrow quick-add-arrow-proband"></span>
+<span class="quick-add-p-mark">P</span>
+</span>
+</button>
+<button aria-label="Añadir hombre consultante" class="quick-add-button" data-i18n-aria-label="app.quickAddConsultandManBtn.aria_label" data-i18n-title="app.quickAddConsultandManBtn.title" id="quickAddConsultandManBtn" title="Añadir hombre consultante" type="button">
+<span aria-hidden="true" class="quick-add-person-with-arrow">
+<span class="quick-add-symbol quick-add-square"></span>
+<span class="quick-add-arrow quick-add-arrow-consultand"></span>
+<span class="quick-add-c-mark">C</span>
+</span>
+</button>
+<button aria-label="Añadir mujer consultante" class="quick-add-button" data-i18n-aria-label="app.quickAddConsultandWomanBtn.aria_label" data-i18n-title="app.quickAddConsultandWomanBtn.title" id="quickAddConsultandWomanBtn" title="Añadir mujer consultante" type="button">
+<span aria-hidden="true" class="quick-add-person-with-arrow">
+<span class="quick-add-symbol quick-add-circle"></span>
+<span class="quick-add-arrow quick-add-arrow-consultand"></span>
+<span class="quick-add-c-mark">C</span>
+</span>
+</button>
+<button aria-label="Añadir pareja de hombre y mujer" class="quick-add-button" data-i18n-aria-label="app.quickAddCoupleBtn.aria_label" data-i18n-title="app.quickAddCoupleBtn.title" id="quickAddCoupleBtn" title="Añadir pareja hombre-mujer" type="button">
+<span aria-hidden="true" class="quick-add-couple-icon">
+<span class="quick-add-symbol quick-add-square"></span>
+<span class="quick-add-couple-line"></span>
+<span class="quick-add-symbol quick-add-circle"></span>
+</span>
+</button>
+<button aria-label="Añadir pareja hombre-mujer con un hijo" class="quick-add-button quick-add-template-button quick-add-one-child-button" data-i18n-aria-label="app.quickAddCouple1SonBtn.aria_label" data-i18n-title="app.quickAddCouple1SonBtn.title" id="quickAddCouple1SonBtn" title="Añadir pareja hombre-mujer con un hijo" type="button">
+<svg aria-hidden="true" class="quick-add-pedigree-icon quick-add-one-child-icon" viewbox="0 0 82 48">
+<rect height="12" width="12" x="19" y="3"></rect>
+<circle cx="55" cy="9" r="6"></circle>
+<line x1="31" x2="49" y1="9" y2="9"></line>
+<line x1="40" x2="40" y1="9" y2="34"></line>
+<rect height="12" width="12" x="34" y="34"></rect>
+</svg>
+</button>
+<button aria-label="Añadir pareja hombre-mujer con una hija" class="quick-add-button quick-add-template-button quick-add-one-child-button" data-i18n-aria-label="app.quickAddCouple1DaughterBtn.aria_label" data-i18n-title="app.quickAddCouple1DaughterBtn.title" id="quickAddCouple1DaughterBtn" title="Añadir pareja hombre-mujer con una hija" type="button">
+<svg aria-hidden="true" class="quick-add-pedigree-icon quick-add-one-child-icon" viewbox="0 0 82 48">
+<rect height="12" width="12" x="19" y="3"></rect>
+<circle cx="55" cy="9" r="6"></circle>
+<line x1="31" x2="49" y1="9" y2="9"></line>
+<line x1="40" x2="40" y1="9" y2="34"></line>
+<circle cx="40" cy="40" r="6"></circle>
+</svg>
+</button>
+<button aria-label="Añadir pareja con 3 hijos varones" class="quick-add-button quick-add-template-button" data-i18n-aria-label="app.quickAddCouple3SonsBtn.aria_label" data-i18n-title="app.quickAddCouple3SonsBtn.title" id="quickAddCouple3SonsBtn" title="Añadir pareja con 3 hijos varones" type="button">
+<svg aria-hidden="true" class="quick-add-pedigree-icon quick-add-family-icon" viewbox="0 0 82 48">
+<rect height="12" width="12" x="19" y="3"></rect>
+<circle cx="55" cy="9" r="6"></circle>
+<line x1="31" x2="49" y1="9" y2="9"></line>
+<line x1="40" x2="40" y1="9" y2="26"></line>
+<line x1="18" x2="62" y1="26" y2="26"></line>
+<line x1="20" x2="20" y1="26" y2="35"></line>
+<line x1="40" x2="40" y1="26" y2="35"></line>
+<line x1="60" x2="60" y1="26" y2="35"></line>
+<rect height="12" width="12" x="14" y="35"></rect>
+<rect height="12" width="12" x="34" y="35"></rect>
+<rect height="12" width="12" x="54" y="35"></rect>
+</svg>
+</button>
+<button aria-label="Añadir pareja con 3 hijas mujeres" class="quick-add-button quick-add-template-button" data-i18n-aria-label="app.quickAddCouple3DaughtersBtn.aria_label" data-i18n-title="app.quickAddCouple3DaughtersBtn.title" id="quickAddCouple3DaughtersBtn" title="Añadir pareja con 3 hijas mujeres" type="button">
+<svg aria-hidden="true" class="quick-add-pedigree-icon quick-add-family-icon" viewbox="0 0 82 48">
+<rect height="12" width="12" x="19" y="3"></rect>
+<circle cx="55" cy="9" r="6"></circle>
+<line x1="31" x2="49" y1="9" y2="9"></line>
+<line x1="40" x2="40" y1="9" y2="26"></line>
+<line x1="18" x2="62" y1="26" y2="26"></line>
+<line x1="20" x2="20" y1="26" y2="35"></line>
+<line x1="40" x2="40" y1="26" y2="35"></line>
+<line x1="60" x2="60" y1="26" y2="35"></line>
+<circle cx="20" cy="41" r="6"></circle>
+<circle cx="40" cy="41" r="6"></circle>
+<circle cx="60" cy="41" r="6"></circle>
+</svg>
+</button>
+<button aria-label="Añadir padre, madre y feto (sexo desconocido)" class="quick-add-button quick-add-template-button quick-add-one-child-button" data-i18n-aria-label="app.quickAddCoupleFetusBtn.aria_label" data-i18n-title="app.quickAddCoupleFetusBtn.title" id="quickAddCoupleFetusBtn" title="Añadir padre, madre y feto (sexo desconocido)" type="button">
+<svg aria-hidden="true" class="quick-add-pedigree-icon quick-add-one-child-icon" viewbox="0 0 82 48">
+<rect height="12" width="12" x="19" y="3"></rect>
+<circle cx="55" cy="9" r="6"></circle>
+<line x1="31" x2="49" y1="9" y2="9"></line>
+<line x1="40" x2="40" y1="9" y2="32"></line>
+<polygon points="40,32 48,40 40,48 32,40"></polygon>
+<text fill="#111" font-size="10" stroke="none" text-anchor="middle" x="40" y="43">P</text>
+</svg>
+</button>
+</div>
+</div>
+</section>
+<section aria-label="Acciones principales" class="action-card pedigrapp-header">
+<div aria-label="Acciones principales" class="actions" role="toolbar">
+<button aria-label="Nueva familia" class="action-icon" id="newFamilyBtn" title="Nueva familia" type="button" data-i18n-title="toolbar.newFamilyBtn.title" data-i18n-aria-label="toolbar.newFamilyBtn.ariaLabel"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"></path><path d="M15 3v4h4M12 10v7M8.5 13.5h7"></path></svg></button>
+<button aria-label="Resetear árbol" class="action-icon danger" data-i18n-aria-label="app.resetTreeBtn.aria_label" data-i18n-title="app.resetTreeBtn.title" id="resetTreeBtn" title="Resetear árbol" type="button"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.7L4 8.6"></path><path d="M4 4v4.6h4.6"></path></svg></button>
+<button aria-label="Deshacer" class="action-icon" disabled="" id="undoBtn" title="Deshacer" type="button"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M9 7 4 12l5 5"></path><path d="M5 12h8a6 6 0 0 1 6 6"></path></svg></button>
+<button aria-label="Rehacer" class="action-icon" disabled="" id="redoBtn" title="Rehacer" type="button"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="m15 7 5 5-5 5"></path><path d="M19 12h-8a6 6 0 0 0-6 6"></path></svg></button>
+<button aria-keyshortcuts="Control+S Meta+S" aria-label="Guardar" class="action-icon primary" id="saveFamilyBtn" title="Guardar · Ctrl+S" type="button"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M4 4h13l3 3v13H4z"></path><path d="M8 4v6h8V4M8 20v-6h8v6"></path></svg></button>
+<button aria-label="Marcar pedigree como revisado" aria-pressed="false" class="action-icon clinical-review-action" id="clinicalReviewBtn" title="Marcar pedigree como revisado" type="button">
+<svg aria-hidden="true" viewbox="0 0 24 24">
+<path d="M5 4h14v16H5z"></path>
+<path d="m8 9 2 2 4-4"></path>
+<path d="M8 15h8"></path>
+</svg>
+</button>
+<button aria-controls="pedigreeQcPanel" aria-expanded="false" aria-label="Abrir incidencias del QC automático" class="action-icon pedigree-qc-action" data-i18n-aria-label="app.validatePedigreeBtn.aria_label" data-i18n-title="app.validatePedigreeBtn.title" data-qc-state="pending" id="validatePedigreeBtn" title="Control de calidad automático en directo · pulsar para ver detalles" type="button">
+<svg aria-hidden="true" class="qc-traffic-light" focusable="false" viewbox="0 0 28 28">
+<rect class="qc-traffic-housing" height="24.4" rx="7" width="24.4" x="1.8" y="1.8"></rect>
+<circle class="qc-bulb" cx="14" cy="14" r="8"></circle>
+<ellipse class="qc-bulb-glint" cx="11.5" cy="11.3" rx="2.7" ry="1.5"></ellipse>
+</svg>
+</button>
+<span aria-hidden="true" class="action-separator"></span>
+<button aria-label="Exportar JSON" class="action-icon file-action" id="exportJsonBtn" title="Exportar JSON" type="button" data-i18n-title="toolbar.exportJsonBtn.title" data-i18n-aria-label="toolbar.exportJsonBtn.ariaLabel"><svg aria-hidden="true" viewbox="0 0 30 30"><path d="M6 3h12l6 6v18H6z"></path><path d="M18 3v6h6"></path><text x="15" y="20">JSON</text><path class="mini-arrow" d="m12 23 3 3 3-3M15 26v-5"></path></svg></button>
+<label aria-label="Importar JSON" class="button-like action-icon file-action" for="importJsonInput" title="Importar JSON" data-i18n-title="toolbar.importJsonInput.title" data-i18n-aria-label="toolbar.importJsonInput.ariaLabel"><svg aria-hidden="true" viewbox="0 0 30 30"><path d="M6 3h12l6 6v18H6z"></path><path d="M18 3v6h6"></path><text x="15" y="20">JSON</text><path class="mini-arrow" d="m12 24 3-3 3 3M15 21v5"></path></svg></label>
+<input accept=".json,application/json" hidden="" id="importJsonInput" type="file"/>
+<button aria-label="Exportar PED" class="action-icon file-action" id="exportPedBtn" title="Exportar PED" type="button" data-i18n-title="toolbar.exportPedBtn.title" data-i18n-aria-label="toolbar.exportPedBtn.ariaLabel"><svg aria-hidden="true" viewbox="0 0 30 30"><path d="M6 3h12l6 6v18H6z"></path><path d="M18 3v6h6"></path><text x="15" y="20">PED</text><path class="mini-arrow" d="m12 23 3 3 3-3M15 26v-5"></path></svg></button>
+<label aria-label="Importar PED" class="button-like action-icon file-action" for="importPedInput" title="Importar PED" data-i18n-title="toolbar.importPedInput.title" data-i18n-aria-label="toolbar.importPedInput.ariaLabel"><svg aria-hidden="true" viewbox="0 0 30 30"><path d="M6 3h12l6 6v18H6z"></path><path d="M18 3v6h6"></path><text x="15" y="20">PED</text><path class="mini-arrow" d="m12 24 3-3 3 3M15 21v5"></path></svg></label>
+<input accept=".ped,text/plain" hidden="" id="importPedInput" type="file"/>
+<span aria-hidden="true" class="action-separator"></span>
+<button aria-label="Exportar SVG" class="action-icon file-action export-only" id="exportSvgBtn" title="Exportar SVG" type="button" data-i18n-title="toolbar.exportSvgBtn.title" data-i18n-aria-label="toolbar.exportSvgBtn.ariaLabel"><svg aria-hidden="true" viewbox="0 0 30 30"><path d="M6 3h12l6 6v18H6z"></path><path d="M18 3v6h6"></path><text x="15" y="20">SVG</text></svg></button>
+<button aria-label="Exportar PNG" class="action-icon file-action export-only" id="exportPngBtn" title="Exportar PNG" type="button" data-i18n-title="toolbar.exportPngBtn.title" data-i18n-aria-label="toolbar.exportPngBtn.ariaLabel"><svg aria-hidden="true" viewbox="0 0 30 30"><path d="M6 3h12l6 6v18H6z"></path><path d="M18 3v6h6"></path><text x="15" y="20">PNG</text></svg></button>
+<button aria-label="Exportar PDF" class="action-icon file-action export-only" id="exportPdfBtn" title="Exportar PDF" type="button" data-i18n-title="toolbar.exportPdfBtn.title" data-i18n-aria-label="toolbar.exportPdfBtn.ariaLabel"><svg aria-hidden="true" viewbox="0 0 30 30"><path d="M6 3h12l6 6v18H6z"></path><path d="M18 3v6h6"></path><text x="15" y="20">PDF</text></svg></button>
+<a aria-label="Abrir ayuda y nomenclatura del pedigree" data-i18n-aria-label="toolbar.help.ariaLabel" data-i18n-title="toolbar.help.title" class="button-like action-icon help-action" href="help.html" rel="noopener noreferrer" target="_blank" title="Ayuda y nomenclatura del pedigree"><svg aria-hidden="true" viewbox="0 0 30 30">
+<circle cx="15" cy="15" r="11"></circle>
+<path d="M11.8 11.2c.4-2.2 2-3.5 4.4-3.5 2.5 0 4.2 1.5 4.2 3.7 0 1.8-.9 2.8-2.7 4-1.6 1-2.1 1.8-2.1 3.4"></path>
+<path d="M15.7 22.2h.01"></path>
+</svg></a>
+</div>
+</section>
+</section>
+<section aria-label="Control de calidad del pedigree" class="pedigree-qc-panel" hidden="" id="pedigreeQcPanel">
+<div class="pedigree-qc-header">
+<div>
+<h2 data-i18n="app.pedigreeQcPanel.div1.div1.h21.text">Control de calidad · QC</h2>
+<p class="pedigree-qc-subtitle" data-i18n="app.pedigreeQcPanel.div1.div1.p1.text">QC automático en directo, basado en Bennett/NSGC y la integridad de PedigrAPP. Solo se muestra este panel al pulsar el semáforo; no implica revisión clínica.</p>
+</div>
+<div class="pedigree-qc-controls">
+<button data-i18n="app.pedigreeQcRefreshBtn.text" id="pedigreeQcRefreshBtn" type="button">Recalcular ahora</button>
+<button aria-label="Cerrar control de calidad" data-i18n="app.pedigreeQcCloseBtn.text" id="pedigreeQcCloseBtn" type="button">Cerrar ×</button>
+</div>
+</div>
+<div aria-live="polite" class="pedigree-qc-summary" id="pedigreeQcSummary" role="status"></div>
+<div class="pedigree-qc-issues" id="pedigreeQcIssues"></div>
+<p class="pedigree-qc-disclaimer" data-i18n="app.pedigreeQcPanel.p1.text">Este informe no sustituye la revisión profesional ni comprueba exhaustivamente la ausencia de cruces gráficos, la veracidad de la historia familiar, ni la interpretación clínica de variantes y diagnósticos. Sin incidencias detectadas no significa validación clínica.</p>
+</section>
+<section class="pedigree-card">
+<div class="status" id="status"></div>
+<div class="pedigree-viewport-shell">
+<div aria-label="Buscar individuo en el pedigree" data-i18n-aria-label="layout.search.region" class="pedigree-search-controls" role="search">
+<label class="visually-hidden" data-i18n="app.workspace.section1.section3.div2.div1.label1.text" for="pedigreePersonSearch">Buscar individuo</label>
+<input aria-keyshortcuts="F" autocomplete="off" class="pedigree-person-search" id="pedigreePersonSearch" list="pedigreePersonSearchList" placeholder="Buscar individuo…" data-i18n-placeholder="layout.search.placeholder" data-i18n-title="layout.search.title" title="Buscar individuo · F" type="search"/>
+<datalist id="pedigreePersonSearchList"></datalist>
+<button aria-label="Buscar y centrar individuo" class="pedigree-search-button" id="pedigreePersonSearchBtn" title="Buscar y centrar individuo" type="button" data-i18n-title="toolbar.pedigreePersonSearchBtn.title" data-i18n-aria-label="toolbar.pedigreePersonSearchBtn.ariaLabel">⌕</button>
+</div>
+<div aria-label="Controles del visor del pedigree" data-i18n-aria-label="layout.controls.label" class="pedigree-viewer-controls" role="toolbar">
+<button aria-keyshortcuts="-" aria-label="Alejar" class="pedigree-viewer-button" id="pedigreeZoomOutBtn" title="Alejar · −" type="button" data-i18n-title="toolbar.pedigreeZoomOutBtn.title" data-i18n-aria-label="toolbar.pedigreeZoomOutBtn.ariaLabel">−</button>
+<div aria-live="polite" class="pedigree-zoom-indicator" id="pedigreeZoomIndicator">100 %</div>
+<button aria-keyshortcuts="+" aria-label="Acercar" class="pedigree-viewer-button" id="pedigreeZoomInBtn" title="Acercar · +" type="button" data-i18n-title="toolbar.pedigreeZoomInBtn.title" data-i18n-aria-label="toolbar.pedigreeZoomInBtn.ariaLabel">+</button>
+<span aria-hidden="true" class="pedigree-viewer-separator"></span>
+<button aria-label="Ajustar todo el pedigree a la ventana" class="pedigree-viewer-button pedigree-viewer-button-wide" id="pedigreeFitBtn" title="Ajustar todo el pedigree a la ventana" type="button" data-i18n-title="toolbar.pedigreeFitBtn.title" data-i18n-aria-label="toolbar.pedigreeFitBtn.ariaLabel">⛶</button>
+<button aria-label="Ajustar pedigree al ancho del visor" class="pedigree-viewer-button" id="pedigreeFitWidthBtn" title="Ajustar pedigree al ancho del visor" type="button" data-i18n-title="toolbar.pedigreeFitWidthBtn.title" data-i18n-aria-label="toolbar.pedigreeFitWidthBtn.ariaLabel">↔</button>
+<button aria-label="Centrar pedigree" class="pedigree-viewer-button" id="pedigreeCenterBtn" title="Centrar pedigree" type="button" data-i18n-title="toolbar.pedigreeCenterBtn.title" data-i18n-aria-label="toolbar.pedigreeCenterBtn.ariaLabel">⊙</button>
+<button aria-label="Zoom 100 %" class="pedigree-viewer-button pedigree-viewer-button-wide" id="pedigreeActualSizeBtn" title="Zoom 100 %" type="button" data-i18n-title="toolbar.pedigreeActualSizeBtn.title" data-i18n-aria-label="toolbar.pedigreeActualSizeBtn.ariaLabel">1:1</button>
+<span aria-hidden="true" class="pedigree-viewer-separator"></span>
+<button aria-label="Activar modo Reordenar horizontalmente" aria-pressed="false" class="pedigree-viewer-button" id="pedigreeReorderSiblingsBtn" title="Reordenar horizontalmente" type="button">⇄</button>
+<button aria-label="Restablecer posiciones manuales" class="pedigree-viewer-button" disabled="" id="pedigreeResetManualPositionsBtn" title="Restablecer distribución horizontal automática" type="button">↺</button>
+<span aria-hidden="true" class="pedigree-viewer-separator"></span>
+<button aria-label="Activar modo foco" aria-pressed="false" class="pedigree-viewer-button pedigree-focus-button" id="pedigreeFocusModeBtn" title="Modo foco: ampliar el área del pedigree" type="button">⤢</button>
+</div>
+<div aria-label="Visor interactivo del pedigree" data-i18n-aria-label="layout.viewport.label" class="pedigree-container" id="pedigreeContainer" tabindex="0"></div>
+</div>
+<div aria-hidden="true" aria-label="Acciones del individuo" class="condition-hover-card" hidden="" id="conditionHoverCard" role="dialog"></div>
+</section>
+<section class="legend-card">
+<h2 data-i18n="app.workspace.section1.section4.h21.text">Leyenda</h2>
+<div class="legend-grid">
+<div hidden="" id="maleLegend"><span class="legend-symbol square"></span> <span data-i18n="app.maleLegend.text">Hombre / niño</span></div>
+<div hidden="" id="femaleLegend"><span class="legend-symbol circle"></span> <span data-i18n="app.femaleLegend.text">Mujer / niña</span></div>
+<div hidden="" id="diverseGenderLegend"><span class="legend-symbol diamond"></span> <span data-i18n="app.diverseGenderLegend.text">Género diverso / no especificado</span></div>
+<div hidden="" id="genericAffectedLegend"><span class="legend-symbol affected"></span> <span data-i18n="app.genericAffectedLegend.text">Afectado</span></div>
+<div hidden="" id="deceasedLegend"><span class="legend-line deceased"></span> <span data-i18n="app.deceasedLegend.text">Fallecido</span></div>
+<div hidden="" id="consultandLegend"><span class="legend-arrow">↗</span> <span data-i18n="app.consultandLegend.text">Consultante</span></div>
+<div hidden="" id="probandLegend"><span class="legend-proband-mark"><span class="legend-proband-p">P</span><span class="legend-arrow">↗</span></span> <span data-i18n="app.probandLegend.text">Probando</span></div>
+<div hidden="" id="sabLegend"><span class="legend-pregnancy-loss sab"></span> <span data-i18n="app.sabLegend.text">Aborto espontáneo (SAB)</span></div>
+<div hidden="" id="topLegend"><span class="legend-pregnancy-loss top"></span> <span data-i18n="app.topLegend.text">Interrupción del embarazo (TOP)</span></div>
+<div hidden="" id="ectLegend"><span class="legend-pregnancy-loss top"></span> <span data-i18n="app.ectLegend.text">Embarazo ectópico (ECT)</span></div>
+<div hidden="" id="adoptedInLegend"><span class="legend-adoption-brackets adopted-in"><span aria-hidden="true" class="legend-adoption-stem"></span><span class="legend-symbol circle inner"></span></span> <span data-i18n="app.adoptedInLegend.text">Adoptado/a en la familia</span></div>
+<div hidden="" id="adoptedOutLegend"><span class="legend-adoption-brackets adopted-out"><span aria-hidden="true" class="legend-adoption-stem"></span><span class="legend-symbol circle inner"></span></span> <span data-i18n="app.adoptedOutLegend.text">Dado/a en adopción</span></div>
+<div hidden="" id="adoptiveLineLegend"><span class="legend-dashed-line"></span> <span data-i18n="app.adoptiveLineLegend.text">Filiación adoptiva</span></div>
+<div hidden="" id="endedUnionLegend"><span class="legend-ended-union"></span> <span data-i18n="app.endedUnionLegend.text">Relación finalizada</span></div>
+<div hidden="" id="commentLegend"><span class="comment-dot-legend"></span> <span data-i18n="app.commentLegend.text">Tiene comentario</span></div>
+<div hidden="" id="familyHistoryUnknownLegend"><span class="family-history-unknown-legend">?</span> <span data-i18n="app.familyHistoryUnknownLegend.text">Historia familiar no disponible/desconocida</span></div>
+<div hidden="" id="noChildrenLegend"><span class="legend-reproductive-status no-children"></span> <span data-i18n="app.noChildrenLegend.text">No descendencia por elección / motivo desconocido</span></div>
+<div hidden="" id="infertilityLegend"><span class="legend-reproductive-status infertility"></span> <span data-i18n="app.infertilityLegend.text">Infertilidad</span></div>
+<div hidden="" id="donorLegend">
+<svg aria-hidden="true" class="legend-donor" viewbox="0 0 32 32">
+<circle cx="16" cy="16" r="12"></circle>
+<text x="16" y="20">D</text>
+</svg>
+            <span data-i18n="app.donorLegend.text">Donante de gametos (D)</span>
           </div>
-          <button id="addConditionBtn" type="button">Añadir condición</button>
-        </div>
-        <div id="conditionsEmpty" class="conditions-empty">Aún no hay condiciones definidas.</div>
-        <div id="conditionsList" class="conditions-list"></div>
-      </section>
-
-  <div id="appMessage" class="app-message" role="status"></div>
-
-  <div
-    id="toastContainer"
-    class="toast-container"
-    aria-live="polite"
-    aria-atomic="false"
-  ></div>
-
-  <nav
-    id="stickyPedigreeActions"
-    class="sticky-pedigree-actions"
-    aria-label="Acciones rápidas del pedigree"
-    aria-hidden="true"
-  >
-    <button
-      id="stickyUndoBtn"
-      class="sticky-action-button"
-      type="button"
-      title="Deshacer"
-      aria-label="Deshacer"
-      disabled
-    >
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M9 7 4 12l5 5"/>
-        <path d="M5 12h8a6 6 0 0 1 6 6"/>
-      </svg>
-      <span>Deshacer</span>
-    </button>
-
-    <button
-      id="stickyRedoBtn"
-      class="sticky-action-button"
-      type="button"
-      title="Rehacer"
-      aria-label="Rehacer"
-      disabled
-    >
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="m15 7 5 5-5 5"/>
-        <path d="M19 12h-8a6 6 0 0 0-6 6"/>
-      </svg>
-      <span>Rehacer</span>
-    </button>
-
-    <button
-      id="stickySaveBtn"
-      class="sticky-action-button sticky-save-button"
-      type="button"
-      title="Guardar · Ctrl+S"
-      aria-label="Guardar"
-      aria-keyshortcuts="Control+S Meta+S"
-    >
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M4 4h13l3 3v13H4z"/>
-        <path d="M8 4v6h8V4M8 20v-6h8v6"/>
-      </svg>
-      <span class="sticky-save-label">Guardar</span>
-      <span class="sticky-dirty-dot" aria-hidden="true"></span>
-    </button>
-
-    <span class="sticky-action-separator" aria-hidden="true"></span>
-
-    <button
-      id="stickyReturnToTreeBtn"
-      class="sticky-action-button sticky-tree-button"
-      type="button"
-      title="Volver al pedigree"
-      aria-label="Volver al pedigree"
-    >
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M12 3v4"/>
-        <path d="M5 8h14"/>
-        <path d="M5 8v4M19 8v4"/>
-        <rect x="2" y="12" width="6" height="6"/>
-        <circle cx="19" cy="15" r="3"/>
-        <path d="M12 8v5"/>
-        <rect x="9" y="13" width="6" height="6"/>
-      </svg>
-      <span>Árbol</span>
-    </button>
-  </nav>
-
-  <section id="workspace" class="workspace">
-    <section class="viewer-column">
-      <section class="top-tool-row" aria-label="Acciones rápidas">
-      <section class="quick-add-card">
-        <div class="quick-add-inline" aria-label="Altas rápidas">
-          <div class="quick-add-strip quick-add-strip-wide">
-      <button id="quickAddManBtn"
-              class="quick-add-button"
-              type="button"
-              title="Añadir hombre"
-              aria-label="Añadir hombre">
-        <span class="quick-add-symbol quick-add-square" aria-hidden="true"></span>
-      </button>
-
-      <button id="quickAddWomanBtn"
-              class="quick-add-button"
-              type="button"
-              title="Añadir mujer"
-              aria-label="Añadir mujer">
-        <span class="quick-add-symbol quick-add-circle" aria-hidden="true"></span>
-      </button>
-
-      <button id="quickAddProbandManBtn"
-              class="quick-add-button"
-              type="button"
-              title="Añadir hombre probando"
-              aria-label="Añadir hombre probando">
-        <span class="quick-add-person-with-arrow" aria-hidden="true">
-          <span class="quick-add-symbol quick-add-square"></span>
-          <span class="quick-add-arrow quick-add-arrow-proband"></span>
-          <span class="quick-add-p-mark">P</span>
-        </span>
-      </button>
-
-      <button id="quickAddProbandWomanBtn"
-              class="quick-add-button"
-              type="button"
-              title="Añadir mujer probando"
-              aria-label="Añadir mujer probando">
-        <span class="quick-add-person-with-arrow" aria-hidden="true">
-          <span class="quick-add-symbol quick-add-circle"></span>
-          <span class="quick-add-arrow quick-add-arrow-proband"></span>
-          <span class="quick-add-p-mark">P</span>
-        </span>
-      </button>
-
-      <button id="quickAddConsultandManBtn"
-              class="quick-add-button"
-              type="button"
-              title="Añadir hombre consultante"
-              aria-label="Añadir hombre consultante">
-        <span class="quick-add-person-with-arrow" aria-hidden="true">
-          <span class="quick-add-symbol quick-add-square"></span>
-          <span class="quick-add-arrow quick-add-arrow-consultand"></span>
-          <span class="quick-add-c-mark">C</span>
-        </span>
-      </button>
-
-      <button id="quickAddConsultandWomanBtn"
-              class="quick-add-button"
-              type="button"
-              title="Añadir mujer consultante"
-              aria-label="Añadir mujer consultante">
-        <span class="quick-add-person-with-arrow" aria-hidden="true">
-          <span class="quick-add-symbol quick-add-circle"></span>
-          <span class="quick-add-arrow quick-add-arrow-consultand"></span>
-          <span class="quick-add-c-mark">C</span>
-        </span>
-      </button>
-
-      <button id="quickAddCoupleBtn"
-              class="quick-add-button"
-              type="button"
-              title="Añadir pareja hombre-mujer"
-              aria-label="Añadir pareja de hombre y mujer">
-        <span class="quick-add-couple-icon" aria-hidden="true">
-          <span class="quick-add-symbol quick-add-square"></span>
-          <span class="quick-add-couple-line"></span>
-          <span class="quick-add-symbol quick-add-circle"></span>
-        </span>
-      </button>
-
-      <button id="quickAddCouple1SonBtn"
-              class="quick-add-button quick-add-template-button quick-add-one-child-button"
-              type="button"
-              title="Añadir pareja hombre-mujer con un hijo"
-              aria-label="Añadir pareja hombre-mujer con un hijo">
-        <svg class="quick-add-pedigree-icon quick-add-one-child-icon"
-             viewBox="0 0 82 48"
-             aria-hidden="true">
-          <rect x="19" y="3" width="12" height="12"></rect>
-          <circle cx="55" cy="9" r="6"></circle>
-          <line x1="31" y1="9" x2="49" y2="9"></line>
-          <line x1="40" y1="9" x2="40" y2="34"></line>
-          <rect x="34" y="34" width="12" height="12"></rect>
-        </svg>
-      </button>
-
-      <button id="quickAddCouple1DaughterBtn"
-              class="quick-add-button quick-add-template-button quick-add-one-child-button"
-              type="button"
-              title="Añadir pareja hombre-mujer con una hija"
-              aria-label="Añadir pareja hombre-mujer con una hija">
-        <svg class="quick-add-pedigree-icon quick-add-one-child-icon"
-             viewBox="0 0 82 48"
-             aria-hidden="true">
-          <rect x="19" y="3" width="12" height="12"></rect>
-          <circle cx="55" cy="9" r="6"></circle>
-          <line x1="31" y1="9" x2="49" y2="9"></line>
-          <line x1="40" y1="9" x2="40" y2="34"></line>
-          <circle cx="40" cy="40" r="6"></circle>
-        </svg>
-      </button>
-
-      <button id="quickAddCouple3SonsBtn"
-              class="quick-add-button quick-add-template-button"
-              type="button"
-              title="Añadir pareja con 3 hijos varones"
-              aria-label="Añadir pareja con 3 hijos varones">
-        <svg class="quick-add-pedigree-icon quick-add-family-icon"
-             viewBox="0 0 82 48"
-             aria-hidden="true">
-          <rect x="19" y="3" width="12" height="12"></rect>
-          <circle cx="55" cy="9" r="6"></circle>
-          <line x1="31" y1="9" x2="49" y2="9"></line>
-          <line x1="40" y1="9" x2="40" y2="26"></line>
-          <line x1="18" y1="26" x2="62" y2="26"></line>
-          <line x1="20" y1="26" x2="20" y2="35"></line>
-          <line x1="40" y1="26" x2="40" y2="35"></line>
-          <line x1="60" y1="26" x2="60" y2="35"></line>
-          <rect x="14" y="35" width="12" height="12"></rect>
-          <rect x="34" y="35" width="12" height="12"></rect>
-          <rect x="54" y="35" width="12" height="12"></rect>
-        </svg>
-      </button>
-
-      <button id="quickAddCouple3DaughtersBtn"
-              class="quick-add-button quick-add-template-button"
-              type="button"
-              title="Añadir pareja con 3 hijas mujeres"
-              aria-label="Añadir pareja con 3 hijas mujeres">
-        <svg class="quick-add-pedigree-icon quick-add-family-icon"
-             viewBox="0 0 82 48"
-             aria-hidden="true">
-          <rect x="19" y="3" width="12" height="12"></rect>
-          <circle cx="55" cy="9" r="6"></circle>
-          <line x1="31" y1="9" x2="49" y2="9"></line>
-          <line x1="40" y1="9" x2="40" y2="26"></line>
-          <line x1="18" y1="26" x2="62" y2="26"></line>
-          <line x1="20" y1="26" x2="20" y2="35"></line>
-          <line x1="40" y1="26" x2="40" y2="35"></line>
-          <line x1="60" y1="26" x2="60" y2="35"></line>
-          <circle cx="20" cy="41" r="6"></circle>
-          <circle cx="40" cy="41" r="6"></circle>
-          <circle cx="60" cy="41" r="6"></circle>
-        </svg>
-      </button>
-      <button id="quickAddCoupleFetusBtn"
-              class="quick-add-button quick-add-template-button quick-add-one-child-button"
-              type="button"
-              title="Añadir padre, madre y feto (sexo desconocido)"
-              aria-label="Añadir padre, madre y feto (sexo desconocido)">
-        <svg class="quick-add-pedigree-icon quick-add-one-child-icon"
-             viewBox="0 0 82 48"
-             aria-hidden="true">
-          <rect x="19" y="3" width="12" height="12"></rect>
-          <circle cx="55" cy="9" r="6"></circle>
-          <line x1="31" y1="9" x2="49" y2="9"></line>
-          <line x1="40" y1="9" x2="40" y2="32"></line>
-          <polygon points="40,32 48,40 40,48 32,40"></polygon>
-          <text x="40" y="43" font-size="10" text-anchor="middle" stroke="none" fill="#111">P</text>
-        </svg>
-      </button>
-    </div>
-        </div>
-      </section>
-      <section class="action-card pedigrapp-header" aria-label="Acciones principales">
-        <div class="actions" role="toolbar" aria-label="Acciones principales">
-      <button id="newFamilyBtn" class="action-icon" type="button" title="Nueva familia" aria-label="Nueva familia"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M12 10v7M8.5 13.5h7"/></svg></button>
-      <button id="resetTreeBtn" class="action-icon danger" type="button" title="Resetear árbol" aria-label="Resetear árbol"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.3-5.7L4 8.6"/><path d="M4 4v4.6h4.6"/></svg></button>
-      <button id="undoBtn" class="action-icon" type="button" title="Deshacer" aria-label="Deshacer" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 4 12l5 5"/><path d="M5 12h8a6 6 0 0 1 6 6"/></svg></button>
-      <button id="redoBtn" class="action-icon" type="button" title="Rehacer" aria-label="Rehacer" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 7 5 5-5 5"/><path d="M19 12h-8a6 6 0 0 0-6 6"/></svg></button>
-      <button id="saveFamilyBtn" class="action-icon primary" type="button" title="Guardar · Ctrl+S" aria-label="Guardar" aria-keyshortcuts="Control+S Meta+S"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h13l3 3v13H4z"/><path d="M8 4v6h8V4M8 20v-6h8v6"/></svg></button>
-      <button
-        id="clinicalReviewBtn"
-        class="action-icon clinical-review-action"
-        type="button"
-        title="Marcar pedigree como revisado"
-        aria-label="Marcar pedigree como revisado"
-        aria-pressed="false"
-      >
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M5 4h14v16H5z"/>
-          <path d="m8 9 2 2 4-4"/>
-          <path d="M8 15h8"/>
-        </svg>
-      </button>
-
-      <button id="validatePedigreeBtn" class="action-icon pedigree-qc-action" type="button" data-qc-state="pending" title="Control de calidad automático en directo · pulsar para ver detalles" aria-label="Abrir incidencias del QC automático" aria-controls="pedigreeQcPanel" aria-expanded="false">
-        <svg class="qc-traffic-light" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
-          <rect class="qc-traffic-housing" x="1.8" y="1.8" width="24.4" height="24.4" rx="7"/>
-          <circle class="qc-bulb" cx="14" cy="14" r="8"/>
-          <ellipse class="qc-bulb-glint" cx="11.5" cy="11.3" rx="2.7" ry="1.5"/>
-        </svg>
-      </button>
-
-      <span class="action-separator" aria-hidden="true"></span>
-
-      <button id="exportJsonBtn" class="action-icon file-action" type="button" title="Exportar JSON" aria-label="Exportar JSON"><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M6 3h12l6 6v18H6z"/><path d="M18 3v6h6"/><text x="15" y="20">JSON</text><path class="mini-arrow" d="m12 23 3 3 3-3M15 26v-5"/></svg></button>
-      <label class="button-like action-icon file-action" for="importJsonInput" title="Importar JSON" aria-label="Importar JSON"><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M6 3h12l6 6v18H6z"/><path d="M18 3v6h6"/><text x="15" y="20">JSON</text><path class="mini-arrow" d="m12 24 3-3 3 3M15 21v5"/></svg></label>
-      <input id="importJsonInput" type="file" accept=".json,application/json" hidden>
-      <button id="exportPedBtn" class="action-icon file-action" type="button" title="Exportar PED" aria-label="Exportar PED"><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M6 3h12l6 6v18H6z"/><path d="M18 3v6h6"/><text x="15" y="20">PED</text><path class="mini-arrow" d="m12 23 3 3 3-3M15 26v-5"/></svg></button>
-      <label class="button-like action-icon file-action" for="importPedInput" title="Importar PED" aria-label="Importar PED"><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M6 3h12l6 6v18H6z"/><path d="M18 3v6h6"/><text x="15" y="20">PED</text><path class="mini-arrow" d="m12 24 3-3 3 3M15 21v5"/></svg></label>
-      <input id="importPedInput" type="file" accept=".ped,text/plain" hidden>
-
-      <span class="action-separator" aria-hidden="true"></span>
-
-      <button id="exportSvgBtn" class="action-icon file-action export-only" type="button" title="Exportar SVG" aria-label="Exportar SVG"><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M6 3h12l6 6v18H6z"/><path d="M18 3v6h6"/><text x="15" y="20">SVG</text></svg></button>
-      <button id="exportPngBtn" class="action-icon file-action export-only" type="button" title="Exportar PNG" aria-label="Exportar PNG"><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M6 3h12l6 6v18H6z"/><path d="M18 3v6h6"/><text x="15" y="20">PNG</text></svg></button>
-      <button id="exportPdfBtn" class="action-icon file-action export-only" type="button" title="Exportar PDF" aria-label="Exportar PDF"><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M6 3h12l6 6v18H6z"/><path d="M18 3v6h6"/><text x="15" y="20">PDF</text></svg></button>
-      <a
-        href="help.html"
-        class="button-like action-icon help-action"
-        target="_blank"
-        rel="noopener noreferrer"
-        title="Ayuda y nomenclatura del pedigree"
-        aria-label="Abrir ayuda y nomenclatura del pedigree"
-      ><svg viewBox="0 0 30 30" aria-hidden="true">
-        <circle cx="15" cy="15" r="11"></circle>
-        <path d="M11.8 11.2c.4-2.2 2-3.5 4.4-3.5 2.5 0 4.2 1.5 4.2 3.7 0 1.8-.9 2.8-2.7 4-1.6 1-2.1 1.8-2.1 3.4"></path>
-        <path d="M15.7 22.2h.01"></path>
-      </svg></a>
-    </div>
-      </section>
-      </section>
-
-      <section id="pedigreeQcPanel" class="pedigree-qc-panel" aria-label="Control de calidad del pedigree" hidden>
-        <div class="pedigree-qc-header">
-          <div>
-            <h2>Control de calidad · QC</h2>
-            <p class="pedigree-qc-subtitle">QC automático en directo, basado en Bennett/NSGC y la integridad de PedigrAPP. Solo se muestra este panel al pulsar el semáforo; no implica revisión clínica.</p>
+<div hidden="" id="surrogateLegend">
+<svg aria-hidden="true" class="legend-donor" viewbox="0 0 44 44">
+<circle cx="16" cy="13" r="9"></circle>
+<text x="16" y="17">D</text>
+<line x1="16" x2="16" y1="22" y2="28"></line>
+<polygon points="16,27 24,35 16,43 8,35"></polygon>
+<text class="legend-surrogate-p" x="16" y="38">P</text>
+</svg>
+            <span data-i18n="app.surrogateLegend.text">Surrogate: donante de óvulos y gestante</span>
           </div>
-          <div class="pedigree-qc-controls">
-            <button id="pedigreeQcRefreshBtn" type="button">Recalcular ahora</button>
-            <button id="pedigreeQcCloseBtn" type="button" aria-label="Cerrar control de calidad">Cerrar ×</button>
+<div hidden="" id="gestationalCarrierLegend">
+<svg aria-hidden="true" class="legend-gestational-carrier" viewbox="0 0 32 32">
+<circle cx="16" cy="16" r="12"></circle>
+<text x="16" y="20">G</text>
+</svg>
+            <span data-i18n="app.gestationalCarrierLegend.text">Gestante / gestational carrier (G)</span>
           </div>
-        </div>
-        <div id="pedigreeQcSummary" class="pedigree-qc-summary" role="status" aria-live="polite"></div>
-        
-        <div id="pedigreeQcIssues" class="pedigree-qc-issues"></div>
-        <p class="pedigree-qc-disclaimer">Este informe no sustituye la revisión profesional ni comprueba exhaustivamente la ausencia de cruces gráficos, la veracidad de la historia familiar, ni la interpretación clínica de variantes y diagnósticos. Sin incidencias detectadas no significa validación clínica.</p>
-      </section>
-
-      <section class="pedigree-card">
-        <div id="status" class="status"></div>
-        <div class="pedigree-viewport-shell">
-          <div class="pedigree-search-controls" role="search" aria-label="Buscar individuo en el pedigree">
-            <label class="visually-hidden" for="pedigreePersonSearch">Buscar individuo</label>
-            <input id="pedigreePersonSearch" class="pedigree-person-search" type="search" list="pedigreePersonSearchList" placeholder="Buscar individuo…" autocomplete="off" title="Buscar individuo · F" aria-keyshortcuts="F">
-            <datalist id="pedigreePersonSearchList"></datalist>
-            <button id="pedigreePersonSearchBtn" class="pedigree-search-button" type="button" title="Buscar y centrar individuo" aria-label="Buscar y centrar individuo">⌕</button>
+<div hidden="" id="fetusLegend">
+<svg aria-hidden="true" class="legend-fetus" viewbox="0 0 32 32">
+<polygon points="16,3 29,16 16,29 3,16"></polygon>
+<text x="16" y="20">P</text>
+</svg>
+            <span data-i18n="app.fetusLegend.text">Feto / embarazo (P)</span>
           </div>
-          <div class="pedigree-viewer-controls" role="toolbar" aria-label="Controles del visor del pedigree">
-            <button id="pedigreeZoomOutBtn" class="pedigree-viewer-button" type="button" title="Alejar · −" aria-label="Alejar" aria-keyshortcuts="-">−</button>
-            <div id="pedigreeZoomIndicator" class="pedigree-zoom-indicator" aria-live="polite">100 %</div>
-            <button id="pedigreeZoomInBtn" class="pedigree-viewer-button" type="button" title="Acercar · +" aria-label="Acercar" aria-keyshortcuts="+">+</button>
-            <span class="pedigree-viewer-separator" aria-hidden="true"></span>
-            <button id="pedigreeFitBtn" class="pedigree-viewer-button pedigree-viewer-button-wide" type="button" title="Ajustar todo el pedigree a la ventana" aria-label="Ajustar todo el pedigree a la ventana">⛶</button>
-            <button id="pedigreeFitWidthBtn" class="pedigree-viewer-button" type="button" title="Ajustar pedigree al ancho del visor" aria-label="Ajustar pedigree al ancho del visor">↔</button>
-            <button id="pedigreeCenterBtn" class="pedigree-viewer-button" type="button" title="Centrar pedigree" aria-label="Centrar pedigree">⊙</button>
-            <button id="pedigreeActualSizeBtn" class="pedigree-viewer-button pedigree-viewer-button-wide" type="button" title="Zoom 100 %" aria-label="Zoom 100 %">1:1</button>
-            <span class="pedigree-viewer-separator" aria-hidden="true"></span>
-            <button id="pedigreeReorderSiblingsBtn" class="pedigree-viewer-button" type="button" title="Reordenar horizontalmente" aria-label="Activar modo Reordenar horizontalmente" aria-pressed="false">⇄</button>
-            <button id="pedigreeResetManualPositionsBtn" class="pedigree-viewer-button" type="button" title="Restablecer distribución horizontal automática" aria-label="Restablecer posiciones manuales" disabled>↺</button>
-            <span class="pedigree-viewer-separator" aria-hidden="true"></span>
-            <button id="pedigreeFocusModeBtn" class="pedigree-viewer-button pedigree-focus-button" type="button" title="Modo foco: ampliar el área del pedigree" aria-label="Activar modo foco" aria-pressed="false">⤢</button>
+<div hidden="" id="stillbirthLegend">
+<svg aria-hidden="true" class="legend-stillbirth" viewbox="0 0 32 32">
+<rect height="22" width="22" x="5" y="5"></rect>
+<line x1="3" x2="29" y1="29" y2="3"></line>
+</svg>
+            <span data-i18n="app.stillbirthLegend.text">Mortinato (SB)</span>
           </div>
-          <div id="pedigreeContainer" class="pedigree-container" tabindex="0" aria-label="Visor interactivo del pedigree"></div>
-        </div>
-        <div
-          id="conditionHoverCard"
-          class="condition-hover-card"
-          role="dialog"
-          aria-label="Acciones del individuo"
-          aria-hidden="true"
-          hidden
-        ></div>
-      </section>
-
-
-      <section class="legend-card">
-        <h2>Leyenda</h2>
-        <div class="legend-grid">
-          <div id="maleLegend" hidden><span class="legend-symbol square"></span> Hombre / niño</div>
-          <div id="femaleLegend" hidden><span class="legend-symbol circle"></span> Mujer / niña</div>
-          <div id="diverseGenderLegend" hidden><span class="legend-symbol diamond"></span> Género diverso / no especificado</div>
-          <div id="genericAffectedLegend" hidden><span class="legend-symbol affected"></span> Afectado</div>
-          <div id="deceasedLegend" hidden><span class="legend-line deceased"></span> Fallecido</div>
-          <div id="consultandLegend" hidden><span class="legend-arrow">↗</span> Consultante</div>
-          <div id="probandLegend" hidden><span class="legend-proband-mark"><span class="legend-proband-p">P</span><span class="legend-arrow">↗</span></span> Probando</div>
-          <div id="sabLegend" hidden><span class="legend-pregnancy-loss sab"></span> Aborto espontáneo (SAB)</div>
-          <div id="topLegend" hidden><span class="legend-pregnancy-loss top"></span> Interrupción del embarazo (TOP)</div>
-          <div id="ectLegend" hidden><span class="legend-pregnancy-loss top"></span> Embarazo ectópico (ECT)</div>
-          <div id="adoptedInLegend" hidden><span class="legend-adoption-brackets adopted-in"><span class="legend-adoption-stem" aria-hidden="true"></span><span class="legend-symbol circle inner"></span></span> Adoptado/a en la familia</div>
-          <div id="adoptedOutLegend" hidden><span class="legend-adoption-brackets adopted-out"><span class="legend-adoption-stem" aria-hidden="true"></span><span class="legend-symbol circle inner"></span></span> Dado/a en adopción</div>
-          <div id="adoptiveLineLegend" hidden><span class="legend-dashed-line"></span> Filiación adoptiva</div>
-          <div id="endedUnionLegend" hidden><span class="legend-ended-union"></span> Relación finalizada</div>
-          <div id="commentLegend" hidden><span class="comment-dot-legend"></span> Tiene comentario</div>
-          <div id="familyHistoryUnknownLegend" hidden><span class="family-history-unknown-legend">?</span> Historia familiar no disponible/desconocida</div>
-          <div id="noChildrenLegend" hidden><span class="legend-reproductive-status no-children"></span> No descendencia por elección / motivo desconocido</div>
-          <div id="infertilityLegend" hidden><span class="legend-reproductive-status infertility"></span> Infertilidad</div>
-          <div id="donorLegend" hidden>
-            <svg class="legend-donor" viewBox="0 0 32 32" aria-hidden="true">
-              <circle cx="16" cy="16" r="12"></circle>
-              <text x="16" y="20">D</text>
-            </svg>
-            Donante de gametos (D)
+<div hidden="" id="multipleIndividualsLegend">
+<svg aria-hidden="true" class="legend-multiple-individuals" viewbox="0 0 32 32">
+<rect height="24" width="24" x="4" y="4"></rect>
+<text x="16" y="20">3</text>
+</svg>
+            <span data-i18n="app.multipleIndividualsLegend.text">Varios individuos (número conocido)</span>
           </div>
-          <div id="surrogateLegend" hidden>
-            <svg class="legend-donor" viewBox="0 0 44 44" aria-hidden="true">
-              <circle cx="16" cy="13" r="9"></circle>
-              <text x="16" y="17">D</text>
-              <line x1="16" y1="22" x2="16" y2="28"></line>
-              <polygon points="16,27 24,35 16,43 8,35"></polygon>
-              <text class="legend-surrogate-p" x="16" y="38">P</text>
-            </svg>
-            Surrogate: donante de óvulos y gestante
+<div hidden="" id="multipleIndividualsUnknownLegend">
+<svg aria-hidden="true" class="legend-multiple-individuals" viewbox="0 0 32 32">
+<rect height="24" width="24" x="4" y="4"></rect>
+<text x="16" y="20">n</text>
+</svg>
+            <span data-i18n="app.multipleIndividualsUnknownLegend.text">Varios individuos (número desconocido/no especificado)</span>
           </div>
-          <div id="gestationalCarrierLegend" hidden>
-            <svg class="legend-gestational-carrier" viewBox="0 0 32 32" aria-hidden="true">
-              <circle cx="16" cy="16" r="12"></circle>
-              <text x="16" y="20">G</text>
-            </svg>
-            Gestante / gestational carrier (G)
+<div hidden="" id="trizygoticLegend">
+<svg aria-hidden="true" class="legend-trizygotic" viewbox="0 0 38 30">
+<line x1="19" x2="19" y1="2" y2="9"></line>
+<line x1="19" x2="7" y1="9" y2="21"></line>
+<line x1="19" x2="19" y1="9" y2="21"></line>
+<line x1="19" x2="31" y1="9" y2="21"></line>
+<rect height="8" width="8" x="3" y="21"></rect>
+<rect height="8" width="8" x="15" y="21"></rect>
+<rect height="8" width="8" x="27" y="21"></rect>
+</svg>
+            <span data-i18n="app.trizygoticLegend.text">Trillizos tricigóticos</span>
           </div>
-          <div id="fetusLegend" hidden>
-            <svg class="legend-fetus" viewBox="0 0 32 32" aria-hidden="true">
-              <polygon points="16,3 29,16 16,29 3,16"></polygon>
-              <text x="16" y="20">P</text>
-            </svg>
-            Feto / embarazo (P)
-          </div>
-          <div id="stillbirthLegend" hidden>
-            <svg class="legend-stillbirth" viewBox="0 0 32 32" aria-hidden="true">
-              <rect x="5" y="5" width="22" height="22"></rect>
-              <line x1="3" y1="29" x2="29" y2="3"></line>
-            </svg>
-            Mortinato (SB)
-          </div>
-          <div id="multipleIndividualsLegend" hidden>
-            <svg class="legend-multiple-individuals" viewBox="0 0 32 32" aria-hidden="true">
-              <rect x="4" y="4" width="24" height="24"></rect>
-              <text x="16" y="20">3</text>
-            </svg>
-            Varios individuos (número conocido)
-          </div>
-          <div id="multipleIndividualsUnknownLegend" hidden>
-            <svg class="legend-multiple-individuals" viewBox="0 0 32 32" aria-hidden="true">
-              <rect x="4" y="4" width="24" height="24"></rect>
-              <text x="16" y="20">n</text>
-            </svg>
-            Varios individuos (número desconocido/no especificado)
-          </div>
-          <div id="trizygoticLegend" hidden>
-            <svg class="legend-trizygotic" viewBox="0 0 38 30" aria-hidden="true">
-              <line x1="19" y1="2" x2="19" y2="9"></line>
-              <line x1="19" y1="9" x2="7" y2="21"></line>
-              <line x1="19" y1="9" x2="19" y2="21"></line>
-              <line x1="19" y1="9" x2="31" y2="21"></line>
-              <rect x="3" y="21" width="8" height="8"></rect>
-              <rect x="15" y="21" width="8" height="8"></rect>
-              <rect x="27" y="21" width="8" height="8"></rect>
-            </svg>
-            Trillizos tricigóticos
-          </div>
-        </div>
-        <p id="legendDynamicNote" class="legend-note-ui" hidden></p>
-      </section>
-
-      
-      <section class="management-row" aria-label="Gestión de individuos y relaciones">
-        <details
-          id="creationCardDisclosure"
-          class="editor-disclosure separator wide-disclosure creation-card"
-        >
-          <summary class="editor-disclosure-summary">
-            <span>
-              <strong>Añadir individuo</strong>
-              <small>Individuos, eventos gestacionales, donantes y gestantes</small>
-            </span>
-          </summary>
-
-          <div class="editor-disclosure-body creation-card-body">
-        
-
-        <div class="panel-header">
-          <h2 id="personFormTitle">Añadir individuo / evento</h2>
-          <button id="cancelEditBtn" class="link-button" type="button" hidden>Cancelar</button>
-        </div>
-
-        <form id="personForm">
-          <input id="editingUid" type="hidden">
-
-          
-          <div class="form-grid">
-            <div class="field">
-              <label for="recordType">Tipo de registro</label>
-              <select id="recordType">
-                <option value="person">Individuo</option>
-                <option value="multiple">Varios individuos</option>
-                <option value="fetus">Feto</option>
-                <option value="stillbirth">Mortinato (SB)</option>
-                <option value="gestational_carrier">Gestante</option>
-                <option value="sperm_donor">Donante de esperma</option>
-                <option value="ovum_donor">Donante de óvulos</option>
-                <option value="ovum_donor_surrogate">Donante de óvulos y gestante (surrogate)</option>
-                <option value="sab">Aborto espontáneo (SAB)</option>
-                <option value="top">Interrupción del embarazo (TOP)</option>
-                <option value="ect">Embarazo ectópico (ECT)</option>
-              </select>
-            </div>
-
-            <div class="field person-label-field">
-              <label for="personLabel">Nombre / alias opcional</label>
-              <input id="personLabel" type="text" placeholder="p. ej. Caso índice">
-            </div>
-
-            <div class="field brief-info-field">
-              <label for="briefInfo">Breve información</label>
-              <input id="briefInfo"
-                     type="text"
-                     maxlength="120"
-                     placeholder="p. ej. Ca. pulmón 2006">
-            </div>
-
-            <div class="field person-or-multiple-field">
-              <label for="gender">Género</label>
-              <select id="gender">
-                <option value="man">Hombre / niño</option>
-                <option value="woman">Mujer / niña</option>
-                <option value="gender_diverse">Género diverso</option>
-                <option value="unspecified">No especificado</option>
-              </select>
-            </div>
-
-            <div class="field person-or-multiple-field">
-              <label for="sexAtBirth">Sexo asignado al nacimiento</label>
-              <select id="sexAtBirth">
-                <option value="male">Masculino</option>
-                <option value="female">Femenino</option>
-                <option value="unassigned">No asignado</option>
-                <option value="">Desconocido / no registrado</option>
-              </select>
-            </div>
-
-            <div id="fetalSexField" class="field fetus-only-field hidden">
-              <label for="fetalSex">Sexo fetal / símbolo</label>
-              <select id="fetalSex">
-                <option value="unspecified" selected>Indeterminado / no conocido</option>
-                <option value="man">Masculino</option>
-                <option value="woman">Femenino</option>
-              </select>
-              <small class="field-help">
+</div>
+<p class="legend-note-ui" hidden="" id="legendDynamicNote"></p>
+</section>
+<section aria-label="Gestión de individuos y relaciones" class="management-row" data-i18n-aria-label="app.workspace.section1.section5.aria_label">
+<details class="editor-disclosure separator wide-disclosure creation-card" id="creationCardDisclosure">
+<summary class="editor-disclosure-summary">
+<span>
+<strong data-i18n="app.creationCardDisclosure.summary1.span1.strong1.text">Añadir individuo</strong>
+<small data-i18n="app.creationCardDisclosure.summary1.span1.small1.text">Individuos, eventos gestacionales, donantes y gestantes</small>
+</span>
+</summary>
+<div class="editor-disclosure-body creation-card-body">
+<div class="panel-header">
+<h2 data-i18n-dynamic="recordFormTitle" id="personFormTitle">Añadir individuo / evento</h2>
+<button class="link-button" data-i18n="app.cancelEditBtn.text" hidden="" id="cancelEditBtn" type="button">Cancelar</button>
+</div>
+<form id="personForm">
+<input id="editingUid" type="hidden"/>
+<div class="form-grid">
+<div class="field">
+<label data-i18n="app.personForm.div1.div1.label1.text" for="recordType">Tipo de registro</label>
+<select id="recordType">
+<option data-i18n="app.recordType.option1.text" value="person">Individuo</option>
+<option data-i18n="app.recordType.option2.text" value="multiple">Varios individuos</option>
+<option data-i18n="app.recordType.option3.text" value="fetus">Feto</option>
+<option data-i18n="app.recordType.option4.text" value="stillbirth">Mortinato (SB)</option>
+<option data-i18n="app.recordType.option5.text" value="gestational_carrier">Gestante</option>
+<option data-i18n="app.recordType.option6.text" value="sperm_donor">Donante de esperma</option>
+<option data-i18n="app.recordType.option7.text" value="ovum_donor">Donante de óvulos</option>
+<option data-i18n="app.recordType.option8.text" value="ovum_donor_surrogate">Donante de óvulos y gestante (surrogate)</option>
+<option data-i18n="app.recordType.option9.text" value="sab">Aborto espontáneo (SAB)</option>
+<option data-i18n="app.recordType.option10.text" value="top">Interrupción del embarazo (TOP)</option>
+<option data-i18n="app.recordType.option11.text" value="ect">Embarazo ectópico (ECT)</option>
+</select>
+</div>
+<div class="field person-label-field">
+<label data-i18n="app.personForm.div1.div2.label1.text" for="personLabel">Nombre / alias opcional</label>
+<input data-i18n-placeholder="app.personLabel.placeholder" id="personLabel" placeholder="p. ej. Caso índice" type="text"/>
+</div>
+<div class="field brief-info-field">
+<label data-i18n="app.personForm.div1.div3.label1.text" for="briefInfo">Breve información</label>
+<input data-i18n-placeholder="app.briefInfo.placeholder" id="briefInfo" maxlength="120" placeholder="p. ej. Ca. pulmón 2006" type="text"/>
+</div>
+<div class="field person-or-multiple-field">
+<label data-i18n="app.personForm.div1.div4.label1.text" for="gender">Género</label>
+<select id="gender">
+<option data-i18n="app.gender.option1.text" value="man">Hombre / niño</option>
+<option data-i18n="app.gender.option2.text" value="woman">Mujer / niña</option>
+<option data-i18n="app.gender.option3.text" value="gender_diverse">Género diverso</option>
+<option data-i18n="app.gender.option4.text" value="unspecified">No especificado</option>
+</select>
+</div>
+<div class="field person-or-multiple-field">
+<label data-i18n="app.personForm.div1.div5.label1.text" for="sexAtBirth">Sexo asignado al nacimiento</label>
+<select id="sexAtBirth">
+<option data-i18n="app.sexAtBirth.option1.text" value="male">Masculino</option>
+<option data-i18n="app.sexAtBirth.option2.text" value="female">Femenino</option>
+<option data-i18n="app.sexAtBirth.option3.text" value="unassigned">No asignado</option>
+<option data-i18n="app.sexAtBirth.option4.text" value="">Desconocido / no registrado</option>
+</select>
+</div>
+<div class="field fetus-only-field hidden" id="fetalSexField">
+<label data-i18n="app.fetalSexField.label1.text" for="fetalSex">Sexo fetal / símbolo</label>
+<select id="fetalSex">
+<option data-i18n="app.fetalSex.option1.text" selected="" value="unspecified">Indeterminado / no conocido</option>
+<option data-i18n="app.fetalSex.option2.text" value="man">Masculino</option>
+<option data-i18n="app.fetalSex.option3.text" value="woman">Femenino</option>
+</select>
+<small class="field-help" data-i18n="app.fetalSexField.small1.text">
                 Masculino: cuadrado con P. Femenino: círculo con P. Indeterminado: rombo con P.
               </small>
-            </div>
-
-            <div id="donationTargetField" class="field donor-only-field hidden">
-              <label id="donationTargetLabel" for="donationTarget">Hijo / feto / embarazo resultante</label>
-
-              <div id="donationTargetsCheckboxes"
-                   class="donation-target-checkboxes hidden"
-                   role="group"
-                   aria-labelledby="donationTargetLabel"></div>
-
-              <select id="donationTarget">
-                <option value="">— Seleccionar —</option>
-              </select>
-
-              <small id="donationTargetHelp" class="field-help">
+</div>
+<div class="field donor-only-field hidden" id="donationTargetField">
+<label data-i18n="app.donationTargetLabel.text" for="donationTarget" id="donationTargetLabel">Hijo / feto / embarazo resultante</label>
+<div aria-labelledby="donationTargetLabel" class="donation-target-checkboxes hidden" id="donationTargetsCheckboxes" role="group"></div>
+<select id="donationTarget">
+<option data-i18n="app.donationTarget.option1.text" value="">— Seleccionar —</option>
+</select>
+<small class="field-help" data-i18n="app.donationTargetHelp.text" id="donationTargetHelp">
                 Esperma: se sustituye la descendencia de la pareja por una línea desde la mujer gestante al resultado. Óvulos: se conserva la descendencia original y se añade la diagonal de la donante.
               </small>
-            </div>
-
-            <div id="gestationTargetField" class="field gestational-carrier-only-field hidden">
-              <label for="gestationTarget">Feto / embarazo gestado</label>
-              <select id="gestationTarget">
-                <option value="">— Seleccionar —</option>
-              </select>
-              <small class="field-help">
+</div>
+<div class="field gestational-carrier-only-field hidden" id="gestationTargetField">
+<label data-i18n="app.gestationTargetField.label1.text" for="gestationTarget">Feto / embarazo gestado</label>
+<select id="gestationTarget">
+<option data-i18n="app.gestationTarget.option1.text" value="">— Seleccionar —</option>
+</select>
+<small class="field-help" data-i18n="app.gestationTargetField.small1.text">
                 Gestante (G): lleva la gestación sin aportar el óvulo. El embarazo se colocará directamente debajo de la gestante y se unirá mediante una línea continua.
               </small>
-            </div>
-
-            <div id="multipleCountField" class="field multiple-only-field hidden">
-              <label for="multipleCount">Número de individuos</label>
-              <input id="multipleCount"
-                     type="text"
-                     inputmode="numeric"
-                     autocomplete="off"
-                     placeholder="p. ej. 4 o n">
-              <small class="field-help">
-                Introduce un entero de al menos 2 o <strong>n</strong> si el número es desconocido/no especificado. El valor se escribirá dentro del símbolo. Los individuos afectados no deben agruparse.
-              </small>
-            </div>
-
-            <div class="field person-basic-field">
-              <label for="age">Edad</label>
-              <input id="age" type="number" min="0" max="130" step="1">
-            </div>
-
-            <div class="field pregnancy-loss-only-field hidden">
-              <label for="gestationalAge">Edad gestacional (semanas)</label>
-              <input id="gestationalAge" type="number" min="1" max="45" step="1"
-                     placeholder="p. ej. 8">
-            </div>
-
-          </div>
-
-          <div class="person-status-row person-only-field"
-               aria-label="Estados rápidos del individuo">
-
-            <label class="person-status-option"
-                   title="Consultante">
-              <input id="consultand"
-                     type="checkbox"
-                     aria-label="Consultante">
-              <span class="person-status-symbol person-status-consultand"
-                    aria-hidden="true">↗</span>
-            </label>
-
-            <label class="person-status-option"
-                   title="Probando">
-              <input id="proband"
-                     type="checkbox"
-                     aria-label="Probando">
-              <span class="person-status-symbol person-status-proband"
-                    aria-hidden="true">
-                <span class="person-status-proband-p">P</span>
-                <span class="person-status-proband-arrow">↗</span>
-              </span>
-            </label>
-
-            <label class="person-status-option"
-                   title="Fallecido">
-              <input id="deceased"
-                     type="checkbox"
-                     aria-label="Fallecido">
-              <svg class="person-status-deceased"
-                   viewBox="0 0 24 24"
-                   aria-hidden="true">
-                <rect x="5" y="5" width="14" height="14"></rect>
-                <line x1="3.5" y1="20.5" x2="20.5" y2="3.5"></line>
-              </svg>
-            </label>
-
-            <label class="person-status-option"
-                   title="Historia familiar no disponible o desconocida">
-              <input id="familyHistoryUnknown"
-                     type="checkbox"
-                     aria-label="Historia familiar no disponible o desconocida">
-              <span class="person-status-family-history"
-                    aria-hidden="true">
-                <span class="person-status-family-question">?</span>
-                <svg class="person-status-mini-pedigree"
-                     viewBox="0 0 34 22">
-                  <rect x="2" y="2" width="6" height="6"></rect>
-                  <circle cx="16" cy="5" r="3"></circle>
-                  <line x1="8" y1="5" x2="13" y2="5"></line>
-                  <line x1="10.5" y1="5" x2="10.5" y2="13"></line>
-                  <line x1="6" y1="13" x2="25" y2="13"></line>
-                  <line x1="7" y1="13" x2="7" y2="19"></line>
-                  <line x1="16" y1="13" x2="16" y2="19"></line>
-                  <line x1="24" y1="13" x2="24" y2="19"></line>
-                  <rect x="4.5" y="17" width="5" height="5"></rect>
-                  <circle cx="16" cy="19.5" r="2.5"></circle>
-                  <rect x="21.5" y="17" width="5" height="5"></rect>
-                </svg>
-              </span>
-            </label>
-          </div>
-
-          <details id="personAdvancedDetails"
-                   class="person-form-disclosure">
-            <summary>Opciones avanzadas</summary>
-            <div class="person-form-disclosure-body form-grid">
-              <div class="field">
-                <label for="birthOrder">Orden de nacimiento / gestación entre hermanos</label>
-                <input id="birthOrder" type="number" min="1" step="1">
-              </div>
-
-              <div class="field">
-                <label for="generationOverride">Nivel / generación manual</label>
-                <input id="generationOverride" type="number" min="1" max="20" step="1"
-                       placeholder="Automático">
-                <small class="field-help">
+</div>
+<div class="field multiple-only-field hidden" id="multipleCountField">
+<label data-i18n="app.multipleCountField.label1.text" for="multipleCount">Número de individuos</label>
+<input autocomplete="off" id="multipleCount" inputmode="numeric" placeholder="p. ej. 4 o n" type="text"/>
+<small class="field-help">
+                <span data-i18n="app.multipleCountField.small1.text1">Introduce un entero de al menos 2 o</span> <span data-i18n="app.multipleCountField.small1.text2">si el número es desconocido/no especificado. El valor se escribirá dentro del símbolo. Los individuos afectados no deben agruparse.</span>
+              <strong>n</strong> </small>
+</div>
+<div class="field person-basic-field">
+<label data-i18n="app.personForm.div1.div10.label1.text" for="age">Edad</label>
+<input id="age" max="130" min="0" step="1" type="number"/>
+</div>
+<div class="field pregnancy-loss-only-field hidden">
+<label data-i18n="app.personForm.div1.div11.label1.text" for="gestationalAge">Edad gestacional (semanas)</label>
+<input id="gestationalAge" max="45" min="1" placeholder="p. ej. 8" step="1" type="number"/>
+</div>
+</div>
+<div aria-label="Estados rápidos del individuo" class="person-status-row person-only-field" data-i18n-aria-label="app.personForm.div2.aria_label">
+<label class="person-status-option" data-i18n-title="app.personForm.div2.label1.title" title="Consultante">
+<input aria-label="Consultante" data-i18n-aria-label="app.consultand.aria_label" id="consultand" type="checkbox"/>
+<span aria-hidden="true" class="person-status-symbol person-status-consultand">↗</span>
+</label>
+<label class="person-status-option" data-i18n-title="app.personForm.div2.label2.title" title="Probando">
+<input aria-label="Probando" data-i18n-aria-label="app.proband.aria_label" id="proband" type="checkbox"/>
+<span aria-hidden="true" class="person-status-symbol person-status-proband">
+<span class="person-status-proband-p">P</span>
+<span class="person-status-proband-arrow">↗</span>
+</span>
+</label>
+<label class="person-status-option" data-i18n-title="app.personForm.div2.label3.title" title="Fallecido">
+<input aria-label="Fallecido" data-i18n-aria-label="app.deceased.aria_label" id="deceased" type="checkbox"/>
+<svg aria-hidden="true" class="person-status-deceased" viewbox="0 0 24 24">
+<rect height="14" width="14" x="5" y="5"></rect>
+<line x1="3.5" x2="20.5" y1="20.5" y2="3.5"></line>
+</svg>
+</label>
+<label class="person-status-option" title="Historia familiar no disponible o desconocida">
+<input aria-label="Historia familiar no disponible o desconocida" id="familyHistoryUnknown" type="checkbox"/>
+<span aria-hidden="true" class="person-status-family-history">
+<span class="person-status-family-question">?</span>
+<svg class="person-status-mini-pedigree" viewbox="0 0 34 22">
+<rect height="6" width="6" x="2" y="2"></rect>
+<circle cx="16" cy="5" r="3"></circle>
+<line x1="8" x2="13" y1="5" y2="5"></line>
+<line x1="10.5" x2="10.5" y1="5" y2="13"></line>
+<line x1="6" x2="25" y1="13" y2="13"></line>
+<line x1="7" x2="7" y1="13" y2="19"></line>
+<line x1="16" x2="16" y1="13" y2="19"></line>
+<line x1="24" x2="24" y1="13" y2="19"></line>
+<rect height="5" width="5" x="4.5" y="17"></rect>
+<circle cx="16" cy="19.5" r="2.5"></circle>
+<rect height="5" width="5" x="21.5" y="17"></rect>
+</svg>
+</span>
+</label>
+</div>
+<details class="person-form-disclosure" id="personAdvancedDetails">
+<summary data-i18n="app.personAdvancedDetails.summary1.text">Opciones avanzadas</summary>
+<div class="person-form-disclosure-body form-grid">
+<div class="field">
+<label data-i18n="app.personAdvancedDetails.div1.div1.label1.text" for="birthOrder">Orden de nacimiento / gestación entre hermanos</label>
+<input id="birthOrder" min="1" step="1" type="number"/>
+</div>
+<div class="field">
+<label data-i18n="app.personAdvancedDetails.div1.div2.label1.text" for="generationOverride">Nivel / generación manual</label>
+<input data-i18n-placeholder="app.generationOverride.placeholder" id="generationOverride" max="20" min="1" placeholder="Automático" step="1" type="number"/>
+<small class="field-help" data-i18n="app.personAdvancedDetails.div1.div2.small1.text">
                   Déjalo vacío para que se calcule por parentesco.
                 </small>
-              </div>
-
-              <div class="field intended-parent-field hidden">
-                <label id="intendedParentLabel">Progenitores intencionales</label>
-                <div id="intendedParentCheckboxes"
-                     class="intended-parent-checkboxes"
-                     role="group"
-                     aria-labelledby="intendedParentLabel"></div>
-                <small class="field-help">
+</div>
+<div class="field intended-parent-field hidden">
+<label data-i18n="app.intendedParentLabel.text" id="intendedParentLabel">Progenitores intencionales</label>
+<div aria-labelledby="intendedParentLabel" class="intended-parent-checkboxes" id="intendedParentCheckboxes" role="group"></div>
+<small class="field-help" data-i18n="app.personAdvancedDetails.div1.div3.small1.text">
                   Relación intencional (no genética ni gestacional).
                   Selecciona hasta dos personas. PedigrAPP añadirá bajo el
                   descendiente «Progenitores intencionales: I-1 y I-2»,
                   utilizando la numeración actual, sin trazar una línea de filiación.
                   Si existe una línea biológica incorrecta, elimínala desde Relaciones.
                 </small>
-              </div>
-
-              <div class="form-grid person-only-field advanced-reproductive-grid">
-                <div class="field">
-                  <label for="personReproductiveStatus">Situación reproductiva individual</label>
-                  <select id="personReproductiveStatus">
-                    <option value="none">Sin información especial</option>
-                    <option value="no_children">No descendencia por elección / motivo desconocido</option>
-                    <option value="infertility">Infertilidad</option>
-                  </select>
-                  <small class="field-help">
+</div>
+<div class="form-grid person-only-field advanced-reproductive-grid">
+<div class="field">
+<label data-i18n="app.personAdvancedDetails.div1.div4.div1.label1.text" for="personReproductiveStatus">Situación reproductiva individual</label>
+<select id="personReproductiveStatus">
+<option data-i18n="app.personReproductiveStatus.option1.text" value="none">Sin información especial</option>
+<option data-i18n="app.personReproductiveStatus.option2.text" value="no_children">No descendencia por elección / motivo desconocido</option>
+<option data-i18n="app.personReproductiveStatus.option3.text" value="infertility">Infertilidad</option>
+</select>
+<small class="field-help" data-i18n="app.personAdvancedDetails.div1.div4.div1.small1.text">
                     Puede utilizarse aunque el individuo no tenga pareja representada.
                   </small>
-                </div>
-
-                <div id="personReproductiveReasonField" class="field hidden">
-                  <label for="personReproductiveReason">Motivo, si se conoce</label>
-                  <input id="personReproductiveReason"
-                         type="text"
-                         maxlength="120"
-                         placeholder="p. ej. azoospermia, endometriosis, vasectomía">
-                </div>
-              </div>
-            </div>
-          </details>
-
-
-          <button id="submitPersonBtn" class="primary full" type="submit">Añadir individuo</button>
-        </form>
-          </div>
-        </details>
-        <details id="relationCard" class="editor-disclosure separator wide-disclosure">
-        <summary class="editor-disclosure-summary">
-          <span>
-            <strong>Relaciones avanzadas</strong>
-            <small>Adopción, gemelos, filiación y relaciones por selección</small>
-          </span>
-        </summary>
-
-        <div class="editor-disclosure-body">
-          <div class="panel-header compact-panel-header">
-            <h2 id="relationFormTitle">Añadir relación</h2>
-          </div>
-
-          <form id="relationForm" onsubmit="return false;">
-          <div class="form-grid">
-            <div class="field">
-              <label for="relationA">Registro A</label>
-              <select id="relationA"></select>
-            </div>
-
-            <div class="field">
-              <label for="relationType">Relación</label>
-              <select id="relationType">
-                <option value="parent">es progenitor/a de</option>
-                <option value="child">es hijo/a de</option>
-                <option value="adoptive_parent">es progenitor/a adoptivo/a de</option>
-                <option value="adoptive_child">es adoptado/a en la familia por</option>
-                <option value="adopted_out_child">es hijo/a dado/a en adopción de</option>
-                <option value="sibling">es hermano/a de</option>
-                <option value="twin">es gemelo/a o trillizo/a de</option>
-                <option value="union">es pareja de</option>
-                <option value="ended_union">relación finalizada con</option>
-                <option value="consanguineous_union">es pareja consanguínea de</option>
-              </select>
-            </div>
-
-            <div id="consanguinityDegreeField" class="field hidden">
-            <label for="consanguinityDegree">Grado de consanguinidad (opcional)</label>
-            <input id="consanguinityDegree" type="text"
-                   placeholder="p. ej. primos hermanos, primos terceros">
-            <small>Si el grado no queda evidente en el pedigree, las guías recomiendan indicarlo sobre la línea de relación.</small>
-          </div>
-
-          <div id="reproductiveStatusField" class="field hidden">
-              <label for="reproductiveStatus">Situación reproductiva</label>
-              <select id="reproductiveStatus">
-                <option value="none">Sin información especial</option>
-                <option value="no_children">No descendencia por elección / motivo desconocido</option>
-                <option value="infertility">Infertilidad</option>
-              </select>
-              <small class="field-help">
+</div>
+<div class="field hidden" id="personReproductiveReasonField">
+<label data-i18n="app.personReproductiveReasonField.label1.text" for="personReproductiveReason">Motivo, si se conoce</label>
+<input data-i18n-placeholder="app.personReproductiveReason.placeholder" id="personReproductiveReason" maxlength="120" placeholder="p. ej. azoospermia, endometriosis, vasectomía" type="text"/>
+</div>
+</div>
+</div>
+</details>
+<button class="primary full" data-i18n-dynamic="recordFormSubmit" id="submitPersonBtn" type="submit">Añadir individuo</button>
+</form>
+</div>
+</details>
+<details class="editor-disclosure separator wide-disclosure" id="relationCard">
+<summary class="editor-disclosure-summary">
+<span>
+<strong data-i18n="app.relationCard.summary1.span1.strong1.text">Relaciones avanzadas</strong>
+<small data-i18n="app.relationCard.summary1.span1.small1.text">Adopción, gemelos, filiación y relaciones por selección</small>
+</span>
+</summary>
+<div class="editor-disclosure-body">
+<div class="panel-header compact-panel-header">
+<h2 data-i18n="app.relationFormTitle.text" id="relationFormTitle">Añadir relación</h2>
+</div>
+<form id="relationForm" onsubmit="return false;">
+<div class="form-grid">
+<div class="field">
+<label data-i18n="app.relationForm.div1.div1.label1.text" for="relationA">Registro A</label>
+<select id="relationA"></select>
+</div>
+<div class="field">
+<label data-i18n="app.relationForm.div1.div2.label1.text" for="relationType">Relación</label>
+<select id="relationType">
+<option data-i18n="app.relationType.option1.text" value="parent">es progenitor/a de</option>
+<option data-i18n="app.relationType.option2.text" value="child">es hijo/a de</option>
+<option data-i18n="app.relationType.option3.text" value="adoptive_parent">es progenitor/a adoptivo/a de</option>
+<option data-i18n="app.relationType.option4.text" value="adoptive_child">es adoptado/a en la familia por</option>
+<option data-i18n="app.relationType.option5.text" value="adopted_out_child">es hijo/a dado/a en adopción de</option>
+<option data-i18n="app.relationType.option6.text" value="sibling">es hermano/a de</option>
+<option data-i18n="app.relationType.option7.text" value="twin">es gemelo/a o trillizo/a de</option>
+<option data-i18n="app.relationType.option8.text" value="union">es pareja de</option>
+<option data-i18n="app.relationType.option9.text" value="ended_union">relación finalizada con</option>
+<option data-i18n="app.relationType.option10.text" value="consanguineous_union">es pareja consanguínea de</option>
+</select>
+</div>
+<div class="field hidden" id="consanguinityDegreeField">
+<label data-i18n="app.consanguinityDegreeField.label1.text" for="consanguinityDegree">Grado de consanguinidad (opcional)</label>
+<input id="consanguinityDegree" placeholder="p. ej. primos hermanos, primos terceros" type="text"/>
+<small data-i18n="app.consanguinityDegreeField.small1.text">Si el grado no queda evidente en el pedigree, las guías recomiendan indicarlo sobre la línea de relación.</small>
+</div>
+<div class="field hidden" id="reproductiveStatusField">
+<label data-i18n="app.reproductiveStatusField.label1.text" for="reproductiveStatus">Situación reproductiva</label>
+<select id="reproductiveStatus">
+<option data-i18n="app.reproductiveStatus.option1.text" value="none">Sin información especial</option>
+<option data-i18n="app.reproductiveStatus.option2.text" value="no_children">No descendencia por elección / motivo desconocido</option>
+<option data-i18n="app.reproductiveStatus.option3.text" value="infertility">Infertilidad</option>
+</select>
+<small class="field-help" data-i18n="app.reproductiveStatusField.small1.text">
                 Se representa con una barra horizontal para no descendencia y dos barras para infertilidad.
               </small>
-            </div>
-
-            <div id="reproductiveAttributionField" class="field hidden">
-              <label for="reproductiveAttribution">Atribución</label>
-              <select id="reproductiveAttribution">
-                <option value="union">Pareja / no especificado</option>
-              </select>
-            </div>
-
-            <div id="reproductiveReasonField" class="field hidden">
-              <label for="reproductiveReason">Motivo, si se conoce</label>
-              <input id="reproductiveReason" type="text"
-                     maxlength="120"
-                     placeholder="p. ej. vasectomía, azoospermia, endometriosis">
-            </div>
-
-          <div id="twinZygosityField" class="field hidden">
-              <label for="twinZygosity">Tipo de gestación múltiple</label>
-              <select id="twinZygosity">
-                <option value="monozygotic">Gemelos monocigóticos (MZ)</option>
-                <option value="dizygotic">Gemelos dicigóticos (DZ)</option>
-                <option value="unknown">Gemelos de cigosis desconocida</option>
-                <option value="trizygotic">Trillizos tricigóticos (TZ)</option>
-              </select>
-              <small class="field-help">
+</div>
+<div class="field hidden" id="reproductiveAttributionField">
+<label data-i18n="app.reproductiveAttributionField.label1.text" for="reproductiveAttribution">Atribución</label>
+<select id="reproductiveAttribution">
+<option data-i18n="app.reproductiveAttribution.option1.text" value="union">Pareja / no especificado</option>
+</select>
+</div>
+<div class="field hidden" id="reproductiveReasonField">
+<label data-i18n="app.reproductiveReasonField.label1.text" for="reproductiveReason">Motivo, si se conoce</label>
+<input data-i18n-placeholder="app.reproductiveReason.placeholder" id="reproductiveReason" maxlength="120" placeholder="p. ej. vasectomía, azoospermia, endometriosis" type="text"/>
+</div>
+<div class="field hidden" id="twinZygosityField">
+<label data-i18n="app.twinZygosityField.label1.text" for="twinZygosity">Tipo de gestación múltiple</label>
+<select id="twinZygosity">
+<option data-i18n="app.twinZygosity.option1.text" value="monozygotic">Gemelos monocigóticos (MZ)</option>
+<option data-i18n="app.twinZygosity.option2.text" value="dizygotic">Gemelos dicigóticos (DZ)</option>
+<option data-i18n="app.twinZygosity.option3.text" value="unknown">Gemelos de cigosis desconocida</option>
+<option data-i18n="app.twinZygosity.option4.text" value="trizygotic">Trillizos tricigóticos (TZ)</option>
+</select>
+<small class="field-help" data-i18n="app.twinZygosityField.small1.text">
                 MZ: línea de conexión; desconocida: “?”. Tricigóticos: tres ramas desde un único punto común.
               </small>
-            </div>
-
-            <div class="field">
-              <label>Persona(s) B</label>
-              <div id="relationBList" class="multi-person-list" role="group" aria-label="Personas B"></div>
-              <div class="multi-person-actions">
-                <button id="selectAllBBtn" type="button" class="mini-button">Todas</button>
-                <button id="clearAllBBtn" type="button" class="mini-button">Ninguna</button>
-              </div>
-              <small id="relationBHelp" class="field-help">
+</div>
+<div class="field">
+<label data-i18n="app.relationForm.div1.div8.label1.text">Persona(s) B</label>
+<div aria-label="Personas B" class="multi-person-list" id="relationBList" role="group"></div>
+<div class="multi-person-actions">
+<button class="mini-button" data-i18n="app.selectAllBBtn.text" id="selectAllBBtn" type="button">Todas</button>
+<button class="mini-button" data-i18n="app.clearAllBBtn.text" id="clearAllBBtn" type="button">Ninguna</button>
+</div>
+<small class="field-help" data-i18n="app.relationBHelp.text" id="relationBHelp">
                 Puedes seleccionar varias personas y crear todas las relaciones de una sola vez.
               </small>
-            </div>
-          </div>
-
-          <div class="relation-form-actions">
-            <button id="relationSubmitBtn" class="full" type="submit">Añadir relación</button>
-            <button id="cancelRelationEditBtn" type="button" class="mini-button hidden">Cancelar edición</button>
-          </div>
-          </form>
-        </div>
-      </details>
-        <details id="editorListsDisclosure" class="editor-disclosure separator wide-disclosure">
-        <summary class="editor-disclosure-summary">
-          <span>
-            <strong>Listados</strong>
-            <small id="editorListsCount">0 individuos · 0 relaciones</small>
-          </span>
-        </summary>
-
-        <div class="editor-disclosure-body editor-lists-body">
-          <section class="editor-list-section">
-            <h3>Individuos</h3>
-            <div class="table-wrap">
-              <table class="people-table">
-                <thead>
-                  <tr>
-                    <th>Pedigree</th>
-                    <th>Alias</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody id="peopleTableBody"></tbody>
-              </table>
-            </div>
-          </section>
-
-          <section class="editor-list-section">
-            <h3>Relaciones</h3>
-            <div id="relationsList" class="relations-list"></div>
-          </section>
-        </div>
-      </details>
-      </section>
-
-      <div
-        id="clinicalDrawerBackdrop"
-        class="clinical-drawer-backdrop"
-        aria-hidden="true"
-        hidden
-      ></div>
-
-      <section
-        id="personNotesCard"
-        class="notes-card clinical-drawer"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="clinicalDrawerTitle"
-        aria-hidden="true"
-      >
-        <div class="notes-header">
-          <div class="clinical-drawer-heading">
-            <h2 id="clinicalDrawerTitle">Información clínica y genética</h2>
-
-            <div
-              id="notesPersonTitle"
-              class="notes-person-title clinical-selected-indicator"
-              aria-live="polite"
-            >Pincha sobre un individuo del árbol.</div>
-
-            <div
-              class="clinical-navigation"
-              role="group"
-              aria-label="Navegación entre registros del pedigree"
-            >
-              <button
-                id="clinicalPrevBtn"
-                type="button"
-                class="clinical-nav-button"
-                aria-label="Registro anterior"
-                disabled
-              ><span aria-hidden="true">←</span><span id="clinicalPrevLabel">Anterior</span></button>
-
-              <span
-                id="clinicalNavPosition"
-                class="clinical-nav-position"
-                aria-live="polite"
-              ></span>
-
-              <button
-                id="clinicalNextBtn"
-                type="button"
-                class="clinical-nav-button"
-                aria-label="Registro siguiente"
-                disabled
-              ><span id="clinicalNextLabel">Siguiente</span><span aria-hidden="true">→</span></button>
-            </div>
 </div>
-
-          <button
-            id="clearPersonSelectionBtn"
-            type="button"
-            class="clinical-drawer-close"
-            title="Cerrar información clínica · Esc"
-            aria-label="Cerrar información clínica"
-            aria-keyshortcuts="Escape"
-            hidden
-          >×</button>
-        </div>
-
-        <div id="conditionAssignmentsCard" class="condition-assignments-panel">
-          <div class="assignment-header">
-            <div>
-              <h3>Estado respecto a cada condición</h3>
-              <p class="section-help">Cada individuo puede tener un estado, resultado molecular y evaluación documentada diferentes para cada condición.</p>
-            </div>
-          </div>
-          <div id="personConditionAssignmentsEmpty" class="conditions-empty">Define primero una condición del pedigree.</div>
-          <div id="personConditionAssignments" class="condition-assignments"></div>
-        </div>
-
-        <div class="field notes-free-text">
-          <label for="personNotes">Comentario libre</label>
-          <textarea id="personNotes" rows="6" placeholder="Selecciona un individuo para añadir información libre..." disabled></textarea>
-        </div>
-
-        <div class="notes-actions">
-          <button id="savePersonNotesBtn" type="button" class="primary" disabled>Guardar información clínica</button>
-          <span id="notesStatus" class="notes-status"></span>
-        </div>
-        <p class="clinical-guidance">La representación clínica se genera a partir del estado respecto a cada condición. El asterisco junto al individuo indica que al menos una condición tiene evaluación documentada / registros revisados; no se utiliza la antigua notación “E”.</p>
-      </section>
-    </section>
-  </section>
+</div>
+<div class="relation-form-actions">
+<button class="full" data-i18n="app.relationSubmitBtn.text" id="relationSubmitBtn" type="submit">Añadir relación</button>
+<button class="mini-button hidden" data-i18n="app.cancelRelationEditBtn.text" id="cancelRelationEditBtn" type="button">Cancelar edición</button>
+</div>
+</form>
+</div>
+</details>
+<details class="editor-disclosure separator wide-disclosure" id="editorListsDisclosure">
+<summary class="editor-disclosure-summary">
+<span>
+<strong data-i18n="app.editorListsDisclosure.summary1.span1.strong1.text">Listados</strong>
+<small data-i18n="app.editorListsCount.text" id="editorListsCount">0 individuos · 0 relaciones</small>
+</span>
+</summary>
+<div class="editor-disclosure-body editor-lists-body">
+<section class="editor-list-section">
+<h3 data-i18n="app.editorListsDisclosure.div1.section1.h31.text">Individuos</h3>
+<div class="table-wrap">
+<table class="people-table">
+<thead>
+<tr>
+<th data-i18n="app.editorListsDisclosure.div1.section1.div1.table1.thead1.tr1.th1.text">Pedigree</th>
+<th data-i18n="app.editorListsDisclosure.div1.section1.div1.table1.thead1.tr1.th2.text">Alias</th>
+<th></th>
+</tr>
+</thead>
+<tbody id="peopleTableBody"></tbody>
+</table>
+</div>
+</section>
+<section class="editor-list-section">
+<h3 data-i18n="app.editorListsDisclosure.div1.section2.h31.text">Relaciones</h3>
+<div class="relations-list" id="relationsList"></div>
+</section>
+</div>
+</details>
+</section>
+<div aria-hidden="true" class="clinical-drawer-backdrop" hidden="" id="clinicalDrawerBackdrop"></div>
+<section aria-hidden="true" aria-labelledby="clinicalDrawerTitle" aria-modal="true" class="notes-card clinical-drawer" id="personNotesCard" role="dialog">
+<div class="notes-header">
+<div class="clinical-drawer-heading">
+<h2 data-i18n="app.clinicalDrawerTitle.text" id="clinicalDrawerTitle">Información clínica y genética</h2>
+<div aria-live="polite" class="notes-person-title clinical-selected-indicator" id="notesPersonTitle">Pincha sobre un individuo del árbol.</div>
+<div aria-label="Navegación entre registros del pedigree" class="clinical-navigation" data-i18n-aria-label="app.personNotesCard.div1.div1.div2.aria_label" role="group">
+<button aria-label="Registro anterior" class="clinical-nav-button" disabled="" id="clinicalPrevBtn" type="button"><span aria-hidden="true">←</span><span data-i18n="app.clinicalPrevLabel.text" id="clinicalPrevLabel">Anterior</span></button>
+<span aria-live="polite" class="clinical-nav-position" id="clinicalNavPosition"></span>
+<button aria-label="Registro siguiente" class="clinical-nav-button" disabled="" id="clinicalNextBtn" type="button"><span data-i18n="app.clinicalNextLabel.text" id="clinicalNextLabel">Siguiente</span><span aria-hidden="true">→</span></button>
+</div>
+</div>
+<button aria-keyshortcuts="Escape" aria-label="Cerrar información clínica" class="clinical-drawer-close" data-i18n-aria-label="app.clearPersonSelectionBtn.aria_label" data-i18n-title="app.clearPersonSelectionBtn.title" hidden="" id="clearPersonSelectionBtn" title="Cerrar información clínica · Esc" type="button">×</button>
+</div>
+<div class="condition-assignments-panel" id="conditionAssignmentsCard">
+<div class="assignment-header">
+<div>
+<h3 data-i18n="app.conditionAssignmentsCard.div1.div1.h31.text">Estado respecto a cada condición</h3>
+<p class="section-help" data-i18n="app.conditionAssignmentsCard.div1.div1.p1.text">Cada individuo puede tener un estado, resultado molecular y evaluación documentada diferentes para cada condición.</p>
+</div>
+</div>
+<div class="conditions-empty" data-i18n="app.personConditionAssignmentsEmpty.text" id="personConditionAssignmentsEmpty">Define primero una condición del pedigree.</div>
+<div class="condition-assignments" id="personConditionAssignments"></div>
+</div>
+<div class="field notes-free-text">
+<label data-i18n="app.personNotesCard.div3.label1.text" for="personNotes">Comentario libre</label>
+<textarea data-i18n-placeholder="app.personNotes.placeholder" disabled="" id="personNotes" placeholder="Selecciona un individuo para añadir información libre..." rows="6"></textarea>
+</div>
+<div class="notes-actions">
+<button class="primary" data-i18n="app.savePersonNotesBtn.text" disabled="" id="savePersonNotesBtn" type="button">Guardar información clínica</button>
+<span class="notes-status" id="notesStatus"></span>
+</div>
+<p class="clinical-guidance" data-i18n="app.personNotesCard.p1.text">La representación clínica se genera a partir del estado respecto a cada condición. El asterisco junto al individuo indica que al menos una condición tiene evaluación documentada / registros revisados; no se utiliza la antigua notación “E”.</p>
+</section>
+</section>
+</section>
 </main>
-
-<script src="pedigree-qc.js?v=0864"></script>
-<script src="pedigree.js?v=1002"></script>
+<script src="locales/catalog.js?v=10058"></script>
+<script src="i18n.js?v=10058"></script><script src="pedigree-qc.js?v=10058"></script>
+<script src="pedigree.js?v=10058"></script>
 </body>
 </html>

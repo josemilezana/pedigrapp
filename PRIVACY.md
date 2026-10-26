@@ -1,26 +1,27 @@
-# Privacidad y protección de datos
+# Privacy and data protection
 
-PedigrAPP es una aplicación web de representación de genealogías clínicas. Según su utilización, puede procesar información **especialmente sensible**, incluidos datos de salud y genéticos de varias personas de una familia. Esta documentación es informativa y no equivale a una evaluación de impacto ni certifica por sí misma el cumplimiento normativo de un despliegue.
+PedigrAPP is a web application for representing clinical family pedigrees. Depending on its use, it may process **particularly sensitive information**, including health and genetic data concerning several members of a family. This document is informational; it is not a data protection impact assessment and does not, by itself, certify compliance for a particular deployment.
 
-## Datos y almacenamiento
+## Data and storage
 
-- En la edición con guardado en servidor, `api.php` escribe y lee archivos JSON dentro del directorio local `data/` del servidor de la instalación.
-- La aplicación permite importar/exportar JSON y PED y generar SVG, PNG y PDF; esas copias deben protegerse igual que los registros originales.
-- El código fuente publicado no debe incluir datos reales de pacientes. Los archivos de prueba incluidos en `examples/` se destinan al desarrollo y validación.
-- No existe una cuenta de usuario ni control de acceso propio de PedigrAPP en la versión v1.0.1. La seguridad depende de la configuración de la instalación.
+- When server-side saving is enabled, `api.php` reads and writes JSON files within the installation's local `data/` directory.
+- Users can import/export JSON and PED and create SVG, PNG, and PDF files. These copies require protection equivalent to the original records.
+- Published source code must not contain actual patient information. The fixtures in `examples/` are intended for development and validation.
+- **PedigrAPP v1.0.5 does not include built-in user accounts or access authorization.** Security depends on deployment configuration.
+- The selected interface language is stored in browser `localStorage` (`pedigrapp.language`); this does not change the saved family records.
 
-## Responsabilidad de cada instalación
+## Responsibilities of each deployment
 
-Antes de utilizar datos reales, la organización que instale PedigrAPP debe determinar las bases legales, medidas técnicas y organizativas, funciones y responsabilidades pertinentes, incluido, cuando proceda, el Reglamento (UE) 2016/679 (RGPD) y la normativa española aplicable.
+Before using real data, the deploying organization must determine its lawful basis, applicable technical and organizational safeguards, and the relevant roles and responsibilities, including, where applicable, Regulation (EU) 2016/679 (GDPR) and Spanish data protection legislation.
 
-Se recomienda, como mínimo, autenticar y autorizar el acceso; limitar permisos del directorio `data/`; impedir su exposición por HTTP; usar HTTPS cuando corresponda; realizar copias de seguridad protegidas; definir un periodo de conservación; y revisar los controles de acceso y el registro de operaciones según las necesidades clínicas.
+At a minimum, appropriate authentication and authorization, restricted `data/` permissions, protection against direct HTTP access, HTTPS where appropriate, secured backups, a retention policy, and access controls and operational logging proportionate to the clinical context should be considered.
 
-El archivo `data/.htaccess` solo protege frente a accesos HTTP directos cuando el servidor Apache aplica realmente esas reglas. **No sustituye autenticación ni control de autorización.** En otros servidores (por ejemplo, Nginx o servidores de desarrollo) habrá que aportar una protección equivalente.
+`data/.htaccess` blocks direct HTTP access only when Apache actually applies its directives. **It is not a substitute for authentication or authorization.** Equivalent safeguards are required for other web servers, such as Nginx or development servers.
 
-## Compartición y publicación
+## Sharing and publication
 
-Un pedigree puede permitir identificar indirectamente a personas o familias incluso si se eliminan los nombres. Antes de compartir capturas, ejemplos o archivos exportados, verifica que existe base legítima y que no se expone información sensible o identificable.
+A pedigree can indirectly identify individuals or families even after names have been removed. Before sharing screenshots, examples, or exported files, verify that doing so is lawful and does not disclose sensitive or identifiable information.
 
-La publicación abierta del **código fuente** bajo EUPL-1.2 no implica autorización para divulgar datos personales o historias familiares almacenadas por quienes utilicen el programa.
+Public release of the **source code** under EUPL-1.2 is not permission to disclose personal information or family records held by users of the software.
 
-Para comunicar vulnerabilidades, consulta [`SECURITY.md`](SECURITY.md).
+To report vulnerabilities, see [SECURITY.md](SECURITY.md).

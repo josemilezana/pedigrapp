@@ -1,0 +1,350 @@
+[
+  {
+    "file": "pedigree.js",
+    "line": 543,
+    "raw": "app-message error",
+    "text": "app-message error"
+  },
+  {
+    "file": "pedigree.js",
+    "line": 3515,
+    "raw": "dos fratrías enfrentadas",
+    "text": "dos fratrías enfrentadas"
+  },
+  {
+    "file": "pedigree.js",
+    "line": 24365,
+    "raw": "qc.heading.error",
+    "text": "qc.heading.error"
+  },
+  {
+    "file": "pedigree.js",
+    "line": 24636,
+    "raw": "status error",
+    "text": "status error"
+  },
+  {
+    "file": "pedigree.js",
+    "line": 31094,
+    "raw": ");\n\n    if (!printWindow) {\n      throw new Error(\n        t(",
+    "text": "); if (!printWindow) { throw new Error( t("
+  },
+  {
+    "file": "pedigree.js",
+    "line": 31515,
+    "raw": ",{error:err.message}),",
+    "text": ",{error:err.message}),"
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 89,
+    "raw": "El UID ${uid} corresponde a más de un registro.",
+    "text": "El UID ${uid} corresponde a más de un registro."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 112,
+    "raw": "${desc}: un mismo UID figura más de una vez.",
+    "text": "${desc}: un mismo UID figura más de una vez."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 129,
+    "raw": "Hay más de una unión entre ${label(ids[0])} y ${label(ids[1])}. Revisa si procede diferenciar la relación.",
+    "text": "Hay más de una unión entre ${label(ids[0])} y ${label(ids[1])}. Revisa si procede diferenciar la relación."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 133,
+    "raw": "Entre ${label(ids[0])} y ${label(ids[1])}, anota el grado de parentesco cuando no sea evidente en el árbol.",
+    "text": "Entre ${label(ids[0])} y ${label(ids[1])}, anota el grado de parentesco cuando no sea evidente en el árbol."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 154,
+    "raw": "${label(child)} figura como su propio progenitor.",
+    "text": "${label(child)} figura como su propio progenitor."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 184,
+    "raw": "Revisa la relación «${t || '(sin tipo)'}».",
+    "text": "Revisa la relación «${t || '(sin tipo)'}»."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 205,
+    "raw": "Se ha detectado un circuito de filiación: ${cycle.map(label).join(' → ')}.",
+    "text": "Se ha detectado un circuito de filiación: ${cycle.map(label).join(' → ')}."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 216,
+    "raw": "${label(child)} tiene ${parents.size} progenitores registrados como biológicos. Revisa si hay filiaciones sociales o donación de gametos que deban representarse de otra forma.",
+    "text": "${label(child)} tiene ${parents.size} progenitores registrados como biológicos. Revisa si hay filiaciones sociales o donación de gametos que deban representarse de otra forma."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 219,
+    "raw": "${label(child)} aparece en varias relaciones de filiación biológica con conjuntos diferentes de progenitores. Revisa la representación en el contexto de reproducción asistida.",
+    "text": "${label(child)} aparece en varias relaciones de filiación biológica con conjuntos diferentes de progenitores. Revisa la representación en el contexto de reproducción asistida."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 239,
+    "raw": "${label(ids[i])} y ${label(ids[j])} están vinculados como hermanos, pero no comparten los progenitores biológicos registrados. Puede ser correcto si se trata de hermanastros o adopción.",
+    "text": "${label(ids[i])} y ${label(ids[j])} están vinculados como hermanos, pero no comparten los progenitores biológicos registrados. Puede ser correcto si se trata de hermanastros o adopción."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 250,
+    "raw": "La pareja ${ids.map(label).join('–')} consta como «sin descendencia» y tiene descendencia vinculada.",
+    "text": "La pareja ${ids.map(label).join('–')} consta como «sin descendencia» y tiene descendencia vinculada."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 268,
+    "raw": "${label(uid)} necesita un registro de descendencia o embarazo al que vincularse.",
+    "text": "${label(uid)} necesita un registro de descendencia o embarazo al que vincularse."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 271,
+    "raw": "${label(uid)} no puede señalarse como resultado de su propia donación o gestación.",
+    "text": "${label(uid)} no puede señalarse como resultado de su propia donación o gestación."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 274,
+    "raw": "Una gestante G debe vincularse al embarazo o pérdida gestacional que lleva. Comprueba ${label(target)}.",
+    "text": "Una gestante G debe vincularse al embarazo o pérdida gestacional que lleva. Comprueba ${label(target)}."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 282,
+    "raw": "${label(uid)} figura como gestante G y como surrogate/donante. La convención de 2025 distingue la gestante sin aporte de óvulo (G) de quien aporta óvulo y gesta (D).",
+    "text": "${label(uid)} figura como gestante G y como surrogate/donante. La convención de 2025 distingue la gestante sin aporte de óvulo (G) de quien aporta óvulo y gesta (D)."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 286,
+    "raw": "${label(uid)} consta como donante y gestante, pero carece de embarazo vinculado.",
+    "text": "${label(uid)} consta como donante y gestante, pero carece de embarazo vinculado."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 291,
+    "raw": "${label(uid)}: conviene registrar los antecedentes familiares disponibles de donantes y gestantes; la ausencia de anotación no significa que no se hayan investigado.",
+    "text": "${label(uid)}: conviene registrar los antecedentes familiares disponibles de donantes y gestantes; la ausencia de anotación no significa que no se hayan investigado."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 297,
+    "raw": "${label(uid)} consta sin descendencia, pero aparece como progenitor/a de ${descendants.length} registro(s).",
+    "text": "${label(uid)} consta sin descendencia, pero aparece como progenitor/a de ${descendants.length} registro(s)."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 301,
+    "raw": "${label(uid)} figura con infertilidad y descendencia; puede ser correcto por reproducción asistida, historia previa o adopción. Comprueba la anotación.",
+    "text": "${label(uid)} figura con infertilidad y descendencia; puede ser correcto por reproducción asistida, historia previa o adopción. Comprueba la anotación."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 305,
+    "raw": "${label(uid)} consta como dado/a en adopción. Si se conoce la filiación biológica, puede incorporarse.",
+    "text": "${label(uid)} consta como dado/a en adopción. Si se conoce la filiación biológica, puede incorporarse."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 309,
+    "raw": "En ${label(uid)}, registra la edad o el año de fallecimiento cuando se conozca.",
+    "text": "En ${label(uid)}, registra la edad o el año de fallecimiento cuando se conozca."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 314,
+    "raw": "En ${label(uid)}, anota la edad o edad de inicio si está disponible y resulta relevante.",
+    "text": "En ${label(uid)}, anota la edad o edad de inicio si está disponible y resulta relevante."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 318,
+    "raw": "${label(uid)} requiere un número ≥ 2 o «n».",
+    "text": "${label(uid)} requiere un número ≥ 2 o «n»."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 326,
+    "raw": "${label(uid)} está marcado como probando, pero no consta como afectado. Comprueba si corresponde «consultante» o si falta registrar la afectación.",
+    "text": "${label(uid)} está marcado como probando, pero no consta como afectado. Comprueba si corresponde «consultante» o si falta registrar la afectación."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 339,
+    "raw": "El embarazo ${label(target)} está vinculado a ${carriers.length} gestantes/surrogates.",
+    "text": "El embarazo ${label(target)} está vinculado a ${carriers.length} gestantes/surrogates."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 352,
+    "raw": "${label(child.uid)} identifica como progenitor intencional a un registro que ya no existe.",
+    "text": "${label(child.uid)} identifica como progenitor intencional a un registro que ya no existe."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 368,
+    "raw": "${label(child.uid)} tiene doble donación y gestante G externa, pero se ha conservado una filiación biológica desde ${conflicting.map(label).join(' y ')}. Revisa si corresponde eliminar esa línea y mantener solo la anotación de progenitores intencionales.",
+    "text": "${label(child.uid)} tiene doble donación y gestante G externa, pero se ha conservado una filiación biológica desde ${conflicting.map(label).join(' y ')}. Revisa si corresponde eliminar esa línea y mantener solo la anotac"
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 377,
+    "raw": "${label(child)} figura con filiación adoptiva y con el indicador «dado en adopción». Puede ser correcto; comprueba la intención gráfica.",
+    "text": "${label(child)} figura con filiación adoptiva y con el indicador «dado en adopción». Puede ser correcto; comprueba la intención gráfica."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 385,
+    "raw": "El ID de condición «${id}» está repetido.",
+    "text": "El ID de condición «${id}» está repetido."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 387,
+    "raw": "La condición «${id || '?'}» necesita un nombre para interpretar su relleno en la leyenda.",
+    "text": "La condición «${id || '?'}» necesita un nombre para interpretar su relleno en la leyenda."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 390,
+    "raw": "La condición «${str(c.name)}» no tiene un patrón de herencia establecido. No siempre se conoce.",
+    "text": "La condición «${str(c.name)}» no tiene un patrón de herencia establecido. No siempre se conoce."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 397,
+    "raw": "${label(p.uid)} tiene un estado referido a «${id || '(sin ID)'}», que no existe entre las condiciones.",
+    "text": "${label(p.uid)} tiene un estado referido a «${id || '(sin ID)'}», que no existe entre las condiciones."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 398,
+    "raw": "${label(p.uid)} tiene varias asignaciones para la condición «${id}».",
+    "text": "${label(p.uid)} tiene varias asignaciones para la condición «${id}»."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 407,
+    "raw": "${label(p.uid)} tiene una variante consignada para «${cMap.get(id).name}», pero el estudio aparece como no realizado o no indicado.",
+    "text": "${label(p.uid)} tiene una variante consignada para «${cMap.get(id).name}», pero el estudio aparece como no realizado o no indicado."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 411,
+    "raw": "${label(p.uid)} tiene cigosis para «${cMap.get(id).name}» sin variante/genotipo asociado.",
+    "text": "${label(p.uid)} tiene cigosis para «${cMap.get(id).name}» sin variante/genotipo asociado."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 415,
+    "raw": "${label(p.uid)} tiene resultado positivo para «${cMap.get(id).name}» sin variante/genotipo consignado.",
+    "text": "${label(p.uid)} tiene resultado positivo para «${cMap.get(id).name}» sin variante/genotipo consignado."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 421,
+    "raw": "${label(p.uid)} tiene asterisco de evaluación documentada para «${cMap.get(id).name}», sin datos adicionales.",
+    "text": "${label(p.uid)} tiene asterisco de evaluación documentada para «${cMap.get(id).name}», sin datos adicionales."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 425,
+    "raw": "${label(p.uid)} figura como portador en «${cMap.get(id).name}»; revisa si resulta más apropiado asintomático/presintomático.",
+    "text": "${label(p.uid)} figura como portador en «${cMap.get(id).name}»; revisa si resulta más apropiado asintomático/presintomático."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 432,
+    "raw": "${label(p.uid)} figura afectado, pero ninguna de las condiciones asignadas consta como afectada.",
+    "text": "${label(p.uid)} figura afectado, pero ninguna de las condiciones asignadas consta como afectada."
+  },
+  {
+    "file": "pedigree-qc.js",
+    "line": 451,
+    "raw": "${label(a.uid)} y ${label(b.uid)} ocupan posiciones muy próximas en el diagrama. Comprueba su legibilidad.",
+    "text": "${label(a.uid)} y ${label(b.uid)} ocupan posiciones muy próximas en el diagrama. Comprueba su legibilidad."
+  },
+  {
+    "file": "help-data.js",
+    "line": 127,
+    "raw": "José Miguel Lezana Rosales",
+    "text": "José Miguel Lezana Rosales"
+  },
+  {
+    "file": "help-data.js",
+    "line": 129,
+    "raw": "Rubén Pérez de la Fuente",
+    "text": "Rubén Pérez de la Fuente"
+  },
+  {
+    "file": "help-data.js",
+    "line": 132,
+    "raw": "José Miguel Lezana Rosales",
+    "text": "José Miguel Lezana Rosales"
+  },
+  {
+    "file": "help-data.js",
+    "line": 134,
+    "raw": "Rubén Pérez de la Fuente",
+    "text": "Rubén Pérez de la Fuente"
+  },
+  {
+    "file": "help-data.js",
+    "line": 136,
+    "raw": "María Teresa Sánchez Calvín",
+    "text": "María Teresa Sánchez Calvín"
+  },
+  {
+    "file": "help-data.js",
+    "line": 137,
+    "raw": "Sonia Mayo de Andrés",
+    "text": "Sonia Mayo de Andrés"
+  },
+  {
+    "file": "help-data.js",
+    "line": 138,
+    "raw": "Ana Arteche López",
+    "text": "Ana Arteche López"
+  },
+  {
+    "file": "help-data.js",
+    "line": 139,
+    "raw": "Víctor Benito García",
+    "text": "Víctor Benito García"
+  },
+  {
+    "file": "help-data.js",
+    "line": 141,
+    "raw": "Raquel Castro del Álamo",
+    "text": "Raquel Castro del Álamo"
+  },
+  {
+    "file": "help-data.js",
+    "line": 142,
+    "raw": "Miguel Ángel Martín Casanueva",
+    "text": "Miguel Ángel Martín Casanueva"
+  },
+  {
+    "file": "help-data.js",
+    "line": 144,
+    "raw": "Fundación Investigación Biomédica Hospital 12 de Octubre",
+    "text": "Fundación Investigación Biomédica Hospital 12 de Octubre"
+  },
+  {
+    "file": "help.js",
+    "line": 206,
+    "raw": "/);\n    if(!match)throw new Error(",
+    "text": "/); if(!match)throw new Error("
+  }
+]

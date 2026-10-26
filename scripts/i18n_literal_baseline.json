@@ -1,0 +1,2107 @@
+[
+  {
+    "file": "help-data.js",
+    "literal": "Aborto espontáneo (SAB)",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Abrir el menú de un individuo",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Actualización exclusivamente documental y de metadatos de publicación: DOI Zenodo y metadatos de citación. No cambia el funcionamiento, el QC, el layout, las exportaciones ni el esquema JSON 4.16.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Actualización exclusivamente legal, documental y de metadatos: EUPL-1.2, autoría registrada, equipo clínico/científico y registro Safe Creative. No cambia el funcionamiento, el QC, el layout, las exportaciones ni el esquema JSON 4.16.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Actualización y evaluación de las recomendaciones de 1995.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Adoptado/a en la familia",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Al añadir progenitores a un individuo de Generación I se inserta una nueva Generación I y todo el pedigree previo baja una generación de forma global.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Al desplazarse por la página aparece una barra compacta con Deshacer, Rehacer, Guardar y Volver al árbol; desaparece al regresar a la zona de acciones principal.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Al pulsar una línea de pareja, el menú permite configurar también No descendencia por elección/motivo desconocido o Infertilidad. Se pueden indicar atribución y motivo opcional, usando exactamente los mismos datos y validaciones que Relaciones avanzadas. Deshacer/Rehacer y guardado habituales.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Algunas decisiones de representación y de layout son convenciones de la aplicación para mantener el árbol legible; se identifican expresamente como «Convención PedigrAPP».",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Ana Arteche López",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Arrastre horizontal de individuos con ratón: conserva el clic de la ficha, recalcula conexiones y separaciones de la fila durante el gesto, persiste los desplazamientos en JSON 4.14 y admite Deshacer/Rehacer. El botón ↺ restablece solo los ajustes horizontales. La generación y el orden genealógico no se cambian mediante el arrastre.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Añadir individuo, Relaciones avanzadas y Listados funcionan como un acordeón; se incorporan Ctrl/Cmd+S, F, +/− y Esc como atajos globales, manteniendo Ctrl/Cmd+Z/Y para deshacer/rehacer.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Añadir individuo, Relaciones avanzadas y Listados se sitúan al mismo nivel en escritorio; los desplegables se redistribuyen para su nuevo ancho.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Añadir individuos",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Bennett / corrección 2025",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Bennett 2008 + corrección 2025",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Botón Validar pedigree: QC independiente de la revisión profesional, con errores, advertencias e informaciones vinculadas a individuos y referencias Bennett/NSGC; la validación no modifica ni guarda los datos.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Con tres o más condiciones PedigrAPP reserva sectores radiales en orden estable, desde las 12 en sentido horario. Un sector puede quedar vacío si la persona no presenta esa condición.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Con una o dos condiciones PedigrAPP utiliza divisiones simples del símbolo. Cada condición se identifica en la leyenda por su color/patrón.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Condiciones, afectación y portadores",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Convención PedigrAPP",
+    "occurrences": 2
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Convención de layout PedigrAPP",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Corrección 2025",
+    "occurrences": 2
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Corrección de conceptos y figuras de 2022, especialmente gestational carrier/surrogate y embarazo ectópico.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Cuadrado. En la revisión de 2022/2025 la forma representa la identidad de género. El sexo asignado al nacimiento se registra por separado.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Cuando es posible y no crea cruces adicionales, se favorece la disposición hombre a la izquierda y mujer a la derecha en una pareja.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Cuando una recomendación de 2025 corrige o matiza la publicación de 2022, PedigrAPP aplica el criterio corregido de 2025.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Círculo. El sexo asignado al nacimiento se documenta de forma independiente cuando es relevante.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Dado/a en adopción",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Desde la tarjeta contextual pulse «Introducir información clínica y genética». Allí se registran estados por condición, resultados moleculares, variantes, cigosis y comentarios.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Doble línea entre los miembros de la pareja. Si el grado no resulta obvio, puede indicarse textualmente.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "El botón destacado «Introducir información clínica y genética» selecciona al individuo y lleva a la sección clínica.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "El formulario de Añadir individuo vuelve a distribuir sus campos principales en dos filas y el botón de añadir queda centrado.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "El individuo aparece entre corchetes y conserva la filiación biológica continua con su familia de origen.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "El individuo aparece entre corchetes. La filiación adoptiva se dibuja discontinua; la biológica, si se representa, permanece continua.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "El menú «⋯» contiene opciones menos frecuentes, como posición manual y relaciones con personas ya existentes.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "El mismo botón permite marcar o cancelar la revisión general; el selector de casos muestra Revisado/No revisado y los atajos de creación se compactan para mantenerse en una única línea.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "El modo ⇄ permite reordenar libremente a cualquier individuo dentro de su generación, incluso entre fratrías y donantes. Parejas/gemelos se desplazan como bloques, sin alterar datos de nacimiento ni relaciones; orden persistente, Deshacer/Rehacer y ↺.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "El número se escribe dentro del símbolo. Los individuos afectados que deban distinguirse no deben agruparse.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "El panel clínico muestra de forma permanente el registro seleccionado e incorpora navegación Anterior/Siguiente según el orden visual del pedigree.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "El piloto luminoso único de QC cambia automáticamente de color al editar: rojo para errores, ámbar para avisos, azul para información, verde sin incidencias y gris para pedigree vacío o pendiente de comprobar. Una pequeña marca violeta indica incidencias gráficas. Pulse el piloto o el resumen de QC para consultar los detalles; el panel permanece cerrado por defecto. El QC no modifica el árbol ni equivale a revisión clínica.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "El relleno identifica afectación clínica. Cuando existen condiciones definidas, el estado se representa por condición y se explica en la leyenda.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "El tooltip se reorganiza como ficha operativa con bloques separados de Estado, Información clínica, Añadir familiar, Resumen clínico, Más opciones y Editar/Eliminar.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "El visor permite zoom, desplazamiento, ajuste al ancho, encuadre completo y búsqueda de individuos. Al cargar un caso, el pedigree se ajusta automáticamente al ancho. Para ajustar una posición, mantén pulsado el ratón sobre un individuo y arrástralo horizontalmente: las conexiones se actualizan y los vecinos de su fila dejan espacio sin intercambiar su orden. El clic breve sigue abriendo la ficha. Los ajustes se guardan con la familia y se pueden deshacer; el botón ↺ restablece posiciones y ordenación gráfica. El botón ⇄ activa el modo «Reordenar horizontalmente»: arrastra cualquier individuo a otra posición dentro de su misma generación, aunque atraviese fratrías o donantes. Las parejas y gemelos se trasladan como unidades, sin cambiar filiaciones ni orden de nacimiento registrado; vuelve a pulsarlo para recuperar el arrastre normal. El QC puede avisar si se modifica el orden de nacimiento representado.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Embarazo ectópico (ECT)",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "En la ficha de una persona, «Añadir familiar» incluye los accesos directos de situación reproductiva individual: una barra para No descendencia por elección/motivo desconocido y dos para Infertilidad. Se aplican a la persona seleccionada (no a su pareja), muestran estado activo y permiten desmarcarlo. El motivo continúa editándose en Opciones avanzadas. Se excluyen donantes, gestantes, fetos, mortinatos, SAB/TOP/ECT y grupos de múltiples individuos; no se permite No descendencia si ya hay descendientes registrados. Sin cambios en JSON 4.16.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "En sentido estricto aporta el óvulo y lleva la gestación. PedigrAPP la representa como donante «D» con la gestación resultante directamente conectada; no utiliza una «S» específica.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "En un embarazo o descendiente, abre Opciones avanzadas y selecciona los progenitores intencionales. PedigrAPP escribirá sus números genealógicos bajo el símbolo y actualizará el texto si cambia la numeración; no dibuja línea genética desde ellos. Es una anotación propia para aclarar la filiación intencional, distinta de las líneas de donación D y gestación G de Bennett 2025.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Evaluación documentada",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Feto / embarazo",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Filiación biológica",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Flecha acompañada de «P». PedigrAPP mantiene un único probando activo en el pedigree.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Flecha hacia el individuo que solicita o recibe el asesoramiento o estudio genético. PedigrAPP permite más de un consultante.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Fratría",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Fundación Investigación Biomédica Hospital 12 de Octubre",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Gestación y pérdidas gestacionales",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Guardar y exportar",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Guía de uso y referencia de los símbolos, relaciones y convenciones implementadas en PedigrAPP. La aplicación se apoya en la nomenclatura estandarizada de pedigree de la National Society of Genetic Counselors (NSGC), con las revisiones y correcciones indicadas en la bibliografía.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Género diverso / no especificado",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Hombre / niño",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Información clínica y genética",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Información clínica y genética disponible para todos los registros del pedigree; SAB, TOP y ECT incorporan además estados por condición y representación clínica.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Información clínica y genética pasa a un panel lateral superpuesto desde la derecha; el pedigree permanece visible y la página no cambia de posición al abrirlo o cerrarlo.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Interfaz a ancho completo: desaparece la barra lateral permanente; el formulario de alta pasa debajo de la leyenda y encima de Condiciones del pedigree.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Interrupción del embarazo (TOP)",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "José Miguel Lezana Rosales",
+    "occurrences": 2
+  },
+  {
+    "file": "help-data.js",
+    "literal": "La aplicación puede marcar que el estado respecto a una condición dispone de evaluación documentada. Es una anotación clínica de la aplicación.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "La cabecera del informe PDF incorpora el logotipo propio de PedigrAPP, incrustado en el documento para que aparezca en la impresión. Al exportar PDF se conserva el icono del botón, sin que aparezca texto permanente. Sin cambios en el esquema JSON 4.16.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "La interrupción «//» indica que la relación ya no existe. PedigrAPP no distingue gráficamente separación y divorcio.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "La letra «D» identifica a una persona donante de gametos cuando corresponde. PedigrAPP diferencia donación de esperma y de óvulos según la relación con el resultado.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "La letra «G» identifica a quien lleva una gestación procedente de un embrión preimplantacional sin aportar material genético al embrión.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "La sección «Información clínica y genética» está disponible para individuos, fetos, mortinatos, SAB, TOP, ECT, donantes y gestantes. Se abre como un panel lateral superpuesto desde la derecha, manteniendo visible el pedigree y sin desplazar la página. La cabecera muestra permanentemente el registro seleccionado y permite avanzar al registro anterior o siguiente siguiendo el orden visual del árbol (generación y posición izquierda→derecha). El tooltip del pedigree se organiza como una ficha operativa: identidad y edición rápida, estado, acceso clínico, atajos para añadir familiares, resumen clínico, opciones avanzadas y, al final, Editar/Eliminar. Cuando la zona superior de acciones deja de estar visible al hacer scroll, aparece una barra compacta fija con Deshacer, Rehacer, Guardar y un acceso para volver al árbol. En la zona de gestión, Añadir individuo, Relaciones avanzadas y Listados se comportan como un acordeón: abrir una cierra las otras. Atajos de teclado: Ctrl/Cmd+S guarda; Ctrl/Cmd+Z deshace; Ctrl/Cmd+Y o Ctrl/Cmd+Shift+Z rehace; F enfoca el buscador; +/− cambia el zoom; Esc cierra primero el panel clínico o el tooltip y, después, el modo foco. Las confirmaciones de acciones correctas se muestran como avisos temporales en la esquina inferior derecha, mientras que los errores permanecen visibles en la zona de mensajes. El botón de revisión alterna el estado general del caso: permite marcar el pedigree como revisado o cancelar posteriormente esa revisión. El estado queda guardado con el pedigree y, al volver a abrir un caso revisado, PedigrAPP muestra un aviso y un indicador persistente junto al ID de familia. El desplegable de casos guardados muestra además, para cada caso, si está Revisado o No revisado, y ofrece filtros rápidos «Todos», «Revisados» y «No revisados». Los registros de varios individuos permiten comentario clínico, pero no un estado único por condición al representar un grupo.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Las acciones principales salen de la cabecera y pasan a una tarjeta situada a la derecha de los atajos rápidos; la tarjeta de altas rápidas elimina su título visible.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Las confirmaciones normales pasan a mostrarse como toasts y se añade un modo de revisión clínica secuencial con progreso y marcas temporales de registros revisados.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Las generaciones se numeran con números romanos (I, II, III…). Los individuos se numeran dentro de cada generación cuando está activa la opción de numeración.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Las incidencias del QC identifican a cada registro por número genealógico (I-1, II-3…) y nombre, en lugar de UID internos, incluso si la numeración del dibujo está oculta. El botón de revisión es ámbar cuando no está revisado y verde cuando sí lo está. Se evita el recorte superior de los iconos al pasar el ratón, conservando la animación.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Las líneas parten de un punto común. La línea horizontal entre ambos indica monocigosis; sin ella se representan como dicigóticos o zigosidad no especificada según el caso.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Las parejas múltiples se tratan como bloques para reducir cruces, procurando conservar fratrías y familias de origen como bloques coherentes.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Las tres tarjetas de gestión parten plegadas, se corrige la alineación checkbox/símbolo, las altas rápidas centran el árbol, la revisión pasa a ser general y persistente, y los iconos de acciones se mantienen en una sola línea.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Las uniones múltiples se organizan procurando conservar como bloques las fratrías y las familias de origen.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Los ajustes manuales de generación o posición deben utilizarse como excepción cuando el layout automático no puede expresar adecuadamente un pedigree complejo.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Los atajos de creación aparecen en una tarjeta sin título sobre el visor, incluido Padre + madre + feto (P, sexo desconocido): puede utilizarse como trío de estudio prenatal sin asignar por defecto una indicación clínica ni un resultado fetal. A su derecha se sitúa una segunda tarjeta con las acciones principales de la aplicación: nueva familia, reset, deshacer/rehacer, guardar, importar/exportar, PDF y ayuda. Más abajo, «Añadir individuo», «Relaciones avanzadas» y «Listados» comparten una misma fila en escritorio; el formulario de individuo distribuye sus campos principales en dos filas para mejorar la lectura.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Los campos rápidos permiten modificar nombre/alias, información breve y datos auxiliares según el tipo de registro.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Los cruces inevitables pueden representarse con un pequeño puente visual para indicar que las líneas se cruzan sin relación.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Los hermanos comparten una línea horizontal. La aplicación intenta mantener el orden de nacimiento de izquierda a derecha.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Los hermanos se intentan ordenar de izquierda a derecha por orden de nacimiento/gestación.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Los iconos inferiores permiten editar, cambiar género/sexo, marcar fallecido, probando, consultante y afectación simple, además de otras acciones contextuales.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Línea de descendencia continua desde la pareja o progenitor hacia la fratría o el individuo.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Línea horizontal entre dos individuos cuando pertenecen a la misma generación.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Marca bajo el individuo o la unión cuando no hay descendencia por elección o por motivo desconocido. Puede añadirse el motivo.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Marca de no descendencia acompañada de una segunda barra; PedigrAPP permite registrar la razón cuando se conoce.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Marcar o cancelar la revisión guarda automáticamente el caso; las altas rápidas desplazan la página al pedigree y lo centran; Casos guardados incorpora filtros rápidos Todos/Revisados/No revisados.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "María Teresa Sánchez Calvín",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Menú de relación con estado finalizado y consanguinidad combinables.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Miguel Ángel Martín Casanueva",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Modo ⇄ original para reordenar hermanos dentro de su fratría (ampliado en 0.8.73).",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Moverse por el árbol",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Mujer / niña",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Múltiples uniones",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Nueva plantilla rápida Padre, madre y feto (P de sexo desconocido), junto a las plantillas de hijos e hijas. Es también un caso prenatal básico; no se añade otro botón con la misma estructura ni se presupone indicación clínica, afectación o edad gestacional. La ficha permite añadir un feto de la pareja como descendencia; con varias uniones aparece un selector explícito de pareja, evitando atribuir el embarazo al progenitor equivocado. No cambia el esquema JSON ni los símbolos Bennett.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Nuevo atajo Mortinato (SB) en Añadir familiar: crea descendencia con sexo desconocido por defecto, símbolo de mortinato y filiación automática con la pareja cuando es inequívoca; con varias uniones solo asigna al progenitor seleccionado. Conserva Deshacer/Rehacer, edición de sexo y esquema JSON 4.16.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Nuevos atajos en «Añadir familiar» desde la ficha: feto P de sexo desconocido por defecto, donante de esperma D y donante de óvulos D, vinculados directamente al resultado elegido. El feto y el mortinato incorporan cambio rápido de sexo (desconocido/masculino/femenino). En el formulario nuevo, la donante de óvulos comienza con género mujer y sexo asignado al nacimiento femenino, ambos editables. No se añade pareja ficticia con los donantes.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Pareja / relación",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Pareja entre generaciones diferentes",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "PedigrAPP / Bennett permite partición",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "PedigrAPP conserva ambas generaciones y une a la pareja mediante una diagonal directa, evitando desplazar el resto del árbol.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "PedigrAPP representa el estado de portador mediante patrón/textura por condición y no mediante el antiguo punto central, desaconsejado como marca universal de portador en la revisión de 2022.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "PedigrAPP usa un símbolo específico con «P» y permite indicar sexo fetal y edad gestacional.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Piloto de QC de una única luz que cambia entre gris, rojo, ámbar, azul y verde según el resultado automático en directo. La columna de ID de familia gana anchura y las insignias de guardado/revisión/QC se distribuyen en líneas sin solaparse; indicación y comentarios empiezan más a la derecha. El panel de incidencias continúa cerrado por defecto.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Primera versión pública independiente de identidad institucional: cabecera de aplicación simplificada, PDF sin membretes ni logos corporativos y documentación preparada para distribución pública. Sin cambios en el formato JSON, el layout ni las reglas clínicas.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Pulsa directamente la línea de unión; debajo de Relación finalizada y Relación consanguínea aparece Situación reproductiva. Elige No descendencia por elección/motivo desconocido o Infertilidad, atribúyelo a la pareja o a uno de sus integrantes, indica un motivo si procede y pulsa Guardar situación reproductiva. El marcador de una o dos barras se representa automáticamente. Esta información es la misma que en Relaciones avanzadas.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Pulse sobre el símbolo del individuo. La tarjeta contextual permite editar datos básicos y aplicar atajos como fallecido, probando, consultante o afectación simple.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Pulse una persona para abrir su tarjeta contextual. El tooltip no se abre por simple paso del ratón.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "QC en directo, recalculado automáticamente al editar personas, relaciones, condiciones y datos de familia; semáforo de cuatro luces (rojo errores, ámbar avisos, azul información, verde sin incidencias) y señal púrpura para incidencias gráficas. El panel de detalles solo se abre cuando se pulsa el semáforo o su resumen. La revisión profesional sigue independiente.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Raquel Castro del Álamo",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Relación finalizada",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Representación de surrogate y gestational carrier ajustada a la corrección de 2025.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Representación reproductiva: donantes de esperma, óvulos y gestantes externas se insertan junto a la pareja receptora cuando esta puede determinarse, abriendo espacio entre hermanos en vez de relegarlos al extremo de la fratría. Doble donación + G se trata como bloque contiguo y el embarazo sigue bajo quien lo gesta. Si no hay progenitores receptores identificables se conserva la distribución anterior. Sin nuevos vínculos biológicos ni cambios en el JSON.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Reproducción asistida y gestación",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Revisión focal sobre sexo, género, inclusividad y representación del estado de portador.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Rombo. Se utiliza cuando el género no se conoce, no es relevante o no se representa como hombre/mujer. PedigrAPP permite además registrar AMAB, AFAB o UAAB.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Rubén Pérez de la Fuente",
+    "occurrences": 2
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Se centran los estados rápidos de Añadir individuo y se añaden atajos para Hombre/Mujer consultante y para pareja con un hijo o una hija.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Se elimina el desplegable para elegir pareja al añadir un feto desde un individuo con varias uniones. El atajo Feto permanece disponible, inicialmente vinculado solo a la persona seleccionada; cualquier segunda filiación se define después si corresponde. Sin cambios en la plantilla prenatal ni en el esquema de datos.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Se utiliza «n» dentro del símbolo cuando el número no se conoce o no se especifica.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Semántica de adopción: adoptado en la familia / dado en adopción.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Si se añaden progenitores a un individuo que ya está en la Generación I, PedigrAPP inserta una nueva Generación I para esos progenitores y desplaza una generación hacia abajo todo el pedigree existente, conservando la estructura relativa del árbol.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Signo «?» asociado al individuo. Indica que no se dispone de información suficiente sobre su historia familiar.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Situación reproductiva de una pareja",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Sonia Mayo de Andrés",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Surrogate: donante de óvulos y gestante",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Símbolo de individuo fallecido asociado a una gestación; puede anotarse la edad gestacional.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Símbolos de individuos",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "T25: en uniones múltiples, el eje de descendencia de la pareja enrutada se elige según la posición de sus propios hijos y dentro de un corredor libre. Evita que la tercera unión comparta el eje con la segunda y confunda las fratrías. Sin cambios en la estructura familiar, numeración, QC o exportaciones. Dos ejemplos T25a/T25b disponibles para pruebas.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Tooltip abierto por clic y acceso explícito a Información clínica y genética.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Tres o más condiciones",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Tres o más ramas parten de un mismo punto. PedigrAPP contempla representación tricigótica y zigosidad cuando se conoce.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Trillizos / múltiples",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Triángulo con la marca correspondiente a ECT. La corrección de 2025 restituye la barra oblicua omitida por error en la figura de 2022.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Triángulo para interrupción del embarazo, con etiqueta TOP.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Triángulo para una gestación no llevada a término, con etiqueta SAB.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Una línea diagonal atraviesa el símbolo. Se evita la cruz para no confundirla con otras anotaciones.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Una o dos condiciones",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Usabilidad: aplicación al 90% de ancho, Condiciones bajo los datos de familia, atajos centrados en tarjeta propia sobre el visor y formulario de individuo en una sola línea.",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Use los atajos del tooltip para relaciones habituales, entre ellos Añadir feto y Añadir mortinato (SB) como descendencia, ambos con sexo desconocido por defecto. Si un individuo tiene varias parejas, ninguno de los dos atajos presupone cuál es la otra filiación: solo registra como progenitor al individuo seleccionado y permite indicar otro posteriormente mediante «Relaciones avanzadas». Para adopción, filiaciones específicas, gemelos y situaciones menos frecuentes también puede usar «Relaciones avanzadas».",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Varios individuos, número conocido",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Varios individuos, número desconocido",
+    "occurrences": 1
+  },
+  {
+    "file": "help-data.js",
+    "literal": "Víctor Benito García",
+    "occurrences": 1
+  },
+  {
+    "file": "help.js",
+    "literal": "/);\n    if(!match)throw new Error(",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${desc}: un mismo UID figura más de una vez.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(a.uid)} y ${label(b.uid)} ocupan posiciones muy próximas en el diagrama. Comprueba su legibilidad.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(child)} aparece en varias relaciones de filiación biológica con conjuntos diferentes de progenitores. Revisa la representación en el contexto de reproducción asistida.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(child)} figura como su propio progenitor.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(child)} figura con filiación adoptiva y con el indicador «dado en adopción». Puede ser correcto; comprueba la intención gráfica.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(child)} tiene ${parents.size} progenitores registrados como biológicos. Revisa si hay filiaciones sociales o donación de gametos que deban representarse de otra forma.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(child.uid)} identifica como progenitor intencional a un registro que ya no existe.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(child.uid)} tiene doble donación y gestante G externa, pero se ha conservado una filiación biológica desde ${conflicting.map(label).join(' y ')}. Revisa si corresponde eliminar esa línea y mantener solo la anotación de progenitores intencionales.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(ids[i])} y ${label(ids[j])} están vinculados como hermanos, pero no comparten los progenitores biológicos registrados. Puede ser correcto si se trata de hermanastros o adopción.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(p.uid)} figura afectado, pero ninguna de las condiciones asignadas consta como afectada.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(p.uid)} figura como portador en «${cMap.get(id).name}»; revisa si resulta más apropiado asintomático/presintomático.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(p.uid)} tiene asterisco de evaluación documentada para «${cMap.get(id).name}», sin datos adicionales.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(p.uid)} tiene cigosis para «${cMap.get(id).name}» sin variante/genotipo asociado.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(p.uid)} tiene resultado positivo para «${cMap.get(id).name}» sin variante/genotipo consignado.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(p.uid)} tiene un estado referido a «${id || '(sin ID)'}», que no existe entre las condiciones.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(p.uid)} tiene una variante consignada para «${cMap.get(id).name}», pero el estudio aparece como no realizado o no indicado.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(p.uid)} tiene varias asignaciones para la condición «${id}».",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(uid)} consta como dado/a en adopción. Si se conoce la filiación biológica, puede incorporarse.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(uid)} consta como donante y gestante, pero carece de embarazo vinculado.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(uid)} consta sin descendencia, pero aparece como progenitor/a de ${descendants.length} registro(s).",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(uid)} está marcado como probando, pero no consta como afectado. Comprueba si corresponde «consultante» o si falta registrar la afectación.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(uid)} figura como gestante G y como surrogate/donante. La convención de 2025 distingue la gestante sin aporte de óvulo (G) de quien aporta óvulo y gesta (D).",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(uid)} figura con infertilidad y descendencia; puede ser correcto por reproducción asistida, historia previa o adopción. Comprueba la anotación.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(uid)} necesita un registro de descendencia o embarazo al que vincularse.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(uid)} no puede señalarse como resultado de su propia donación o gestación.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(uid)} requiere un número ≥ 2 o «n».",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "${label(uid)}: conviene registrar los antecedentes familiares disponibles de donantes y gestantes; la ausencia de anotación no significa que no se hayan investigado.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Adopción sin ascendencia biológica registrada",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Afectación general y condiciones discrepantes",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Afectados agrupados en un símbolo múltiple",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Atribución reproductiva incorrecta",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Añade individuos antes de efectuar un control de calidad.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Bennett et al., 2022, figura 2; corrección de 2025, figura 2",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Bennett et al., 2022, figura 3; corrección de 2025, figura 3",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Cada registro necesita un UID interno no vacío.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Ciclo en la ascendencia biológica",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Coherencia clínica/genética",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Condición clínica sin nombre",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Condición repetida en un individuo",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Condición sin identificador",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Corrección de 2025, figura 4",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Corrección de 2025, figura 5",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Corrección de 2025, figuras 1 y 2",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Descendiente no situado debajo del progenitor",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Doble anotación de adopción",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Documentación",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "El ID de condición «${id}» está repetido.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "El UID ${uid} corresponde a más de un registro.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "El embarazo ${label(target)} está vinculado a ${carriers.length} gestantes/surrogates.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "En ${label(uid)}, anota la edad o edad de inicio si está disponible y resulta relevante.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "En ${label(uid)}, registra la edad o el año de fallecimiento cuando se conozca.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "En un pedigree clínico documenta el motivo de estudio, si procede.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Entre ${label(ids[0])} y ${label(ids[1])}, anota el grado de parentesco cuando no sea evidente en el árbol.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Esta fratría o gestación múltiple aparece duplicada.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Esta relación de filiación está registrada más de una vez.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Estado clínico sin condición definida",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Evaluación documentada sin detalles",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Filiaciones biológicas separadas",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Filiación",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Filiación consigo mismo",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Filiación desigual entre miembros de gestación múltiple",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Filiación duplicada",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Filiación incompleta",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Filiación intencional dibujada como biológica",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Fratría",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Gestación múltiple",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Hay más de una unión entre ${label(ids[0])} y ${label(ids[1])}. Revisa si procede diferenciar la relación.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Hermanos sin ascendencia biológica compartida",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "ID de condición duplicado",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Indicación clínica no indicada",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "La condición «${id || '?'}» necesita un nombre para interpretar su relleno en la leyenda.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "La condición «${str(c.name)}» no tiene un patrón de herencia establecido. No siempre se conoce.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "La donante de óvulos que además gesta debería vincularse a la gestación representada, con la convención D de 2025.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "La pareja ${ids.map(label).join('–')} consta como «sin descendencia» y tiene descendencia vinculada.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "La situación reproductiva de la unión se atribuye a alguien ajeno a la pareja.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Los miembros de esta gestación múltiple tienen filiaciones biológicas diferentes o incompletas. Confirma que es deliberado.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Miembro repetido en una relación",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Más de dos progenitores en filiaciones biológicas",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Más de una gestante para el mismo embarazo",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Número de individuos agrupados no válido",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Número incorrecto en gestación múltiple",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Pareja sin descendencia con hijos registrados",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Patrón de herencia no especificado",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Pedigree vacío",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Posible superposición de símbolos",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Probando sin afectación documentada",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Progenitor intencional inexistente",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Relación con menos de dos miembros",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Relación repetida",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Representa los individuos afectados por separado para conservar la información clínica.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Representación gráfica",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Resultado positivo sin descripción molecular",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Revisa la relación «${t || '(sin tipo)'}».",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Se ha detectado un circuito de filiación: ${cycle.map(label).join(' → ')}.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Sin descendencia y con filiación registrada",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Sin probando ni consultante señalado",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Surrogate sin embarazo vinculado",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Texto en conflicto con otro símbolo",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Tipo de relación desconocido",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Una condición necesita un ID interno.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Una etiqueta puede invadir un símbolo ajeno. Comprueba la representación.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Una fratría o gestación múltiple necesita al menos dos individuos.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Una gestante G debe vincularse al embarazo o pérdida gestacional que lleva. Comprueba ${label(target)}.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Una línea de pareja debe unir exactamente a dos individuos distintos.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Una relación de filiación necesita al menos un progenitor y un descendiente.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Unión duplicada",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree-qc.js",
+    "literal": "Unión incompleta o consigo mismo",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "${p.age} ${\n        Number(p.age) === 1\n          ? \"año\"\n          : \"años\"\n      }",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "${p.age} ${\n        age === 1\n          ? \"año\"\n          : \"años\"\n      }",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "${person.uid}: filiación no representable completamente en PED",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "${person.uid}: progenitor(es) sin sexo asignable a PID/MID",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": ");\n\n    if (!printWindow) {\n      throw new Error(\n        t(",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": ",{error:err.message}),",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Aborto espontáneo (SAB)",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Abrir Información clínica y genética",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Adoptado/a en la familia",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Asintomático / presintomático",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Atribución",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Autosómica dominante",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Autosómica recesiva",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añade individuos para comenzar.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir ${donorLabel}",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir ${eventLabel}",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir ECT",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir ECT de esta pareja",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir SAB",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir SAB de esta pareja",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir TOP",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir TOP de esta pareja",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir donante de esperma para este individuo/embarazo",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir donante de óvulos para este individuo/embarazo",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir familiar",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir feto",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir feto (sexo desconocido por defecto)",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir feto como descendiente (otra filiación sin especificar)",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir feto de esta pareja (sexo desconocido por defecto)",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir hermana",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir hermano",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir hija",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir hija de esta pareja",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir hijo",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir hijo de esta pareja",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir hijo de género y sexo desconocidos",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir hijo de género y sexo desconocidos de esta pareja",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir individuo",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir individuo / evento",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir mortinato",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir mortinato (SB) (sexo desconocido por defecto)",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir mortinato (SB) como descendiente (otra filiación sin especificar; sexo desconocido)",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir mortinato (SB) de esta pareja (sexo desconocido por defecto)",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir padre y madre",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir pareja hombre",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir pareja mujer",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir relación",
+    "occurrences": 5
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir varios individuos",
+    "occurrences": 3
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Añadir varios individuos de esta pareja",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Bajar pareja un nivel",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Bennett et al., 2022, figura 2; corrección de 2025, figura 2",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Bennett et al., 2022, figura 3; corrección de 2025, figura 3",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Breve información",
+    "occurrences": 3
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Cada sector representa una combinación condición + estado. Los patrones de Afectado y Portador no afectado se definen explícitamente y deben ser distintos.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Cambiar género y sexo",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Cambiar género y sexo: hombre/masculino → mujer/femenino → no especificado/desconocido",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Condición actualizada.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Condición eliminada.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Corrección de 2025, figura 4",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Corrección de 2025, figura 5",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Corrección de 2025, figuras 1 y 2",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Dado/a en adopción",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Datos del registro actualizados.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Define primero una condición del pedigree.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Detalle genotípico",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Donante de óvulos",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Donante de óvulos y gestante (surrogate)",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Editar este registro",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Editar situación reproductiva",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "El formato PED no puede representar toda la información del pedigree.\\n\\n",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "El árbol ya está vacío.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Embarazo ectópico (ECT)",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Error listando casos.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Error:",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Escribe para buscar y selecciona un caso.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Estado",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Estado clínico",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Este pedigree consta como revisado.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Evaluación documentada",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Evaluación documentada / registros revisados",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Familia: ${parsed.family.family_id}\\n",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Feto / embarazo (P)",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Filiación adoptiva",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Guardar",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Guardar datos rápidos",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Guardar situación reproductiva",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Guardar · Ctrl+S",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Guardar · hay cambios sin guardar · Ctrl+S",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Guardar, hay cambios sin guardar",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Género diverso",
+    "occurrences": 3
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Género diverso / no especificado",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Hijo / feto / embarazo resultante",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Hombre / niño",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "ID de familia",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Indicación",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Individuo",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Individuo añadido.",
+    "occurrences": 3
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Información clínica y genética",
+    "occurrences": 3
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Información clínica y genética actualizada. Pulsa Guardar para persistir el caso.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Interrupción del embarazo (TOP)",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "LEYENDA EXPLICATIVA DEL ÁRBOL",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Los dos individuos ya tienen progenitores distintos.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Modo foco: ampliar el área del pedigree",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Mortinato añadido.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Mujer / niña",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Más opciones: Posición manual y Añadir relación entre personas existentes",
+    "occurrences": 3
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "No descendencia por elección / motivo desconocido",
+    "occurrences": 3
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "No hay casos que coincidan con la búsqueda.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "No se añadió ninguna relación:",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "No se guardó la situación reproductiva:",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "No se pudieron listar los casos:",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "No se pudo añadir el registro:",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Nueva familia creada.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Número de individuos",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Pareja / no especificado",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Pareja con ${count} ${noun} añadida.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Pareja seleccionada: ${manualCoupleLevelLabel(context)} ·",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Pincha sobre un individuo del árbol.",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Posición manual",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Progenitor intencional:",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Puedes seleccionar varias personas y crear todas las relaciones de una sola vez.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Quitar estado fallecido",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Relación añadida.",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Relación consanguínea",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Relación de pareja",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Relación eliminada.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Relación finalizada",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Restablecer posición automática",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Resumen clínico",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Selecciona al menos otra persona para crear la relación.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Selecciona al menos una persona.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Sin indicación",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Sin información especial",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Situación reproductiva",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Subir pareja un nivel",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Surrogate: donante de óvulos y gestante",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Sí estudiado",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Sí · registros revisados",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Trillizos tricigóticos",
+    "occurrences": 2
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Trillizos tricigóticos: ${(r.members||[]).map(displayName).join(\" + \")}",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Varios individuos (número conocido)",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Varios individuos (número desconocido/no especificado)",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "\\n\\nEl pedigree actual será sustituido. ¿Continuar?",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "\\n\\nSe exportarán únicamente los datos PED compatibles. ¿Continuar?",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "\\n… y ${errors.length-10} error(es) más.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "\\n… y ${result.warnings.length - 8} aviso(s) más.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "app-message error",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "dos fratrías enfrentadas",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "es adoptado/a en la familia por",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "es hijo/a dado/a en adopción de",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "es pareja consanguínea de",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "es pareja de",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "es progenitor/a adoptivo/a de",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "es progenitor/a de",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "generación ${romanGeneration} ·",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "nivel automático.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "orden automático.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "qc.heading.error",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "relación finalizada con",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "status error",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "· consanguínea",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "¿Resetear el árbol? Se eliminarán todos los individuos y relaciones del pedigree.",
+    "occurrences": 1
+  },
+  {
+    "file": "pedigree.js",
+    "literal": "Árbol reseteado. Puedes empezar desde cero.",
+    "occurrences": 1
+  }
+]

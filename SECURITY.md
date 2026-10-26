@@ -1,26 +1,26 @@
-# Seguridad de PedigrAPP
+# PedigrAPP security
 
-## Alcance y estado
+## Scope and current status
 
-PedigrAPP v1.0.1 no incorpora autenticación de usuarios, roles ni autorización granular en `api.php`. **No debe instalarse directamente en Internet con datos clínicos reales sin una capa de seguridad externa y controles adecuados.**
+PedigrAPP v1.0.5 does not implement user authentication, roles, or fine-grained authorization in `api.php`. **Do not expose an installation containing real clinical data directly to the Internet without appropriate external access controls and security measures.**
 
-El archivo `data/.htaccess` está pensado para instalaciones Apache configuradas para respetarlo, y no protege por sí mismo instalaciones en otros servidores ni rutas alternativas.
+The `data/.htaccess` rule is intended for Apache installations configured to honor it; it does not protect alternative paths or deployments on other servers by itself.
 
-## Recomendaciones de despliegue
+## Deployment recommendations
 
-- Proteger el acceso a la aplicación y a `api.php` mediante autenticación y autorización adecuadas.
-- Mantener `data/` fuera del directorio público siempre que la arquitectura lo permita o bloquearlo eficazmente a nivel de servidor.
-- Configurar cifrado en tránsito (HTTPS), permisos mínimos, copias de seguridad seguras y actualizaciones de servidor/PHP.
-- Probar expresamente que las operaciones de lectura, guardado y borrado no están accesibles sin los permisos correspondientes.
-- No alojar datos clínicos reales en GitHub, incidencias, trazas públicas ni ejemplos de demostración.
-- Evitar desplegar `php -S` como servidor público de producción.
+- Protect access to the application and `api.php` with suitable authentication and authorization.
+- Keep `data/` outside the public document root whenever feasible, or effectively deny web-server access to it.
+- Use HTTPS in transit, least-privilege filesystem permissions, protected backups, and maintained web-server/PHP versions.
+- Explicitly test that read, save, and delete operations cannot be performed without the necessary permissions.
+- Never place real clinical records in GitHub, issues, public logs, or sample fixtures.
+- Do not use `php -S` as a public production server.
 
-## Comunicación responsable de vulnerabilidades
+## Responsible vulnerability reporting
 
-Si GitHub permite **Private vulnerability reporting / Security Advisories** para este repositorio, utiliza ese mecanismo para comunicar vulnerabilidades de forma privada. Si no estuviera disponible, contacta con los mantenedores por un canal privado acordado antes de divulgar detalles explotables.
+If GitHub offers **Private vulnerability reporting / Security Advisories** for the repository, use that feature to report vulnerabilities privately. Otherwise, agree on a private channel with the maintainers before disclosing exploitable details.
 
-No se designa en este documento una dirección de correo de seguridad que no haya sido confirmada. Los procedimientos de respuesta y los tiempos de resolución se definirán cuando el proyecto abra públicamente sus canales de comunicación.
+This document does not invent or designate an unconfirmed security email address. Response procedures and target resolution times will be defined when the project establishes its public communication channels.
 
-## Aviso legal
+## Legal notice
 
-La distribución se realiza conforme a **EUPL-1.2**, incluido su régimen de ausencia de garantías. Consulta [`LICENSE`](LICENSE) y [`PRIVACY.md`](PRIVACY.md).
+Distribution is governed by **EUPL-1.2**, including its disclaimer of warranties. See [LICENSE](LICENSE) and [PRIVACY.md](PRIVACY.md).

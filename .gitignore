@@ -1,24 +1,45 @@
-# No subir familias reales ni datos de pacientes
-/data/*.json
-/data/*.json.*
-/data/*.bak
-/data/*.tmp
+# ============================================================
+# PedigrAPP - archivos que NUNCA deben publicarse
+# ============================================================
 
-# Archivos locales, credenciales y cachés
+# Datos clínicos / familias locales
+/data/**
+!/data/.gitkeep
+!/data/.htaccess
+
+# Credenciales y configuración privada
 .env
 .env.*
 !.env.example
+.htpasswd
+.htpasswd.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.cnf
+*.kdbx
+
+# Bases de datos, volcados y logs
+*.sql
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+*.log
+
+# Cachés y archivos del sistema/editor
 .DS_Store
 Thumbs.db
 __pycache__/
 *.pyc
-
-# Datos locales: nunca versionar
-/data/*
-!/data/.gitkeep
-!/data/.htaccess
+*.bak
+*~
 
 # Paquetes y copias locales
 *.zip
-*.bak
-*~
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.rar

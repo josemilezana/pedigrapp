@@ -1,7 +1,82 @@
 (() => {
 "use strict";
 
-const APP_VERSION = "1.0.2";
+const APP_VERSION = "1.0.5";
+// Changes to language do not modify the family model or history.
+function refreshLocalizedPresentation() {
+  // Called once dictionaries are loaded, and whenever the language changes.
+  // Do not reset form fields or mutate the family/undo history.
+  if(typeof refreshRecordFormTexts==='function')refreshRecordFormTexts();
+  if(typeof updateUnsavedIndicator==='function')updateUnsavedIndicator();
+  if(typeof updateUndoButton==='function')updateUndoButton();
+  if(typeof updateFamilyReviewIndicator==='function')updateFamilyReviewIndicator();
+  if(typeof updateSiblingReorderButton==='function')updateSiblingReorderButton();
+  if(typeof updateManualLayoutResetButton==='function')updateManualLayoutResetButton();
+  if(typeof refreshPedigreeFocusModeLanguage==='function')refreshPedigreeFocusModeLanguage();
+  // Update the clinical header in place: NEVER rebuild clinical forms with unsaved edits.
+  if(typeof selectedPerson==='function' && typeof clinicalSelectedIndicatorText==='function'){
+    const title=document.getElementById('notesPersonTitle');
+    const selected=selectedPerson();
+    if(title)title.textContent=selected ? clinicalSelectedIndicatorText(selected) : t("app.notesPersonTitle.text");
+  }
+  if(typeof refreshConditionColorOptionLabels==='function')refreshConditionColorOptionLabels();
+  const viewerSearch=document.getElementById('pedigreePersonSearch');
+  if(viewerSearch)viewerSearch.title=viewerSearch.classList.contains('is-not-found')
+    ? t('validation.person.noneFound') : t('layout.search.title');
+  // The saved-case picker and lists are UI derived from the family model.
+  // Refresh them without modifying free text, selections, or undo history.
+  if(typeof updateSavedCaseReviewFilterButtons==='function')updateSavedCaseReviewFilterButtons();
+  if(typeof setSelectedSavedCase==='function' && typeof selectedSavedCaseId!=='undefined' && selectedSavedCaseId){
+    setSelectedSavedCase(selectedSavedCaseId,{updateSearch:false});
+  } else if(typeof selectedSavedCaseId!=='undefined' && !selectedSavedCaseId){
+    const hint=document.getElementById('savedCaseSelection');
+    if(hint)hint.textContent=t('savedCases.selectHint');
+  }
+  const savedResults=document.getElementById('savedCaseResults');
+  if(savedResults && typeof renderSavedCaseResults==='function'){
+    const wasHidden=savedResults.classList.contains('hidden');
+    renderSavedCaseResults();
+    if(wasHidden)savedResults.classList.add('hidden');
+  }
+  if(typeof renderRelations==='function')renderRelations();
+  if(typeof renderPeopleTable==='function')renderPeopleTable();
+  const emptyStatus=document.getElementById('status');
+  if(emptyStatus && !family.people.length)emptyStatus.textContent=t('layout.empty');
+
+  if(typeof renderClinicalLegend==='function')renderClinicalLegend();
+  if(typeof recalculateLivePedigreeQc==='function')recalculateLivePedigreeQc();
+  if(typeof buildConditionHoverCard==='function' && typeof conditionHoverActiveUid!=='undefined' && conditionHoverActiveUid){
+    const record=typeof personByUid==='function'?personByUid(conditionHoverActiveUid):null;
+    if(record && typeof conditionHoverCard==='function' && !conditionHoverCard().hidden){
+      // Keep the ⋯ panel, the target selection, and the selected twin type
+      // when rebuilding only its translated controls. No model edits.
+      const card=conditionHoverCard();
+      const moreExpanded=card.querySelector('.condition-hover-more-button')?.getAttribute('aria-expanded')==='true';
+      const marked=[...card.querySelectorAll('.condition-hover-relation-list input:checked')].map(el=>el.value);
+      const twinType=card.querySelector('.condition-hover-twin-type')?.value;
+      buildConditionHoverCard(record);
+      if(twinType){
+        const twin=card.querySelector('.condition-hover-twin-type');
+        if(twin)twin.value=twinType;
+      }
+      card.querySelectorAll('.condition-hover-relation-list input').forEach(input=>{
+        input.checked=marked.includes(input.value);
+      });
+      if(moreExpanded){
+        const content=card.querySelector('.condition-hover-more-content');
+        const button=card.querySelector('.condition-hover-more-button');
+        if(content && button){
+          content.hidden=false;
+          button.setAttribute('aria-expanded','true');
+          button.title=t('tooltip.more.hide');
+        }
+      }
+    }
+  }
+  if(typeof window.PedigrAPPi18n?.apply==='function')window.PedigrAPPi18n.apply();
+}
+document.addEventListener('pedigrapp:languagechange',refreshLocalizedPresentation);
+window.addEventListener('pedigrapp:i18nready',refreshLocalizedPresentation);
 
 const C = {
   api: "api.php",
@@ -95,14 +170,14 @@ function updateUnsavedIndicator() {
 
   if (saveButton) {
     saveButton.title = dirty
-      ? "Guardar · hay cambios sin guardar · Ctrl+S"
-      : "Guardar · Ctrl+S";
+      ? t("toolbar.save.dirtyTitle")
+      : t("toolbar.save.cleanTitle");
 
     saveButton.setAttribute(
       "aria-label",
       dirty
-        ? "Guardar, hay cambios sin guardar"
-        : "Guardar"
+        ? t("toolbar.save.dirtyAria")
+        : t("toolbar.save.cleanAria")
     );
   }
 
@@ -116,14 +191,14 @@ function updateUnsavedIndicator() {
     );
 
     stickySaveButton.title = dirty
-      ? "Guardar · hay cambios sin guardar · Ctrl+S"
-      : "Guardar · Ctrl+S";
+      ? t("toolbar.save.dirtyTitle")
+      : t("toolbar.save.cleanTitle");
 
     stickySaveButton.setAttribute(
       "aria-label",
       dirty
-        ? "Guardar, hay cambios sin guardar"
-        : "Guardar"
+        ? t("toolbar.save.dirtyAria")
+        : t("toolbar.save.cleanAria")
     );
   }
 }
@@ -147,13 +222,13 @@ function updateUndoButton() {
 
   const undoTitle =
     undoHistory.length
-      ? `Deshacer último cambio (${undoHistory.length} disponibles) · Ctrl+Z`
-      : "No hay cambios que deshacer · Ctrl+Z";
+      ? t("history.undoAvailable",{count:undoHistory.length})
+      : t("toolbar.history.noUndo");
 
   const redoTitle =
     redoHistory.length
-      ? `Rehacer último cambio (${redoHistory.length} disponibles) · Ctrl+Y`
-      : "No hay cambios que rehacer · Ctrl+Y";
+      ? t("history.redoAvailable",{count:redoHistory.length})
+      : t("toolbar.history.noRedo");
 
   const undoButton =
     $("undoBtn");
@@ -314,7 +389,7 @@ function redoLastChange() {
 
   message(
     redoHistory.length
-      ? `Cambio rehecho. Quedan ${redoHistory.length} paso(s) para rehacer.`
+      ? t("history.redoRemaining",{count:redoHistory.length})
       : "Cambio rehecho.",
     "success"
   );
@@ -441,6 +516,7 @@ function showToast(
 }
 
 function message(text = "", type = "") {
+  text = window.PedigrAPPi18n?.uiText(text) ?? text;
   const inline =
     $("appMessage");
 
@@ -667,7 +743,7 @@ function quickDefaultUnion(
 function quickAddRecord(
   type,
   options={},
-  successMessage="Registro añadido."
+  successMessage=t("message.record.added")
 ) {
   pushUndoState();
 
@@ -700,15 +776,15 @@ function quickAddSinglePerson(
   const config = {
     man:{
       sexAtBirth:"male",
-      message:"Hombre añadido."
+      message:t("message.person.maleAdded")
     },
     woman:{
       sexAtBirth:"female",
-      message:"Mujer añadida."
+      message:t("message.person.femaleAdded")
     },
     gender_diverse:{
       sexAtBirth:"unassigned",
-      message:"Individuo de género diverso añadido."
+      message:t("message.person.diverseAdded")
     },
     unspecified:{
       sexAtBirth:"unassigned",
@@ -760,7 +836,7 @@ function quickAddMaleFemaleCouple() {
   centerPedigreeAfterQuickAdd();
 
   message(
-    "Pareja hombre-mujer añadida.",
+    t("message.union.maleFemaleAdded"),
     "success"
   );
 }
@@ -861,13 +937,13 @@ function quickAddCoupleWithChildren(
 
   const noun =
     fetalPreset
-      ? (count === 1 ? "feto" : "fetos")
+      ? t(count===1?"offspring.fetus.singular":"offspring.fetus.plural")
       : childGender === "woman"
-        ? (count === 1 ? "hija" : "hijas")
-        : (count === 1 ? "hijo" : "hijos");
+        ? t(count===1?"offspring.daughter.singular":"offspring.daughter.plural")
+        : t(count===1?"offspring.son.singular":"offspring.son.plural");
 
   message(
-    `Pareja con ${count} ${noun} añadida.`,
+    t("message.coupleWithChildren",{count,noun}),
     "success"
   );
 }
@@ -998,8 +1074,8 @@ function quickAddThreeGenerationFamily(
 
   message(
     childGender === "woman"
-      ? "Familia de tres generaciones con 3 hijas añadida."
-      : "Familia de tres generaciones con 3 hijos añadida.",
+      ? t("message.template.threeDaughters")
+      : t("message.template.threeSons"),
     "success"
   );
 }
@@ -1059,10 +1135,10 @@ function intendedParentAnnotation(p,numbers=currentNumbers) {
   const codes = uids.map(uid => numbers.get(uid) || uid);
   return {
     title: uids.length === 1
-      ? "Progenitor intencional:"
-      : "Progenitores intencionales:",
+      ? t("record.multiple.intendedParentSingular")
+      : t("record.multiple.intendedParentPlural"),
     ids: codes.length === 2
-      ? `${codes[0]} y ${codes[1]}`
+      ? `${codes[0]}${t("label.conjunction.and")}${codes[1]}`
       : codes.join(", ")
   };
 }
@@ -1255,22 +1331,23 @@ function hasGestationalCarrierForTarget(uid) {
 }
 
 function gestationalCarrierLabel(p) {
-  if (!p) return "Gestante";
+  const description = t("person.type.gestationalCarrier");
+  if (!p) return description;
   return p.label
-    ? `Gestante · ${p.label}`
-    : "Gestante";
+    ? `${description} · ${p.label}`
+    : description;
 }
 
 function donorRecordLabel(p) {
-  if (!p) return "Donante";
+  if (!p) return t("record.type.donor");
 
   if (isSurrogateOvumDonor(p)) {
-    return "Donante de óvulos y gestante (surrogate)";
+    return t("record.type.surrogateOvumDonor");
   }
 
   return recordType(p) === "ovum_donor"
-    ? "Donante de óvulos"
-    : "Donante de esperma";
+    ? t("record.type.ovumDonor")
+    : t("record.type.spermDonor");
 }
 
 function donationTargetUids(p) {
@@ -1356,14 +1433,14 @@ function multipleIndividualsLabel(p) {
   const n = normalizedMultipleCount(p);
   if (!n) return "Varios individuos";
 
-  if (p.gender === "man") return `${n} hombres/niños`;
-  if (p.gender === "woman") return `${n} mujeres/niñas`;
+  if (p.gender === "man") return t("record.multiple.maleCount",{count:n});
+  if (p.gender === "woman") return t("record.multiple.femaleCount",{count:n});
 
-  return `${n} individuos`;
+  return t("record.multiple.unknownCount",{count:n});
 }
 
 function reproductiveEventLabel(p) {
-  if (recordType(p) === "fetus") return "Feto";
+  if (recordType(p) === "fetus") return t("record.type.fetus");
   if (recordType(p) === "stillbirth") return "SB";
   if (recordType(p) === "sab") return "SAB";
   if (recordType(p) === "top") return "TOP";
@@ -1422,7 +1499,7 @@ function isAdoptedPerson(p) {
 function markAdoptedOut(uid) {
   const p = personByUid(uid);
   if (!p || recordType(p) !== "person") {
-    throw new Error("Solo un individuo puede marcarse como dado/a en adopción.");
+    throw new Error(t("message.adoption.singleIndividual"));
   }
   p.adoption_status = "out";
 }
@@ -1453,7 +1530,7 @@ function displayName(uid) {
       ? ` · ${p.label}`
       : "";
 
-    return `${num} · Gestante${label}`;
+    return `${num} · ${t("person.type.gestationalCarrier")}${label}`;
   }
 
   if (recordType(p) !== "person") {
@@ -1462,7 +1539,7 @@ function displayName(uid) {
       ? ` · ${p.label}`
       : "";
     const ga = p.gestational_age_weeks
-      ? ` · ${p.gestational_age_weeks} sem`
+      ? t("record.gestationalAgeShort",{weeks:p.gestational_age_weeks})
       : "";
     return `${num} · ${event}${label}${ga}`;
   }
@@ -1493,21 +1570,21 @@ function unnumberedDisplayName(uid) {
 
   if (isGestationalCarrierRecord(p)) {
     return p.label
-      ? `Gestante · ${p.label}`
-      : "Gestante";
+      ? `${t("person.type.gestationalCarrier")} · ${p.label}`
+      : t("person.type.gestationalCarrier");
   }
 
   if (recordType(p) !== "person") {
     const event =
       reproductiveEventLabel(p) ||
-      "Evento gestacional";
+      t("label.record.gestationalEvent");
 
     const label = p.label
       ? ` · ${p.label}`
       : "";
 
     const ga = p.gestational_age_weeks
-      ? ` · ${p.gestational_age_weeks} sem`
+      ? t("record.gestationalAgeShort",{weeks:p.gestational_age_weeks})
       : "";
 
     return `${event}${label}${ga}`;
@@ -1569,32 +1646,41 @@ function isClinicallyAffected(p) {
   return !!(p && p.affected);
 }
 
-const INHERITANCE_LABELS = {
+const INHERITANCE_LABELS = new Proxy({
   autosomal_dominant: "Autosómica dominante",
   autosomal_recessive: "Autosómica recesiva",
   x_linked_dominant: "Ligada al X dominante",
   x_linked_recessive: "Ligada al X recesiva",
   mitochondrial: "Mitocondrial",
   unknown: "Desconocida / no establecida"
-};
+}, {get(target,key){
+  if(!Object.prototype.hasOwnProperty.call(target,key))return undefined;
+  return t("condition.inheritance."+key);
+}});
 
-const CONDITION_STATUS_LABELS = {
+const CONDITION_STATUS_LABELS = new Proxy({
   unaffected: "No afectado / sin evidencia",
   affected: "Afectado",
   carrier: "Portador no afectado",
   presymptomatic: "Asintomático / presintomático",
   unknown: "Desconocido"
-};
+}, {get(target, key){
+  if(!Object.prototype.hasOwnProperty.call(target,key))return undefined;
+  return t("condition.status."+(key===''?'unspecified':String(key)));
+}});
 
-const MOLECULAR_RESULT_LABELS = {
+const MOLECULAR_RESULT_LABELS = new Proxy({
   not_tested: "No estudiado",
   studied: "Sí estudiado",
   positive: "Positivo",
   negative: "Negativo",
   inconclusive: "No concluyente"
-};
+}, {get(target, key){
+  if(!Object.prototype.hasOwnProperty.call(target,key))return undefined;
+  return t("condition.molecular."+(key===''?'unspecified':String(key)));
+}});
 
-const ZYGOSITY_LABELS = {
+const ZYGOSITY_LABELS = new Proxy({
   "": "No indicada",
   heterozygous: "Heterocigoto",
   homozygous: "Homocigoto",
@@ -1603,7 +1689,10 @@ const ZYGOSITY_LABELS = {
   heteroplasmy: "Heteroplasmia",
   homoplasmy: "Homoplasmia",
   other: "Otra / no especificada"
-};
+}, {get(target, key){
+  if(!Object.prototype.hasOwnProperty.call(target,key))return undefined;
+  return t("condition.zygosity."+(key===''?'unspecified':String(key)));
+}});
 
 const LEGACY_CONDITION_PATTERNS = [
   "solid",
@@ -1615,20 +1704,20 @@ const LEGACY_CONDITION_PATTERNS = [
 ];
 
 const CONDITION_COLORS = [
-  {value:"#111111", label:"Negro"},
-  {value:"#C62828", label:"Rojo"},
-  {value:"#1565C0", label:"Azul"},
-  {value:"#2E7D32", label:"Verde"},
-  {value:"#EF6C00", label:"Naranja"},
-  {value:"#6A1B9A", label:"Morado"}
+  {value:"#111111", label:"Negro", i18nKey:"condition.color.black"},
+  {value:"#C62828", label:"Rojo", i18nKey:"condition.color.red"},
+  {value:"#1565C0", label:"Azul", i18nKey:"condition.color.blue"},
+  {value:"#2E7D32", label:"Verde", i18nKey:"condition.color.green"},
+  {value:"#EF6C00", label:"Naranja", i18nKey:"condition.color.orange"},
+  {value:"#6A1B9A", label:"Morado", i18nKey:"condition.color.purple"}
 ];
 
 const CARRIER_TEXTURES = [
-  {value:"crosshatch", label:"Rayado cruzado"},
-  {value:"diagonal", label:"Rayado diagonal"},
-  {value:"horizontal", label:"Rayado horizontal"},
-  {value:"vertical", label:"Rayado vertical"},
-  {value:"dots", label:"Punteado"}
+  {value:"crosshatch", label:"Rayado cruzado", i18nKey:"condition.texture.crosshatch"},
+  {value:"diagonal", label:"Rayado diagonal", i18nKey:"condition.texture.diagonal"},
+  {value:"horizontal", label:"Rayado horizontal", i18nKey:"condition.texture.horizontal"},
+  {value:"vertical", label:"Rayado vertical", i18nKey:"condition.texture.vertical"},
+  {value:"dots", label:"Punteado", i18nKey:"condition.texture.dots"}
 ];
 
 function normalizeCarrierPattern(value) {
@@ -2371,19 +2460,19 @@ function normalizeFamily(data) {
 
 function validate(data) {
   if (!data || !Array.isArray(data.people) || !Array.isArray(data.relationships)) {
-    throw new Error("Estructura de familia no válida.");
+    throw new Error(t("validation.family.structure"));
   }
 
   const uids = new Set();
   data.people.forEach(p => {
-    if (!p.uid) throw new Error("Todos los individuos necesitan uid.");
+    if (!p.uid) throw new Error(t("validation.person.uidRequired"));
     if (uids.has(p.uid)) throw new Error("UID duplicado: " + p.uid);
 
     if (
       recordType(p) === "person" &&
       !["none","out"].includes(p.adoption_status || "none")
     ) {
-      throw new Error("Estado de adopción no válido.");
+      throw new Error(t("validation.person.adoptionState"));
     }
 
     if (recordType(p) === "multiple") {
@@ -2394,7 +2483,7 @@ function validate(data) {
         (!Number.isInteger(count) || count < 2)
       ) {
         throw new Error(
-          "Un registro de varios individuos necesita un entero de al menos 2 o 'n' si el número es desconocido/no especificado."
+          t("validation.multiple.countField")
         );
       }
 
@@ -2402,7 +2491,7 @@ function validate(data) {
 
       if (p.affected || isClinicallyAffected(p)) {
         throw new Error(
-          "Los individuos afectados no deben agruparse en un símbolo múltiple."
+          t("validation.multiple.affectedGroup")
         );
       }
     }
@@ -2413,7 +2502,7 @@ function validate(data) {
 
       if (!targets.length) {
         throw new Error(
-          "Un donante necesita indicar al menos un hijo/feto/embarazo resultante."
+          t("validation.donor.targetRequired")
         );
       }
 
@@ -2421,7 +2510,7 @@ function validate(data) {
         targets.includes(p.uid)
       ) {
         throw new Error(
-          "El donante no puede apuntarse a sí mismo como resultado."
+          t("validation.donor.notSelf")
         );
       }
 
@@ -2430,7 +2519,7 @@ function validate(data) {
         targets.length > 1
       ) {
         throw new Error(
-          "En esta versión, una donante de óvulos solo puede vincularse a un resultado."
+          t("validation.ovumDonor.oneOutcome")
         );
       }
     }
@@ -2440,7 +2529,7 @@ function validate(data) {
       !donationTargetUid(p)
     ) {
       throw new Error(
-        "Una surrogate necesita indicar el hijo/feto/embarazo que está gestando."
+        t("validation.surrogate.pregnancyRequired")
       );
     }
 
@@ -2449,13 +2538,13 @@ function validate(data) {
 
       if (!target) {
         throw new Error(
-          "Una gestante necesita indicar el feto/embarazo que está gestando."
+          t("validation.gestationalCarrier.pregnancyRequired")
         );
       }
 
       if (target === p.uid) {
         throw new Error(
-          "La gestante no puede apuntarse a sí misma como resultado."
+          t("validation.gestationalCarrier.notSelf")
         );
       }
     }
@@ -2470,15 +2559,15 @@ function validate(data) {
       ? p.intended_parent_uids : [];
     const ids = intendedParentUids(p);
     if (raw.length && !supportsIntendedParentage(p)) {
-      throw new Error("La filiación intencional solo puede asignarse a un descendiente o embarazo.");
+      throw new Error(t("validation.intendedParent.outcome"));
     }
     if (ids.length !== raw.length || ids.length > 2) {
-      throw new Error("Selecciona como máximo dos progenitores intencionales diferentes.");
+      throw new Error(t("validation.intendedParent.maxTwo"));
     }
     for (const uid of ids) {
       const parent = data.people.find(other => other.uid === uid);
       if (!parent || recordType(parent) !== "person" || uid === p.uid) {
-        throw new Error("Progenitor intencional no válido o inexistente.");
+        throw new Error(t("validation.intendedParent.invalid"));
       }
     }
   });
@@ -2507,7 +2596,7 @@ function validate(data) {
           )
         ) {
           throw new Error(
-            "Cada resultado de la donación debe ser un individuo, feto, mortinato, SAB, TOP o ECT existente."
+            t("validation.donation.outcomeType")
           );
         }
       });
@@ -2525,7 +2614,7 @@ function validate(data) {
         .includes(recordType(targetRecord))
     ) {
       throw new Error(
-        "El objetivo de una gestante debe ser un feto/embarazo, mortinato, SAB, TOP o ECT existente."
+        t("validation.gestationalCarrier.outcomeType")
       );
     }
 
@@ -2537,7 +2626,7 @@ function validate(data) {
       )
     ) {
       throw new Error(
-        "Un mismo embarazo no puede tener más de una gestante/surrogate."
+        t("validation.pregnancy.oneCarrier")
       );
     }
   });
@@ -2555,7 +2644,7 @@ function validate(data) {
       )
     ) {
       throw new Error(
-        "Un mismo embarazo no puede tener más de una gestante/surrogate."
+        t("validation.pregnancy.oneCarrier")
       );
     }
   });
@@ -2563,11 +2652,11 @@ function validate(data) {
   data.relationships.forEach(r => {
     if (r.type === "union") {
       (r.people || []).forEach(uid => {
-        if (!uids.has(uid)) throw new Error("Relación con individuo inexistente.");
+        if (!uids.has(uid)) throw new Error(t("validation.relationship.personNotFound"));
       });
 
       if (!["none","no_children","infertility"].includes(r.reproductive_status || "none")) {
-        throw new Error("Situación reproductiva de pareja no válida.");
+        throw new Error(t("validation.relationship.reproductiveStatus"));
       }
 
       if (
@@ -2575,23 +2664,23 @@ function validate(data) {
         r.reproductive_attribution !== "union" &&
         !(r.people || []).includes(r.reproductive_attribution)
       ) {
-        throw new Error("Atribución reproductiva no válida para la pareja.");
+        throw new Error(t("validation.relationship.reproductiveAttribution"));
       }
     }
 
     if (r.type === "parentage") {
       (r.parents || []).concat(r.children || []).forEach(uid => {
-        if (!uids.has(uid)) throw new Error("Relación con individuo inexistente.");
+        if (!uids.has(uid)) throw new Error(t("validation.relationship.personNotFound"));
       });
 
       if (!["biological", "adoptive"].includes(r.descent_type || "biological")) {
-        throw new Error("Tipo de filiación no válido.");
+        throw new Error(t("validation.parentage.type"));
       }
     }
 
     if (r.type === "sibling") {
       (r.members || []).forEach(uid => {
-        if (!uids.has(uid)) throw new Error("Relación de hermandad con individuo inexistente.");
+        if (!uids.has(uid)) throw new Error(t("validation.sibling.personNotFound"));
       });
     }
 
@@ -2606,15 +2695,15 @@ function validate(data) {
       ) {
         throw new Error(
           zygosity === "trizygotic"
-            ? "Una relación de trillizos tricigóticos debe contener exactamente tres individuos."
-            : "Una relación de gemelos debe contener exactamente dos individuos."
+            ? t("validation.triplets.cardinality")
+            : t("validation.twins.cardinality")
         );
       }
 
       r.members.forEach(uid => {
         if (!uids.has(uid)) {
           throw new Error(
-            "Relación de gestación múltiple con individuo inexistente."
+            t("validation.multipleGestation.personNotFound")
           );
         }
       });
@@ -2624,7 +2713,7 @@ function validate(data) {
           .includes(zygosity)
       ) {
         throw new Error(
-          "Cigosidad/tipo de gestación múltiple no válido."
+          t("validation.multipleGestation.type")
         );
       }
     }
@@ -11629,9 +11718,9 @@ function updateSiblingReorderButton() {
   button.setAttribute("aria-pressed",String(siblingReorderMode));
   button.classList.toggle("is-active",siblingReorderMode);
   button.title=siblingReorderMode
-    ? "Reordenación horizontal ACTIVADA · arrastra a otra posición de la misma generación"
-    : "Reordenación horizontal · mover individuos entre grupos de una generación";
-  button.setAttribute('aria-label', 'Activar o desactivar reordenación horizontal de individuos');
+    ? t("action.reorder.enabledTitle")
+    : t("action.reorder.enableTitle");
+  button.setAttribute('aria-label', t("action.reorder.toggle"));
   const container=$("pedigreeContainer");
   if (container) container.classList.toggle("is-sibling-reorder-mode",siblingReorderMode);
 }
@@ -11644,8 +11733,8 @@ function updateManualLayoutResetButton() {
     Object.keys(generationVisualOverrides()).length;
   button.disabled = count === 0;
   button.title = count
-    ? "Restablecer posiciones y ordenación gráfica automáticos"
-    : "No hay posiciones ni ordenaciones manuales que restablecer";
+    ? t("action.layout.restoreAutomatic")
+    : t("toolbar.layout.noneToReset");
 }
 
 function resetManualHorizontalPositions() {
@@ -11657,7 +11746,7 @@ function resetManualHorizontalPositions() {
   family.layout_overrides.sibling_visual_order = {};
   family.layout_overrides.generation_visual_order = {};
   renderPedigree();
-  message("Distribución y ordenación automáticas restablecidas.","success");
+  message(t("message.layout.restored"),"success");
 }
 
 function applyDraggedHorizontalPositions(byGen,pos) {
@@ -12722,16 +12811,16 @@ function appendConditionHoverRow(container,label,value) {
 }
 
 const HOVER_RELATION_TYPES = [
-  {value:"parent", label:"es progenitor/a de"},
-  {value:"child", label:"es hijo/a de"},
-  {value:"adoptive_parent", label:"es progenitor/a adoptivo/a de"},
-  {value:"adoptive_child", label:"es adoptado/a en la familia por"},
-  {value:"adopted_out_child", label:"es hijo/a dado/a en adopción de"},
-  {value:"sibling", label:"es hermano/a de"},
-  {value:"twin", label:"es gemelo/a de"},
-  {value:"union", label:"es pareja de"},
-  {value:"ended_union", label:"relación finalizada con"},
-  {value:"consanguineous_union", label:"es pareja consanguínea de"}
+  {value:"parent", i18nKey:"tooltip.relation.type.parent"},
+  {value:"child", i18nKey:"tooltip.relation.type.child"},
+  {value:"adoptive_parent", i18nKey:"tooltip.relation.type.adoptive_parent"},
+  {value:"adoptive_child", i18nKey:"tooltip.relation.type.adoptive_child"},
+  {value:"adopted_out_child", i18nKey:"tooltip.relation.type.adopted_out_child"},
+  {value:"sibling", i18nKey:"tooltip.relation.type.sibling"},
+  {value:"twin", i18nKey:"tooltip.relation.type.twin"},
+  {value:"union", i18nKey:"tooltip.relation.type.union"},
+  {value:"ended_union", i18nKey:"tooltip.relation.type.ended_union"},
+  {value:"consanguineous_union", i18nKey:"tooltip.relation.type.consanguineous_union"}
 ];
 
 function hoverRelationCandidates(
@@ -12851,8 +12940,8 @@ function quickAddHoverRelations(
     ) {
       message(
         zygosity === "trizygotic"
-          ? "Para trillizos tricigóticos selecciona exactamente dos personas."
-          : "Para gemelos selecciona exactamente una persona.",
+          ? t("validation.relation.selectThreePersons")
+          : t("validation.relation.selectTwoPersons"),
         "error"
       );
       return false;
@@ -12864,7 +12953,7 @@ function quickAddHoverRelations(
     targets.length !== 1
   ) {
     message(
-      "Para una pareja consanguínea selecciona exactamente una persona.",
+      t("validation.relation.consanguineousPartner"),
       "error"
     );
     return false;
@@ -12878,7 +12967,7 @@ function quickAddHoverRelations(
     targets.length !== 1
   ) {
     message(
-      "Para una relación de pareja selecciona exactamente una persona.",
+      t("validation.relation.selectPartner"),
       "error"
     );
     return false;
@@ -12893,7 +12982,7 @@ function quickAddHoverRelations(
     targets.length > 2
   ) {
     message(
-      "Para definir progenitores selecciona como máximo dos personas.",
+      t("validation.relation.maxTwoParents"),
       "error"
     );
     return false;
@@ -13015,7 +13104,7 @@ function quickAddHoverRelations(
     message(
       targets.length === 1
         ? "Relación añadida."
-        : `${targets.length} relaciones añadidas.`,
+        : t("relationship.addedCount",{count:targets.length}),
       "success"
     );
 
@@ -13096,12 +13185,12 @@ function quickCreateDonorFromHover(anchorUid, donorType) {
   if (!target || ![
     "person", "fetus", "stillbirth", "sab", "top", "ect"
   ].includes(recordType(target))) {
-    message("Selecciona un individuo o un resultado gestacional válido para la donación.", "error");
+    message(t("validation.donation.recordType"), "error");
     return false;
   }
   if (!["sperm_donor", "ovum_donor"].includes(donorType)) return false;
   if (donorRecordsForTarget(anchorUid, donorType).length) {
-    message("Ya existe un donante de este tipo asociado al registro. Puedes editarlo para cambiarlo.", "warning");
+    message(t("validation.donation.duplicateType"), "warning");
     return false;
   }
 
@@ -13122,8 +13211,8 @@ function quickCreateDonorFromHover(anchorUid, donorType) {
   }
   message(
     donorType === "sperm_donor"
-      ? "Donante de esperma añadido al registro seleccionado."
-      : "Donante de óvulos añadida al registro seleccionado.",
+      ? t("message.donation.spermAdded")
+      : t("message.donation.ovumAdded"),
     "success"
   );
   return true;
@@ -13160,7 +13249,8 @@ function quickCreateRelativeFromHover(
       "sab_child",
       "top_child",
       "ect_child",
-      "fetus_child"
+      "fetus_child",
+      "stillbirth_child"
     ]);
 
   const childPartnerUid =
@@ -13189,7 +13279,7 @@ function quickCreateRelativeFromHover(
     !siblingAnchorAllowed
   ) {
     message(
-      "Este registro no admite el atajo de hermano/a.",
+      t("validation.shortcut.siblingNotSupported"),
       "error"
     );
     return false;
@@ -13208,16 +13298,17 @@ function quickCreateRelativeFromHover(
       );
 
     /*
-     * 0.8.71: cuando hay varias parejas, no atribuimos el feto
-     * arbitrariamente a ninguna de ellas. El atajo Feto sí está
-     * disponible: crea filiación solo respecto al individuo pulsado.
-     * El segundo progenitor, si procede, se define después mediante
-     * Relaciones avanzadas. Los demás atajos de descendencia siguen
-     * requiriendo una unión inequívoca.
+     * v1.0.3: con varias parejas, Feto y Mortinato no atribuyen la
+     * descendencia a una unión arbitraria: se crea únicamente la
+     * filiación respecto al individuo seleccionado. La segunda
+     * filiación se podrá especificar en Relaciones avanzadas.
      */
-    if (representedUnions.length > 1 && kind !== "fetus_child") {
+    if (
+      representedUnions.length > 1 &&
+      !["fetus_child", "stillbirth_child"].includes(kind)
+    ) {
       message(
-        "Este individuo tiene varias parejas. Selecciona la filiación desde Añadir relación.",
+        t("validation.shortcut.multiplePartners"),
         "error"
       );
       return false;
@@ -13237,7 +13328,7 @@ function quickCreateRelativeFromHover(
       );
 
     successText =
-      "Hermano añadido.";
+      t("message.sibling.brotherAdded");
   } else if (
     kind === "sister"
   ) {
@@ -13248,7 +13339,7 @@ function quickCreateRelativeFromHover(
       );
 
     successText =
-      "Hermana añadida.";
+      t("message.sibling.sisterAdded");
   } else if (
     kind === "son"
   ) {
@@ -13259,7 +13350,7 @@ function quickCreateRelativeFromHover(
       );
 
     successText =
-      "Hijo añadido.";
+      t("message.child.sonAdded");
   } else if (
     kind === "daughter"
   ) {
@@ -13270,7 +13361,7 @@ function quickCreateRelativeFromHover(
       );
 
     successText =
-      "Hija añadida.";
+      t("message.child.daughterAdded");
   } else if (
     kind === "unknown_child"
   ) {
@@ -13281,7 +13372,7 @@ function quickCreateRelativeFromHover(
       );
 
     successText =
-      "Hijo de género y sexo desconocidos añadido.";
+      t("message.child.unknownAdded");
   } else if (
     kind === "fetus_child"
   ) {
@@ -13289,7 +13380,15 @@ function quickCreateRelativeFromHover(
       gender:"unspecified",
       sexAtBirth:""
     });
-    successText = "Feto añadido como descendencia (sexo no conocido).";
+    successText = t("message.child.fetusAdded");
+  } else if (
+    kind === "stillbirth_child"
+  ) {
+    newPerson = quickDefaultRecord("stillbirth", {
+      gender:"unspecified",
+      sexAtBirth:""
+    });
+    successText = t("message.child.stillbirthAdded");
   } else if (
     kind === "multiple_child"
   ) {
@@ -13304,7 +13403,7 @@ function quickCreateRelativeFromHover(
       );
 
     successText =
-      "Varios individuos añadidos como descendencia.";
+      t("message.child.multipleAdded");
   } else if (
     ["sab_child", "top_child", "ect_child"].includes(kind)
   ) {
@@ -13321,7 +13420,7 @@ function quickCreateRelativeFromHover(
       );
 
     successText =
-      `${eventType.toUpperCase()} añadido como descendencia.`;
+      t("relationship.childEventAdded",{type:eventType.toUpperCase()});
   } else if (
     kind === "parents"
   ) {
@@ -13349,7 +13448,7 @@ function quickCreateRelativeFromHover(
       )
     ) {
       message(
-        "El atajo de pareja necesita un hombre o una mujer como individuo de partida.",
+        t("validation.partner.genderRequired"),
         "error"
       );
       return false;
@@ -13373,8 +13472,8 @@ function quickCreateRelativeFromHover(
 
     successText =
       oppositeGender === "man"
-        ? "Pareja masculina añadida."
-        : "Pareja femenina añadida.";
+        ? t("message.partner.maleAdded")
+        : t("message.partner.femaleAdded");
   } else {
     return false;
   }
@@ -13394,7 +13493,7 @@ function quickCreateRelativeFromHover(
         (existingBiological.parents || []).length
       ) {
         throw new Error(
-          "Este registro ya tiene progenitores biológicos representados."
+          t("validation.parents.alreadyBiological")
         );
       }
 
@@ -13450,7 +13549,7 @@ function quickCreateRelativeFromHover(
       );
 
       successText =
-        "Padre y madre añadidos.";
+        t("message.parents.added");
     } else {
       family.people.push(
         newPerson
@@ -13646,7 +13745,7 @@ function setIndividualReproductiveStatusFromHover(uid,status) {
 
   if (next === "no_children" && personHasRegisteredChildren(uid)) {
     message(
-      "No se puede marcar 'No descendencia' porque este individuo ya figura como progenitor/a de descendencia registrada.",
+      t("validation.child.noChildrenConflict"),
       "error"
     );
     return;
@@ -13709,7 +13808,7 @@ function appendHoverManualLayoutControls(card,p) {
 
   const title = document.createElement("div");
   title.className = "condition-hover-layout-title";
-  title.textContent = "Posición manual";
+  title.textContent = t("tooltip.manual.position");
 
   const buttons = document.createElement("div");
   buttons.className = "condition-hover-layout-actions";
@@ -13773,7 +13872,7 @@ function resetHoverManualLayout(uid) {
   }
 
   renderPedigree();
-  message("Posición automática restablecida.","success");
+  message(t("message.layout.automaticRestored"),"success");
 }
 
 
@@ -13823,7 +13922,7 @@ function appendHoverRelationControls(
     "condition-hover-relation-title";
 
   title.textContent =
-    "Añadir relación";
+    t("app.relationFormTitle.text");
 
   const typeSelect =
     document.createElement(
@@ -13837,7 +13936,7 @@ function appendHoverRelationControls(
     .forEach(item => {
       typeSelect.appendChild(
         new Option(
-          item.label,
+          t(item.i18nKey),
           item.value
         )
       );
@@ -13899,7 +13998,7 @@ function appendHoverRelationControls(
     "button";
 
   selectAllButton.textContent =
-    "Todos";
+    t("tooltip.relation.all");
 
   const clearButton =
     document.createElement(
@@ -13910,7 +14009,7 @@ function appendHoverRelationControls(
     "button";
 
   clearButton.textContent =
-    "Ninguno";
+    t("tooltip.relation.none");
 
   targetActions.append(
     selectAllButton,
@@ -13932,10 +14031,10 @@ function appendHoverRelationControls(
     "condition-hover-twin-type";
 
   [
-    ["monozygotic","Gemelos MZ"],
-    ["dizygotic","Gemelos DZ"],
-    ["unknown","Cigosis desconocida"],
-    ["trizygotic","Trillizos tricigóticos"]
+    ["monozygotic",t("tooltip.relation.twin.monozygotic")],
+    ["dizygotic",t("tooltip.relation.twin.dizygotic")],
+    ["unknown",t("tooltip.relation.twin.unknown")],
+    ["trizygotic",t("tooltip.relation.twin.trizygotic")]
   ].forEach(([value,label]) => {
     twinSelect.appendChild(
       new Option(
@@ -13964,8 +14063,8 @@ function appendHoverRelationControls(
     ) {
       return twinSelect.value ===
         "trizygotic"
-          ? "Selecciona exactamente 2 personas."
-          : "Selecciona exactamente 1 persona.";
+          ? t("validation.relation.exactTwo")
+          : t("validation.relation.exactOne");
     }
 
     if (
@@ -13975,7 +14074,7 @@ function appendHoverRelationControls(
         "consanguineous_union"
       ].includes(type)
     ) {
-      return "Selecciona exactamente 1 persona.";
+      return t("validation.relation.exactOne");
     }
 
     if (
@@ -13983,10 +14082,10 @@ function appendHoverRelationControls(
       type === "adoptive_child" ||
       type === "adopted_out_child"
     ) {
-      return "Puedes seleccionar 1 o 2 progenitores.";
+      return t("tooltip.relation.oneOrTwoParents");
     }
 
-    return "Puedes seleccionar varias personas.";
+    return t("tooltip.relation.multiplePeople");
   }
 
   function refreshTargetHelp() {
@@ -14019,8 +14118,8 @@ function appendHoverRelationControls(
 
       empty.textContent =
         typeSelect.value === "twin"
-          ? "No hay hermanos disponibles."
-          : "No hay personas disponibles.";
+          ? t("tooltip.relation.noSiblings")
+          : t("tooltip.relation.noPeople");
 
       targetList.appendChild(
         empty
@@ -14221,7 +14320,7 @@ function appendHoverRelationControls(
     "condition-hover-relation-add";
 
   addButton.textContent =
-    "Añadir";
+    t("tooltip.relation.add");
 
   addButton.addEventListener(
     "click",
@@ -14413,17 +14512,29 @@ function appendHoverRelationControls(
         () => quickCreateRelativeFromHover(p.uid, "fetus_child")
       );
 
+    const stillbirthButton =
+      hoverQuickCreateButton(
+        "stillbirth-child",
+        childPartnerUid
+          ? "Añadir mortinato (SB) de esta pareja (sexo desconocido por defecto)"
+          : "Añadir mortinato (SB) (sexo desconocido por defecto)",
+        "stillbirth-symbol",
+        "",
+        () => quickCreateRelativeFromHover(p.uid, "stillbirth_child")
+      );
+
     createShortcuts.append(
       sonButton,
       daughterButton,
       unknownChildButton,
-      fetusButton
+      fetusButton,
+      stillbirthButton
     );
 
     const multipleButton =
       hoverQuickCreateButton(
         "multiple-child",
-        childPartnerUid ? "Añadir varios individuos de esta pareja" : "Añadir varios individuos",
+        childPartnerUid ? "Añadir varios individuos de esta pareja" : t("label.record.addMultiple"),
         "child multiple",
         "n",
         () =>
@@ -14491,7 +14602,14 @@ function appendHoverRelationControls(
       "P",
       () => quickCreateRelativeFromHover(p.uid, "fetus_child")
     );
-    createShortcuts.appendChild(fetusButton);
+    const stillbirthButton = hoverQuickCreateButton(
+      "stillbirth-child",
+      "Añadir mortinato (SB) como descendiente (otra filiación sin especificar; sexo desconocido)",
+      "stillbirth-symbol",
+      "",
+      () => quickCreateRelativeFromHover(p.uid, "stillbirth_child")
+    );
+    createShortcuts.append(fetusButton, stillbirthButton);
   }
 
   // Atajos reproductivos directos: el registro de partida es el
@@ -14719,7 +14837,7 @@ function togglePersonSimpleAffectedFromHover(uid) {
    */
   if ((family.conditions || []).length) {
     message(
-      "La afectación de este pedigree se gestiona desde Información clínica y genética.",
+      t("validation.affected.fromClinical"),
       "error"
     );
     return;
@@ -14840,7 +14958,7 @@ function appendHoverQuickPersonFields(card,p) {
       p.multiple_count ?? "";
     auxiliaryInput.placeholder = "Nº indiv.";
     auxiliaryInput.title =
-      "Número de individuos (mínimo 2 o n si es desconocido)";
+      t("action.multiple.count");
     auxiliaryInput.setAttribute(
       "aria-label",
       "Número de individuos"
@@ -14905,7 +15023,7 @@ function appendHoverQuickPersonFields(card,p) {
           parsed > 130
         ) {
           auxiliaryInput.setCustomValidity(
-            "Introduce una edad entera entre 0 y 130 años."
+            t("validation.age.integerRange")
           );
           auxiliaryInput.reportValidity();
           return;
@@ -14931,7 +15049,7 @@ function appendHoverQuickPersonFields(card,p) {
           parsed > 45
         ) {
           auxiliaryInput.setCustomValidity(
-            "Introduce una edad gestacional entera entre 1 y 45 semanas."
+            t("validation.gestationalAge.integerRange")
           );
           auxiliaryInput.reportValidity();
           return;
@@ -14958,7 +15076,7 @@ function appendHoverQuickPersonFields(card,p) {
           parsed < 2
         ) {
           auxiliaryInput.setCustomValidity(
-            "Introduce un número entero de al menos 2 o 'n' si es desconocido."
+            t("validation.multiple.integerOrN")
           );
           auxiliaryInput.reportValidity();
           return;
@@ -15114,7 +15232,7 @@ function hoverCardMetaText(p) {
   const parts = [];
 
   const descriptor =
-    clinicalRecordTypeLabel(p);
+    window.PedigrAPPi18n.uiText(clinicalRecordTypeLabel(p));
 
   if (descriptor) {
     parts.push(descriptor);
@@ -15126,11 +15244,7 @@ function hoverCardMetaText(p) {
     p.age !== ""
   ) {
     parts.push(
-      `${p.age} ${
-        Number(p.age) === 1
-          ? "año"
-          : "años"
-      }`
+      t(Number(p.age)===1 ? "label.person.ageSingular" : "label.person.agePlural",{count:p.age})
     );
   } else if (
     p.gestational_age_weeks !== null &&
@@ -15157,7 +15271,7 @@ function hoverSectionLabel(
     "condition-hover-block-label";
 
   label.textContent =
-    text;
+    window.PedigrAPPi18n?.uiText(text) ?? text;
 
   return label;
 }
@@ -15204,7 +15318,7 @@ function buildConditionHoverCard(p) {
 
   closeButton.setAttribute(
     "aria-label",
-    "Cerrar información"
+    t("action.tooltip.close")
   );
 
   closeButton.textContent =
@@ -15326,7 +15440,7 @@ function buildConditionHoverCard(p) {
 
     stateBlock.appendChild(
       hoverSectionLabel(
-        "Estado"
+        t("tooltip.section.state")
       )
     );
 
@@ -15439,7 +15553,7 @@ function buildConditionHoverCard(p) {
       makeHoverStateButton(
         "condition-hover-affected",
         (family.conditions || []).length
-          ? "Afectado: gestionado desde Información clínica y genética"
+          ? t("message.clinical.affectedClinical")
           : (
               simpleAffected
                 ? "Quitar afectado"
@@ -15484,7 +15598,7 @@ function buildConditionHoverCard(p) {
   if (["fetus", "stillbirth"].includes(recordType(p))) {
     const fetalState = document.createElement("div");
     fetalState.className = "condition-hover-block condition-hover-state-block";
-    fetalState.appendChild(hoverSectionLabel("Sexo fetal"));
+    fetalState.appendChild(hoverSectionLabel(t("tooltip.section.fetalSex")));
     const actions = document.createElement("div");
     actions.className = "condition-hover-state-actions";
     const button = document.createElement("button");
@@ -15581,7 +15695,7 @@ function buildConditionHoverCard(p) {
 
     familyBlock.appendChild(
       hoverSectionLabel(
-        "Añadir familiar"
+        t("tooltip.section.addFamily")
       )
     );
 
@@ -15613,7 +15727,7 @@ function buildConditionHoverCard(p) {
 
     clinicalSummary.appendChild(
       hoverSectionLabel(
-        "Resumen clínico"
+        t("tooltip.section.clinicalSummary")
       )
     );
 
@@ -15687,7 +15801,7 @@ function buildConditionHoverCard(p) {
 
       appendConditionHoverRow(
         section,
-        "Estado clínico",
+        t("clinical.field.status"),
         CONDITION_STATUS_LABELS[
           state.status
         ] ||
@@ -15696,7 +15810,7 @@ function buildConditionHoverCard(p) {
 
       appendConditionHoverRow(
         section,
-        "Resultado molecular",
+        t("clinical.field.molecular"),
         MOLECULAR_RESULT_LABELS[
           state.molecular_result
         ] ||
@@ -15705,14 +15819,14 @@ function buildConditionHoverCard(p) {
 
       appendConditionHoverRow(
         section,
-        "Variante",
+        t("clinical.field.variant"),
         state.variant
       );
 
       if (state.zygosity) {
         appendConditionHoverRow(
           section,
-          "Cigosis",
+          t("clinical.field.zygosity"),
           ZYGOSITY_LABELS[
             state.zygosity
           ] ||
@@ -15722,7 +15836,7 @@ function buildConditionHoverCard(p) {
 
       appendConditionHoverRow(
         section,
-        "Detalle genotípico",
+        t("clinical.field.genotype"),
         state.genotype
       );
 
@@ -15731,8 +15845,8 @@ function buildConditionHoverCard(p) {
       ) {
         appendConditionHoverRow(
           section,
-          "Evaluación documentada",
-          "Sí · registros revisados"
+          t("clinical.field.documentedLabel"),
+          t("clinical.field.recordReviewed")
         );
       }
 
@@ -15770,7 +15884,7 @@ function buildConditionHoverCard(p) {
       "condition-hover-more-button";
 
     moreButton.innerHTML =
-      '<span aria-hidden="true">⋯</span> Más';
+      '<span aria-hidden="true">⋯</span> ' + t('ui.more');
 
     moreButton.title =
       "Más opciones: Posición manual y Añadir relación entre personas existentes";
@@ -17397,7 +17511,7 @@ function relationshipActionMenu() {
   menu.className = "relationship-action-menu";
   menu.hidden = true;
   menu.setAttribute("role","dialog");
-  menu.setAttribute("aria-label","Opciones de relación de pareja");
+  menu.setAttribute("aria-label",t("action.relationship.moreOptions"));
 
   menu.addEventListener("pointerdown", event => {
     event.stopPropagation();
@@ -17557,8 +17671,8 @@ function showRelationshipActionMenu(
 
         message(
           checked
-            ? "Relación marcada como finalizada."
-            : "Relación restaurada.",
+            ? t("message.relationship.ended")
+            : t("message.relationship.restored"),
           "success"
         );
       }
@@ -17586,8 +17700,8 @@ function showRelationshipActionMenu(
 
         message(
           checked
-            ? "Relación marcada como consanguínea."
-            : "Consanguinidad retirada de la relación.",
+            ? t("message.relationship.consanguinityAdded")
+            : t("message.relationship.consanguinityRemoved"),
           "success"
         );
       }
@@ -17607,7 +17721,7 @@ function showRelationshipActionMenu(
 
   const reproductiveSelect = document.createElement("select");
   reproductiveSelect.className = "relationship-reproductive-select";
-  reproductiveSelect.setAttribute("aria-label", "Situación reproductiva de la pareja");
+  reproductiveSelect.setAttribute("aria-label", t("action.relationship.reproductiveStatus"));
   reproductiveSelect.replaceChildren(
     new Option("Sin información especial", "none"),
     new Option("No descendencia por elección / motivo desconocido", "no_children"),
@@ -17626,7 +17740,7 @@ function showRelationshipActionMenu(
 
   const attributionSelect = document.createElement("select");
   attributionSelect.className = "relationship-reproductive-select";
-  attributionSelect.setAttribute("aria-label", "A quién corresponde la situación reproductiva");
+  attributionSelect.setAttribute("aria-label", t("action.relationship.reproductiveAttribution"));
   attributionSelect.replaceChildren(
     new Option("Pareja / no especificado", "union"),
     new Option(pedigreeDisplayName(rel.people[0]), "a"),
@@ -17646,7 +17760,7 @@ function showRelationshipActionMenu(
   reasonInput.className = "relationship-reproductive-reason";
   reasonInput.type = "text";
   reasonInput.maxLength = 120;
-  reasonInput.placeholder = "Ej.: azoospermia, vasectomía…";
+  reasonInput.placeholder = t("help.relationship.reasonPlaceholder");
   reasonInput.value = rel.reproductive_reason || "";
   reasonLabel.appendChild(reasonInput);
   reproductiveDetails.appendChild(reasonLabel);
@@ -17671,7 +17785,7 @@ function showRelationshipActionMenu(
     const current = currentUnionRelationship(rel);
     if (!current) {
       hideRelationshipActionMenu();
-      message("La relación ya no existe.", "error");
+      message(t("validation.relationship.notFound"), "error");
       return;
     }
 
@@ -17705,7 +17819,7 @@ function showRelationshipActionMenu(
 
     hideRelationshipActionMenu();
     renderPedigree();
-    message("Situación reproductiva actualizada.", "success");
+    message(t("message.relationship.reproductiveUpdated"), "success");
   });
 
   menu.appendChild(reproductiveSection);
@@ -17751,7 +17865,7 @@ function addRelationshipHitTarget(svg,r,route,x1,x2,y) {
   hit.setAttribute("tabindex","0");
   hit.setAttribute(
     "aria-label",
-    "Opciones de relación de pareja"
+    t("action.relationship.moreOptions")
   );
 
   hit.addEventListener("pointerdown", event => {
@@ -20163,7 +20277,7 @@ function escapeHtml(value) {
 }
 
 function inheritanceOptions(selected) {
-  return Object.entries(INHERITANCE_LABELS).map(([v,l])=>`<option value="${v}" ${v===selected?"selected":""}>${l}</option>`).join("");
+  return Object.entries(INHERITANCE_LABELS).map(([v])=>`<option value="${v}" data-i18n="condition.inheritance.${v}" ${v===selected?"selected":""}>${escapeHtml(t("condition.inheritance."+v))}</option>`).join("");
 }
 function conditionColorOptions(selected) {
   const normalized =
@@ -20174,11 +20288,18 @@ function conditionColorOptions(selected) {
 
   return CONDITION_COLORS
     .map(item =>
-      `<option value="${item.value}" ${item.value===normalized?"selected":""}>` +
-      `Relleno sólido · ${item.label}` +
+      `<option value="${item.value}" data-i18n-color="${item.i18nKey}" ${item.value===normalized?"selected":""}>` +
+      t("legend.solidFill",{label:t(item.i18nKey)}) +
       `</option>`
     )
     .join("");
+}
+
+function refreshConditionColorOptionLabels(){
+  document.querySelectorAll('.condition-color option[data-i18n-color]').forEach(option=>{
+    const key=option.getAttribute('data-i18n-color');
+    option.textContent=t('legend.solidFill',{label:t(key)});
+  });
 }
 
 function carrierTextureOptions(selected) {
@@ -20189,7 +20310,7 @@ function carrierTextureOptions(selected) {
 
   return CARRIER_TEXTURES
     .map(item =>
-      `<option value="${item.value}" ${item.value===normalized?"selected":""}>${item.label}</option>`
+      `<option value="${item.value}" data-i18n="${item.i18nKey}" ${item.value===normalized?"selected":""}>${escapeHtml(t(item.i18nKey))}</option>`
     )
     .join("");
 }
@@ -20267,12 +20388,12 @@ function renderConditionsManager() {
     const color = conditionColor(c);
 
     row.innerHTML=`
-      <div class="field"><label>Condición</label><input class="condition-name" type="text" value="${escapeHtml(c.name)}" placeholder="p. ej. Fibrosis quística"></div>
-      <div class="field"><label>Gen</label><input class="condition-gene" type="text" value="${escapeHtml(c.gene)}" placeholder="CFTR"></div>
-      <div class="field"><label>Herencia</label><select class="condition-inheritance">${inheritanceOptions(c.inheritance)}</select></div>
+      <div class="field"><label data-i18n="condition.editor.name">${t("condition.editor.name")}</label><input class="condition-name" type="text" value="${escapeHtml(c.name)}" data-i18n-placeholder="condition.editor.namePlaceholder" placeholder="${t("condition.editor.namePlaceholder")}"></div>
+      <div class="field"><label data-i18n="condition.editor.gene">${t("condition.editor.gene")}</label><input class="condition-gene" type="text" value="${escapeHtml(c.gene)}" placeholder="CFTR"></div>
+      <div class="field"><label data-i18n="condition.editor.inheritance">${t("condition.editor.inheritance")}</label><select class="condition-inheritance">${inheritanceOptions(c.inheritance)}</select></div>
 
       <div class="field condition-pattern-field">
-        <label>Patrón · Afectado</label>
+        <label data-i18n="condition.editor.affectedPattern">${t("condition.editor.affectedPattern")}</label>
         <div class="condition-pattern-editor">
           <span class="condition-pattern-preview affected" style="--condition-color:${color}" aria-hidden="true"></span>
           <select class="condition-color">${conditionColorOptions(color)}</select>
@@ -20280,14 +20401,14 @@ function renderConditionsManager() {
       </div>
 
       <div class="field condition-pattern-field">
-        <label>Patrón · Portador no afectado</label>
+        <label data-i18n="condition.editor.carrierPattern">${t("condition.editor.carrierPattern")}</label>
         <div class="condition-pattern-editor">
           <span class="condition-pattern-preview carrier pattern-${normalizeCarrierPattern(c.carrier_pattern)}" style="--condition-color:${color}" aria-hidden="true"></span>
           <select class="condition-carrier-texture">${carrierTextureOptions(c.carrier_pattern)}</select>
         </div>
       </div>
 
-      <div class="condition-row-actions"><button type="button" class="save-condition-btn">Guardar</button><button type="button" class="danger delete-condition-btn">Eliminar</button></div>`;
+      <div class="condition-row-actions"><button type="button" class="save-condition-btn" data-i18n="condition.editor.save">${t("condition.editor.save")}</button><button type="button" class="danger delete-condition-btn" data-i18n="condition.editor.delete">${t("condition.editor.delete")}</button></div>`;
 
     row.querySelector(".condition-color")
       .addEventListener(
@@ -20366,26 +20487,26 @@ function saveConditionRow(row) {
   };
 
   if(!next.name){
-    message("La condición necesita un nombre.","error");
+    message(t("validation.condition.nameRequired"),"error");
     return;
   }
 
   if(JSON.stringify(c)===JSON.stringify(next)){
-    message("La condición no tiene cambios.");
+    message(t("message.condition.unchanged"));
     return;
   }
 
   pushUndoState();
   Object.assign(c,next);
   renderPedigree();
-  message("Condición actualizada.","success");
+  message(t("condition.message.updated"),"success");
 }
 
 function deleteCondition(id) {
-  const c=conditionById(id); if(!c) return; if(!confirm(`¿Eliminar la condición "${c.name||c.id}"?`)) return;
+  const c=conditionById(id); if(!c) return; if(!confirm(t("condition.confirmDelete",{name:c.name||c.id}))) return;
   pushUndoState(); family.conditions=family.conditions.filter(x=>x.id!==id);
   family.people.forEach(p=>p.condition_states=(p.condition_states||[]).filter(s=>s.condition_id!==id));
-  renderPedigree(); message("Condición eliminada.","success");
+  renderPedigree(); message(t("condition.message.deleted"),"success");
 }
 
 
@@ -20403,25 +20524,25 @@ function validateConditionState(p, condition, state) {
   if (state.status === "carrier") {
     if (inheritance === "autosomal_dominant") {
       warnings.push(
-        "En una condición autosómica dominante, “portador” suele ser menos preciso que “asintomático/presintomático” si existe una variante causante."
+        t("validation.condition.dominantCarrier")
       );
     }
 
     if (inheritance === "x_linked_dominant") {
       warnings.push(
-        "En una condición ligada al X dominante, “portador” suele sustituirse por afectado o asintomático/presintomático según el fenotipo."
+        t("validation.condition.xDominantCarrier")
       );
     }
 
     if (inheritance === "mitochondrial") {
       warnings.push(
-        "En herencia mitocondrial, conviene describir el estado clínico y la heteroplasmia/homoplasmia en vez de usar “portador” de forma aislada."
+        t("validation.condition.mitochondrialCarrier")
       );
     }
 
     if (inheritance === "x_linked_recessive" && sex === "male") {
       warnings.push(
-        "Un varón con una variante patogénica ligada al X recesiva suele ser hemicigoto; revisa si corresponde afectado o presintomático en vez de portador."
+        t("validation.condition.xRecessiveMale")
       );
     }
   }
@@ -20433,7 +20554,7 @@ function validateConditionState(p, condition, state) {
     !["heterozygous", "other"].includes(state.zygosity)
   ) {
     warnings.push(
-      "Para un portador autosómico recesivo, la cigosis esperable suele ser heterocigota."
+      t("validation.condition.recessiveZygosity")
     );
   }
 
@@ -20446,7 +20567,7 @@ function validateConditionState(p, condition, state) {
     state.zygosity !== "other"
   ) {
     warnings.push(
-      "En un varón con una variante ligada al X, la cigosis esperable suele describirse como hemicigota."
+      t("validation.condition.xMaleZygosity")
     );
   }
 
@@ -20457,7 +20578,7 @@ function validateConditionState(p, condition, state) {
     !["heteroplasmy", "homoplasmy", "other"].includes(state.zygosity)
   ) {
     warnings.push(
-      "Para variantes mitocondriales, suele ser más apropiado indicar heteroplasmia u homoplasmia."
+      t("validation.condition.mitochondrialZygosity")
     );
   }
 
@@ -20466,7 +20587,7 @@ function validateConditionState(p, condition, state) {
     ["carrier", "presymptomatic"].includes(state.status)
   ) {
     warnings.push(
-      "El estado clínico seleccionado sugiere presencia de la variante, pero el resultado molecular figura como negativo."
+      t("validation.condition.molecularConflict")
     );
   }
 
@@ -20484,7 +20605,7 @@ function validateConditionState(p, condition, state) {
     state.variant.trim()
   ) {
     warnings.push(
-      "Hay una variante escrita pero el resultado molecular está marcado como negativo."
+      t("validation.condition.variantConflict")
     );
   }
 
@@ -20535,12 +20656,12 @@ function renderPersonConditionAssignments() {
 
     if (!p) {
       empty.textContent =
-        "Selecciona un individuo del árbol.";
+        t("validation.person.selectInTree");
     } else if (
       !supportsPedigreeConditions(p)
     ) {
       empty.textContent =
-        "Este tipo de registro no utiliza estados por condición.";
+        t("validation.record.noConditionState");
     } else {
       empty.textContent =
         "Define primero una condición del pedigree.";
@@ -20561,20 +20682,22 @@ function renderPersonConditionAssignments() {
     nameBox.innerHTML = `
       <div class="person-condition-name">${escapeHtml(condition.name || condition.id)}</div>
       <div class="person-condition-meta">
-        ${escapeHtml(condition.gene || "Sin gen")} ·
-        ${escapeHtml(INHERITANCE_LABELS[condition.inheritance] || condition.inheritance)}
+        ${condition.gene ? escapeHtml(condition.gene) : `<span data-i18n="clinical.field.noGene">${t("clinical.field.noGene")}</span>`} ·
+        <span data-i18n="condition.inheritance.${escapeHtml(condition.inheritance)}">${escapeHtml(INHERITANCE_LABELS[condition.inheritance] || condition.inheritance)}</span>
       </div>
     `;
 
     const statusField = document.createElement("div");
     statusField.className = "field";
     const statusLabel = document.createElement("label");
-    statusLabel.textContent = "Estado clínico";
+    statusLabel.setAttribute("data-i18n", "clinical.field.status");
+    statusLabel.textContent = t("clinical.field.status");
     const statusSelect = document.createElement("select");
     statusSelect.className = "person-condition-status";
 
     Object.entries(CONDITION_STATUS_LABELS).forEach(([value,label]) => {
       const option = new Option(label, value);
+      option.setAttribute("data-i18n", "condition.status." + (value || "unspecified"));
       if (value === state.status) option.selected = true;
       statusSelect.appendChild(option);
     });
@@ -20583,12 +20706,14 @@ function renderPersonConditionAssignments() {
     const molecularField = document.createElement("div");
     molecularField.className = "field";
     const molecularLabel = document.createElement("label");
-    molecularLabel.textContent = "Resultado molecular";
+    molecularLabel.setAttribute("data-i18n", "clinical.field.molecular");
+    molecularLabel.textContent = t("clinical.field.molecular");
     const molecularSelect = document.createElement("select");
     molecularSelect.className = "person-condition-molecular";
 
     Object.entries(MOLECULAR_RESULT_LABELS).forEach(([value,label]) => {
       const option = new Option(label, value);
+      option.setAttribute("data-i18n", "condition.molecular." + (value || "unspecified"));
       if (value === state.molecular_result) option.selected = true;
       molecularSelect.appendChild(option);
     });
@@ -20600,7 +20725,8 @@ function renderPersonConditionAssignments() {
     const variantField = document.createElement("div");
     variantField.className = "field";
     const variantLabel = document.createElement("label");
-    variantLabel.textContent = "Variante";
+    variantLabel.setAttribute("data-i18n", "clinical.field.variant");
+    variantLabel.textContent = t("clinical.field.variant");
     const variantInput = document.createElement("input");
     variantInput.type = "text";
     variantInput.className = "person-condition-variant";
@@ -20611,12 +20737,14 @@ function renderPersonConditionAssignments() {
     const zygosityField = document.createElement("div");
     zygosityField.className = "field";
     const zygosityLabel = document.createElement("label");
-    zygosityLabel.textContent = "Cigosis";
+    zygosityLabel.setAttribute("data-i18n", "clinical.field.zygosity");
+    zygosityLabel.textContent = t("clinical.field.zygosity");
     const zygositySelect = document.createElement("select");
     zygositySelect.className = "person-condition-zygosity";
 
     Object.entries(ZYGOSITY_LABELS).forEach(([value,label]) => {
       const option = new Option(label, value);
+      option.setAttribute("data-i18n", "condition.zygosity." + (value || "unspecified"));
       if (value === state.zygosity) option.selected = true;
       zygositySelect.appendChild(option);
     });
@@ -20625,12 +20753,14 @@ function renderPersonConditionAssignments() {
     const genotypeField = document.createElement("div");
     genotypeField.className = "field";
     const genotypeLabel = document.createElement("label");
-    genotypeLabel.textContent = "Detalle genotípico";
+    genotypeLabel.setAttribute("data-i18n", "clinical.field.genotype");
+    genotypeLabel.textContent = t("clinical.field.genotype");
     const genotypeInput = document.createElement("input");
     genotypeInput.type = "text";
     genotypeInput.className = "person-condition-genotype";
     genotypeInput.value = state.genotype || "";
-    genotypeInput.placeholder = "p. ej. variante materna";
+    genotypeInput.placeholder = t("clinical.field.genotypePlaceholder");
+    genotypeInput.setAttribute("data-i18n-placeholder", "clinical.field.genotypePlaceholder");
     genotypeField.append(genotypeLabel, genotypeInput);
 
     const documentedField = document.createElement("div");
@@ -20647,9 +20777,9 @@ function renderPersonConditionAssignments() {
     documentedInput.checked =
       !!state.documented_evaluation;
 
-    const documentedText = document.createTextNode(
-      " Evaluación documentada / registros revisados"
-    );
+    const documentedText = document.createElement("span");
+    documentedText.setAttribute("data-i18n", "clinical.field.documented");
+    documentedText.textContent = t("clinical.field.documented");
 
     documentedLabel.append(
       documentedInput,
@@ -20961,31 +21091,31 @@ function renderMainLegend() {
 
   if (used.hasComment) {
     notes.push(
-      "El punto de comentario es solo una ayuda de la interfaz y no forma parte de la simbología del pedigree."
+      t("legend.comment.dot")
     );
   }
 
   if (used.hasSab || used.hasTop || used.hasEct) {
     notes.push(
-      "En los eventos gestacionales afectados, el triángulo utiliza el relleno o patrón correspondiente a la condición."
+      t("legend.pregnancy.affected")
     );
   }
 
   if (used.hasAdopted || used.hasAdoptiveLine) {
     notes.push(
-      "En adopción, el individuo va entre corchetes. Adopted in se conecta con los progenitores adoptivos mediante línea discontinua; Adopted out conserva la filiación biológica continua."
+      t("legend.adoption.brackets")
     );
   }
 
   if (used.hasEndedUnion) {
     notes.push(
-      "Una interrupción “//” sobre la línea de pareja indica que esa relación ya no existe."
+      t("legend.relationship.ended")
     );
   }
 
   if (used.hasSurrogate) {
     notes.push(
-      "Surrogate: la persona aporta el óvulo y lleva la gestación. Se representa con D y el resultado directamente debajo mediante línea continua."
+      t("legend.surrogate.egg")
     );
   }
 
@@ -21115,16 +21245,16 @@ function renderClinicalLegend() {
 
       if (status === "affected") {
         text.textContent =
-          `Afectado por ${condition.name || condition.id}`;
+          t("pdf.status.affected", {name:condition.name || condition.id});
       } else if (status === "carrier") {
         text.textContent =
-          `Portador no afectado de ${condition.name || condition.id}`;
+          t("pdf.status.carrier", {name:condition.name || condition.id});
       } else if (status === "presymptomatic") {
         text.textContent =
-          `Asintomático/presintomático para ${condition.name || condition.id}`;
+          t("pdf.status.presymptomatic", {name:condition.name || condition.id});
       } else {
         text.textContent =
-          `Estado respecto a ${condition.name || condition.id} desconocido/no documentado`;
+          t("pdf.status.unknown", {name:condition.name || condition.id});
       }
 
       item.append(swatch, text);
@@ -21142,20 +21272,19 @@ function renderClinicalLegend() {
 
   const title = document.createElement("div");
   title.className = "auto-legend-title";
-  title.textContent = "Condiciones representadas";
+  title.textContent = t('legend.conditionsRepresented');
   block.insertBefore(title, block.firstChild);
 
   const help = document.createElement("div");
   help.className = "auto-legend-help";
   help.textContent =
-    "Cada sector representa una combinación condición + estado. Los patrones de Afectado y Portador no afectado se definen explícitamente y deben ser distintos. " +
-    "La proporción del sector no representa la cigosis; homocigosis, heterocigosis, hemicigosis y heteroplasmia se documentan en la ficha molecular.";
+    t('legend.condition.sectors') + ' ' + t('legend.condition.zygosity');
   block.appendChild(help);
 
   const helpUnknown = document.createElement("div");
   helpUnknown.className = "auto-legend-help";
   helpUnknown.textContent =
-    "El símbolo sin relleno con “?” es una convención de la aplicación para indicar estado respecto a la condición desconocido/no documentado.";
+    t("legend.condition.unknown");
   block.appendChild(helpUnknown);
 }
 
@@ -21320,8 +21449,8 @@ function currentManualCoupleLevelContext(uid = selectedPersonUid) {
       eligible:false,
       reason:
         unions.length > 1
-          ? "El individuo participa en múltiples uniones; el ajuste vertical manual se limita a parejas simples."
-          : "El individuo seleccionado no forma una pareja representada."
+          ? t("validation.manual.multipleUnions")
+          : t("validation.manual.noCouple")
     };
   }
 
@@ -21345,7 +21474,7 @@ function currentManualCoupleLevelContext(uid = selectedPersonUid) {
     return {
       eligible:false,
       reason:
-        "No se puede determinar la posición de la pareja."
+        t("validation.manual.positionUnknown")
     };
   }
 
@@ -21360,7 +21489,7 @@ function currentManualCoupleLevelContext(uid = selectedPersonUid) {
     return {
       eligible:false,
       reason:
-        "La pareja forma parte de una configuración de múltiples uniones y se mantiene como bloque rígido."
+        t("validation.manual.rigidUnion")
     };
   }
 
@@ -21385,7 +21514,7 @@ function currentManualCoupleLevelContext(uid = selectedPersonUid) {
     return {
       eligible:false,
       reason:
-        "Uno de los miembros tiene hermanos representados en su generación; para no romper la fratría, esta pareja no se mueve verticalmente de forma aislada."
+        t("validation.manual.siblingGroup")
     };
   }
 
@@ -21421,7 +21550,7 @@ function currentManualCoupleLevelContext(uid = selectedPersonUid) {
       manualActive,
       memberUids,
       reason:
-        "Los dos miembros tienen niveles manuales diferentes. Usa «Restablecer nivel» para volver al cálculo automático."
+        t("validation.manual.conflictingLevels")
     };
   }
 
@@ -21515,7 +21644,7 @@ function updateManualCoupleLevelPanel() {
 
   if (!context) {
     info.textContent =
-      "Selecciona un miembro de una pareja simple para moverla de generación.";
+      t("validation.manual.selectCouple");
 
     upBtn.disabled = true;
     downBtn.disabled = true;
@@ -21526,7 +21655,7 @@ function updateManualCoupleLevelPanel() {
   if (!context.eligible) {
     info.textContent =
       context.reason ||
-      "La pareja seleccionada no puede desplazarse verticalmente.";
+      t("validation.manual.cannotMoveCouple");
 
     upBtn.disabled = true;
     downBtn.disabled = true;
@@ -21542,13 +21671,8 @@ function updateManualCoupleLevelPanel() {
     );
 
   info.textContent =
-    `Pareja seleccionada: ${manualCoupleLevelLabel(context)} · ` +
-    `nivel ${level} · ` +
-    (
-      context.manualActive
-        ? "nivel manual activo."
-        : "nivel automático."
-    );
+    t("label.manual.couple",{name:manualCoupleLevelLabel(context),level,
+      status:t(context.manualActive?"label.manual.levelActive":"label.manual.levelAutomatic")});
 
   upBtn.disabled =
     context.generation-1 <
@@ -21576,7 +21700,7 @@ function moveSelectedCoupleGeneration(
     message(
       context && context.reason
         ? context.reason
-        : "Selecciona primero una pareja simple.",
+        : t("validation.manual.selectSimpleCouple"),
       "error"
     );
     return;
@@ -21599,7 +21723,7 @@ function moveSelectedCoupleGeneration(
     targetGeneration > 19
   ) {
     message(
-      "Ese desplazamiento rompería la relación vertical con progenitores o descendientes.",
+      t("validation.manual.breakParentage"),
       "error"
     );
     return;
@@ -21635,8 +21759,8 @@ function moveSelectedCoupleGeneration(
 
   message(
     direction < 0
-      ? "Pareja desplazada una generación hacia arriba."
-      : "Pareja desplazada una generación hacia abajo.",
+      ? t("message.manual.coupleMovedUp")
+      : t("message.manual.coupleMovedDown"),
     "success"
   );
 }
@@ -21673,7 +21797,7 @@ function resetSelectedCoupleGeneration(uid = selectedPersonUid) {
   renderPedigree();
 
   message(
-    "Nivel automático de la pareja restablecido.",
+    t("message.manual.coupleReset"),
     "success"
   );
 }
@@ -21797,7 +21921,7 @@ function updateManualBranchOrderPanel() {
 
   if (!context) {
     info.textContent =
-      "Selecciona un individuo del árbol para recolocar su rama.";
+      t("validation.manual.selectBranch");
 
     leftBtn.disabled = true;
     rightBtn.disabled = true;
@@ -21816,13 +21940,8 @@ function updateManualBranchOrderPanel() {
     );
 
   info.textContent =
-    `Rama seleccionada: ${manualBranchBlockLabel(context.block)} · ` +
-    `generación ${romanGeneration} · ` +
-    (
-      manual
-        ? "orden manual activo."
-        : "orden automático."
-    );
+    t("label.manual.branch",{name:manualBranchBlockLabel(context.block),generation:romanGeneration,
+      status:t(manual?"label.manual.orderActive":"label.manual.orderAutomatic")});
 
   leftBtn.disabled =
     context.blockIndex <= 0;
@@ -21844,7 +21963,7 @@ function moveSelectedBranchManually(
 
   if (!context) {
     message(
-      "Selecciona primero un individuo de la rama que quieres recolocar.",
+      t("validation.manual.selectBranchFirst"),
       "error"
     );
     return;
@@ -21893,8 +22012,8 @@ function moveSelectedBranchManually(
 
   message(
     direction < 0
-      ? "Rama desplazada una posición a la izquierda."
-      : "Rama desplazada una posición a la derecha.",
+      ? t("message.manual.branchMovedLeft")
+      : t("message.manual.branchMovedRight"),
     "success"
   );
 }
@@ -21922,7 +22041,7 @@ function resetSelectedGenerationManualOrder(uid = selectedPersonUid) {
   renderPedigree();
 
   message(
-    `Orden automático restablecido para la generación ${roman(context.generation+1)}.`,
+    t("manual.branchOrderRestored",{generation:roman(context.generation+1)}),
     "success"
   );
 }
@@ -21936,10 +22055,10 @@ function clinicalGenderLabel(p) {
   if (!p) return "";
 
   return {
-    man:"Hombre",
-    woman:"Mujer",
-    gender_diverse:"Género diverso",
-    unspecified:"Sexo/género no especificado"
+    man:t("person.gender.man"),
+    woman:t("person.gender.woman"),
+    gender_diverse:t("person.gender.gender_diverse"),
+    unspecified:t("label.gender.unknown")
   }[p.gender] || "";
 }
 
@@ -21962,11 +22081,11 @@ function clinicalRecordTypeLabel(p) {
   }
 
   if (isGestationalCarrierRecord(p)) {
-    return "Gestante";
+    return t("person.type.gestationalCarrier");
   }
 
-  return reproductiveEventLabel(p) ||
-    "Registro";
+  return window.PedigrAPPi18n?.uiText(reproductiveEventLabel(p)) ||
+    t("person.type.record");
 }
 
 function clinicalSelectedIndicatorText(p) {
@@ -22010,8 +22129,8 @@ function clinicalSelectedIndicatorText(p) {
     parts.push(
       `${p.age} ${
         age === 1
-          ? "año"
-          : "años"
+          ? t("label.unit.yearSingular")
+          : t("label.unit.yearPlural")
       }`
     );
   } else if (
@@ -22189,20 +22308,20 @@ function updateFamilyReviewIndicator() {
     indicator.textContent =
       reviewed
         ? reviewState === "outdated"
-          ? `⚠ Modificado después de la revisión · ${dateLabel || "fecha no disponible"}`
+          ? t("review.changedSince",{date:dateLabel||t("label.review.unavailableDate")})
           : reviewState === "historical"
-            ? `ⓘ Revisión anterior sin huella · ${dateLabel || "fecha no disponible"}`
-            : (dateLabel ? `✓ Pedigree revisado · ${dateLabel}` : "✓ Pedigree revisado")
+            ? t("review.legacySince",{date:dateLabel||t("label.review.unavailableDate")})
+            : (dateLabel ? t("review.reviewedSince",{date:dateLabel}) : t("review.reviewed"))
         : "";
     indicator.classList.toggle("review-is-outdated", reviewState === "outdated");
     indicator.classList.toggle("review-is-historical", reviewState === "historical");
 
     indicator.title = reviewed
       ? reviewState === "outdated"
-        ? "Hay cambios desde la última revisión. Se conserva la fecha anterior hasta revisar la versión actual."
+        ? t("message.review.contentChanged")
         : reviewState === "historical"
-          ? "Revisión anterior a la incorporación de huellas. No es posible comprobar automáticamente si cambió el contenido."
-          : (dateLabel ? `Revisado el ${dateLabel}.` : "Consta como revisado.")
+          ? t("message.review.legacy")
+          : (dateLabel ? t("review.reviewedAt",{date:dateLabel}) : t("review.reviewedStatus"))
       : "";
   }
 
@@ -22223,16 +22342,16 @@ function updateFamilyReviewIndicator() {
       reviewed
         ? (
             dateLabel
-              ? `Pedigree revisado el ${dateLabel} · cancelar revisión`
-              : "Pedigree revisado · cancelar revisión"
+              ? t("review.reviewCancelAt",{date:dateLabel})
+              : t("review.reviewCancel")
           )
-        : "Marcar pedigree como revisado";
+        : t("review.mark");
 
     button.setAttribute(
       "aria-label",
       reviewed
-        ? "Cancelar la revisión del pedigree"
-        : "Marcar pedigree como revisado"
+        ? t("action.review.cancel")
+        : t("review.mark")
     );
   }
 }
@@ -22248,8 +22367,8 @@ async function toggleFamilyReviewStatus() {
 
   const question =
     alreadyReviewed
-      ? "¿Cancelar la revisión de este pedigree? El cambio se guardará automáticamente."
-      : "¿Marcar este pedigree como revisado? El caso se guardará automáticamente.";
+      ? t("confirm.review.cancel")
+      : t("confirm.review.mark");
 
   if (!confirm(question)) {
     return false;
@@ -22282,8 +22401,8 @@ async function toggleFamilyReviewStatus() {
   if (!saved) {
     showToast(
       alreadyReviewed
-        ? "La revisión se ha cancelado en pantalla, pero no se ha podido guardar."
-        : "El pedigree se ha marcado como revisado en pantalla, pero no se ha podido guardar.",
+        ? t("message.review.cancelUnsaved")
+        : t("message.review.markUnsaved"),
       "info",
       4200
     );
@@ -22293,7 +22412,7 @@ async function toggleFamilyReviewStatus() {
 
   if (alreadyReviewed) {
     showToast(
-      "Revisión cancelada y caso guardado.",
+      t("message.review.cancelSaved"),
       "info",
       3400
     );
@@ -22323,7 +22442,7 @@ async function toggleFamilyReviewStatus() {
 async function reviewCurrentFamilyVersion() {
   if (!["outdated","historical"].includes(reviewContentState())) return false;
   syncHeaderToFamily();
-  if (!confirm("¿Marcar como revisada la versión actual? Se conservará la revisión anterior en el historial de Deshacer hasta cerrar el caso y se guardará automáticamente.")) return false;
+  if (!confirm(t("confirm.review.current"))) return false;
   pushUndoState();
   family.review_status = {
     reviewed:true,
@@ -22333,7 +22452,7 @@ async function reviewCurrentFamilyVersion() {
   updateFamilyReviewIndicator();
   updateUnsavedIndicator();
   const saved = await saveFamily({silentSuccess:true});
-  showToast(saved ? "Versión actual revisada y guardada." : "Revisión actualizada en pantalla, pero no se pudo guardar.", saved ? "success" : "info", 3800);
+  showToast(saved ? t("message.review.currentSaved") : t("message.review.currentUnsaved"), saved ? "success" : "info", 3800);
   return saved;
 }
 $("rereviewFamilyBtn").addEventListener("click",reviewCurrentFamilyVersion);
@@ -22353,8 +22472,8 @@ function announceLoadedFamilyReview() {
 
   showToast(
     label
-      ? `Este pedigree consta como revisado desde ${label}.`
-      : "Este pedigree consta como revisado.",
+      ? t("review.reviewAtSince",{date:label})
+      : t("label.review.marked"),
     "info",
     4500
   );
@@ -22548,7 +22667,7 @@ function navigateClinicalPerson(
   if (
     clinicalEditorHasPendingChanges() &&
     !confirm(
-      "Hay cambios clínicos sin guardar en este registro. ¿Cambiar de registro y descartarlos?"
+      t("validation.review.unsavedRecord")
     )
   ) {
     return false;
@@ -22593,8 +22712,7 @@ function updateNotesPanel() {
 
   if (!p) {
     selectedPersonUid = null;
-    title.textContent =
-      "Pincha sobre un individuo del árbol.";
+    title.textContent = t("app.notesPersonTitle.text");
     textarea.value = "";
     textarea.disabled = true;
     saveBtn.disabled = true;
@@ -22921,7 +23039,7 @@ function saveSelectedPersonNotes() {
   $("notesStatus").textContent =
     clinicalWarnings.length
       ? `Guardado con ${clinicalWarnings.length} aviso(s) de coherencia.`
-      : "Información clínica guardada en el árbol.";
+      : t("message.clinical.saved");
 
   message(
     "Información clínica y genética actualizada. Pulsa Guardar para persistir el caso.",
@@ -23235,13 +23353,13 @@ function setEditorPanelCollapsed(collapsed) {
 
   button.textContent = editorPanelCollapsed ? "▶" : "◀";
   button.title = editorPanelCollapsed
-    ? "Mostrar panel de edición"
-    : "Ocultar panel de edición";
+    ? t("action.editor.show")
+    : t("action.editor.hide");
   button.setAttribute(
     "aria-label",
     editorPanelCollapsed
-      ? "Mostrar panel de edición"
-      : "Ocultar panel de edición"
+      ? t("action.editor.show")
+      : t("action.editor.hide")
   );
   button.setAttribute(
     "aria-pressed",
@@ -23334,6 +23452,13 @@ function returnToPedigreeFromStickyBar() {
   }
 }
 
+function refreshPedigreeFocusModeLanguage(){
+  const button=$("pedigreeFocusModeBtn");
+  if(!button)return;
+  button.title=pedigreeFocusMode ? t("action.focus.exit") : t("toolbar.focus.enable");
+  button.setAttribute("aria-label",pedigreeFocusMode ? t("action.focus.exitShort") : t("toolbar.focus.enableAria"));
+}
+
 function setPedigreeFocusMode(active) {
   const button = $("pedigreeFocusModeBtn");
   const container = $("pedigreeContainer");
@@ -23349,13 +23474,13 @@ function setPedigreeFocusMode(active) {
 
   button.textContent = pedigreeFocusMode ? "⤡" : "⤢";
   button.title = pedigreeFocusMode
-    ? "Salir del modo foco (Esc)"
-    : "Modo foco: ampliar el área del pedigree";
+    ? t("action.focus.exit")
+    : t("toolbar.focus.enable");
   button.setAttribute(
     "aria-label",
     pedigreeFocusMode
-      ? "Salir del modo foco"
-      : "Activar modo foco"
+      ? t("action.focus.exitShort")
+      : t("toolbar.focus.enableAria")
   );
   button.setAttribute(
     "aria-pressed",
@@ -23421,7 +23546,7 @@ function syncPedigreeSearchFromSelection() {
   if (!input) return;
 
   input.classList.remove("is-not-found");
-  input.title = "";
+  input.title = t('layout.search.title');
   input.value = selectedPersonUid
     ? pedigreeSearchLabel(personByUid(selectedPersonUid))
     : "";
@@ -23489,13 +23614,13 @@ function searchAndCenterPedigreePerson() {
 
   if (!p) {
     input.classList.add("is-not-found");
-    input.title = "No se ha encontrado ningún individuo";
+    input.title = t("validation.person.noneFound");
     input.focus();
     return;
   }
 
   input.classList.remove("is-not-found");
-  input.title = "";
+  input.title = t('layout.search.title');
   selectPerson(p.uid,{scrollToClinical:false,syncSearch:true});
   centerPedigreeOnPerson(p.uid);
 }
@@ -23513,8 +23638,8 @@ function installPedigreeViewer() {
     siblingReorderMode=!siblingReorderMode;
     updateSiblingReorderButton();
     message(siblingReorderMode
-      ? "Reordenación horizontal activada. Arrastra personas a otro lugar de su generación; parejas y gemelos se mueven en bloque."
-      : "Reordenación desactivada. Vuelve el desplazamiento individual normal.","info");
+      ? t("message.reorder.enabled")
+      : t("message.reorder.disabled"),"info");
   });
   updateSiblingReorderButton();
   const zoomOut = $("pedigreeZoomOutBtn");
@@ -23594,7 +23719,7 @@ function installPedigreeViewer() {
       ? horizontalGenerationBlocks(currentLayout.pos,currentLayout.pos.get(uid).generation) : [];
     const moveIndex=reorderBlocks.findIndex(b=>b.members.includes(uid));
     if (siblingReorderMode && (moveIndex<0 || !reorderBlocks.every(b=>b.contiguous))) {
-      message("No se puede reordenar esta generación: hay una pareja o gemelos ya separados.","warning");
+      message(t("validation.reorder.separatedGroup"),"warning");
       return;
     }
     syncHeaderToFamily();
@@ -23791,8 +23916,8 @@ function installPedigreeViewer() {
       setTimeout(() => { suppressDraggedPersonClick = false; },0);
       renderPedigree();
       if (changed) message(state.reorder
-        ? "Orden horizontal actualizado (sin cambiar la filiación ni los datos de nacimiento). Puedes deshacer."
-        : "Posición horizontal actualizada. Puedes deshacer el cambio.","success");
+        ? t("message.reorder.updated")
+        : t("message.reorder.positionUpdated"),"success");
     }
   };
   document.addEventListener("pointerup", event => finishPersonDrag(event));
@@ -23893,7 +24018,7 @@ function installPedigreeViewer() {
       event.ctrlKey ||
       event.metaKey;
 
-    /* Guardar el caso y evitar "Guardar página" del navegador. */
+    /* Guardar el caso y evitar t("action.export.savePage") del navegador. */
     if (
       commandKey &&
       key === "s" &&
@@ -24073,26 +24198,29 @@ function updateLiveQcIndicator() {
 
   const result = qcLastResult;
   const state = qcTrafficState(result);
-  const label = !result ? "QC automático · comprobando datos"
-    : state === "empty" ? "QC automático · pedigree sin individuos"
-    : `QC automático · ${result.counts.error} errores, ${result.counts.warning} avisos y ${result.counts.info} notas`;
+  const label = !result ? t("qc.indicator.pending")
+    : state === "empty" ? t("qc.indicator.empty")
+    : t("qc.indicator.counts",{errors:result.counts.error,warnings:result.counts.warning,notes:result.counts.info});
   const layoutIssues = result ? result.issues.filter(issue => issue.category === "layout").length : 0;
 
   btn.dataset.qcState = state;
   btn.classList.toggle("qc-has-layout-issues", layoutIssues > 0);
-  btn.title = `${label}${layoutIssues ? ` (${layoutIssues} de representación gráfica)` : ""}. Pulsar para ${$("pedigreeQcPanel").hidden ? "abrir" : "cerrar"} detalles.`;
-  btn.setAttribute("aria-label", label + ". Pulsar para ver u ocultar las incidencias.");
+  btn.title = t("qc.indicator.title",{
+    label, graphics:layoutIssues ? t("qc.indicator.graphics",{count:layoutIssues}) : "",
+    action:$("pedigreeQcPanel").hidden ? t("qc.action.open") : t("qc.action.close")
+  });
+  btn.setAttribute("aria-label", t("qc.indicator.aria",{label}));
 
   if (mini) {
     mini.hidden = !result || state === "empty";
     mini.textContent = state === "error"
-      ? `QC · ${result.counts.error} errores · ${result.counts.warning} avisos`
-      : state === "warning" ? `QC · ${result.counts.warning} avisos · ${result.counts.info} notas`
-      : state === "info" ? `QC · ${result.counts.info} notas`
-      : state === "ok" ? "QC · Sin incidencias detectadas" : "QC · Comprobando…";
+      ? t("qc.mini.errors",{errors:result.counts.error,warnings:result.counts.warning})
+      : state === "warning" ? t("qc.mini.warnings",{warnings:result.counts.warning,notes:result.counts.info})
+      : state === "info" ? t("qc.mini.info",{notes:result.counts.info})
+      : state === "ok" ? t("qc.mini.ok") : t("qc.mini.pending");
     mini.className = "qc-mini-indicator qc-mini-" + (state === "empty" ? "pending" : state);
-    mini.title = label + ". Pulsar para abrir detalles.";
-    mini.setAttribute("aria-label", label + ". Abrir detalle del control de calidad.");
+    mini.title = t("qc.mini.title",{label});
+    mini.setAttribute("aria-label", t("qc.mini.aria",{label}));
   }
 }
 
@@ -24139,12 +24267,12 @@ function collectQcSvgGeometry(svg) {
             const key=`${uid}/${other}`;
             if (marked.has(key)) continue;
             marked.add(key);
-            result.textIssues.push({uids:[uid,other],detail:`Una etiqueta de ${pedigreeDisplayName(uid)} puede invadir el símbolo de ${pedigreeDisplayName(other)}.`});
+            result.textIssues.push({uids:[uid,other],detail:t("qc.geometry.labelOverlap",{first:pedigreeDisplayName(uid),second:pedigreeDisplayName(other)})});
           }
         }
       }
     }
-  } catch(err) { console.warn("QC geométrico no disponible",err); }
+  } catch(err) { console.warn(t("label.qc.geometryUnavailable"),err); }
   qcSvgGeometryCache.set(svg, result);
   return result;
 }
@@ -24181,7 +24309,7 @@ function recalculateLivePedigreeQc() {
     qcLastResult = {
       status: "unavailable", counts: {error:1, warning:0, info:0},
       issues: [{severity:"error", category:"structure", code:"QC_UNAVAILABLE",
-        title:"Módulo de QC no disponible", detail:"No se ha podido cargar pedigree-qc.js.",
+        title:t("label.qc.unavailable"), detail:"No se ha podido cargar pedigree-qc.js.",
         source:"PedigrAPP", uids:[]}]
     };
   } else {
@@ -24194,7 +24322,7 @@ function recalculateLivePedigreeQc() {
         displayLabels: new Map(family.people.map(p => [p.uid, qcPedigreeDisplayLabel(p.uid)]))
       });
     } catch (err) {
-      console.error("QC automático", err);
+      console.error(t("label.qc.automatic"), err);
       qcLastResult = {
         status: "unavailable", counts: {error:1, warning:0, info:0},
         issues: [{severity:"error", category:"structure", code:"QC_RUNTIME_ERROR",
@@ -24208,7 +24336,7 @@ function recalculateLivePedigreeQc() {
       severity:"error", category:"layout", code:"QC_RENDER_ERROR",
       title:"No se ha podido dibujar el pedigree",
       detail:qcRenderError,
-      source:"Motor de representación · PedigrAPP", uids:[]
+      source:t("label.qc.renderer"), uids:[]
     });
     qcLastResult.counts.error++;
   }
@@ -24226,33 +24354,31 @@ function paintPedigreeQcDetails() {
   list.replaceChildren();
   const result = qcLastResult;
   if (!result) {
-    summary.textContent = "El QC automático está comprobando el pedigree…";
+    summary.textContent = t("qc.loading");
     return;
   }
   const heading = document.createElement("strong");
   heading.textContent = result.status === "unavailable"
-    ? "No se ha podido completar el QC automático"
+    ? t("qc.heading.unavailable")
     : result.status === "empty"
-    ? "Pedigree vacío: todavía no hay datos que comprobar"
-    : result.counts.error
-      ? "Se han detectado errores que deben corregirse"
-      : result.counts.warning
-        ? "No se detectan errores estructurales; hay advertencias que revisar"
-        : "Sin errores ni advertencias en las reglas automáticas de QC v2";
+    ? t("qc.heading.empty")
+    : result.counts.error ? t("qc.heading.error")
+    : result.counts.warning ? t("qc.heading.warning")
+    : t("qc.heading.clear");
   summary.appendChild(heading);
 
   const totals = document.createElement("span");
   totals.className = "pedigree-qc-totals";
   const graphic = result.issues.filter(issue => issue.category === "layout").length;
-  totals.textContent = `${result.counts.error} errores · ${result.counts.warning} avisos · ${result.counts.info} notas · ${graphic} de representación gráfica`;
+  totals.textContent = t("qc.totals", {errors:result.counts.error,warnings:result.counts.warning,notes:result.counts.info,graphics:graphic});
   summary.appendChild(totals);
 
   for (const issue of result.issues) {
     const item = document.createElement("article");
     item.className = `pedigree-qc-issue qc-${issue.severity}`;
     const title = document.createElement("h3");
-    const prefix = {error:"Error",warning:"Advertencia",info:"Información"}[issue.severity];
-    const categoryName = (window.PedigrAPPQC?.CATEGORIES || {})[issue.category] || "Control de calidad";
+    const prefix = t("qc.severity." + issue.severity);
+    const categoryName = t("qc.category." + issue.category);
     title.textContent = `${prefix} · ${issue.title}`;
     const category = document.createElement("span");
     category.className = "pedigree-qc-category";
@@ -24266,14 +24392,22 @@ function paintPedigreeQcDetails() {
     footer.className = "pedigree-qc-issue-footer";
     const source = document.createElement("span");
     source.className = "pedigree-qc-source";
-    source.textContent = `${issue.code} · ${issue.source}`;
+    const qcSourceMap = {
+      "Integridad de datos · PedigrAPP":"qc.source.integrity",
+      "Bennett et al., 2022, figura 3; corrección de 2025, figura 3":"qc.source.relations",
+      "Bennett et al., 2022, figura 2; corrección de 2025, figura 2":"qc.source.conditions",
+      "Corrección de 2025, figura 4":"qc.source.pregnancy",
+      "Corrección de 2025, figura 5":"qc.source.art",
+      "Corrección de 2025, figuras 1 y 2":"qc.source.clinical"
+    };
+    source.textContent = `${issue.code} · ${qcSourceMap[issue.source] ? t(qcSourceMap[issue.source]) : issue.source}`;
     footer.appendChild(source);
     const uid = (issue.uids || []).find(id => personByUid(id));
     if (uid) {
       const find = document.createElement("button");
       find.type = "button";
       find.className = "pedigree-qc-person-link";
-      find.textContent = `Localizar ${qcPedigreeDisplayLabel(uid)} →`;
+      find.textContent = t("qc.find",{person:qcPedigreeDisplayLabel(uid)});
       find.addEventListener("click", () => openQcPerson(uid));
       footer.appendChild(find);
     }
@@ -24283,7 +24417,7 @@ function paintPedigreeQcDetails() {
   if (!result.issues.length) {
     const done = document.createElement("p");
     done.className = "pedigree-qc-empty";
-    done.textContent = "Las reglas automáticas implantadas no han detectado errores, advertencias ni datos recomendados ausentes.";
+    done.textContent = t("qc.noIssues");
     list.appendChild(done);
   }
   list.scrollTop = previousScrollTop;
@@ -24475,7 +24609,7 @@ function renderPedigree() {
     );
     updatePedigreeZoomIndicator();
 
-    $("status").textContent = family.people.length ? "" : "Añade individuos para comenzar.";
+    $("status").textContent = family.people.length ? "" : t('layout.empty');
     $("status").className = "status";
 
     renderPeopleTable();
@@ -24520,8 +24654,8 @@ function updateEditorListCounts() {
       : 0;
 
   node.textContent =
-    `${peopleCount} ${peopleCount === 1 ? "individuo" : "individuos"} · ` +
-    `${relationCount} ${relationCount === 1 ? "relación" : "relaciones"}`;
+    t(peopleCount===1?"review.peopleCountSingular":"review.peopleCount",{count:peopleCount})+" · " +
+    t(relationCount===1?"review.relationCountSingular":"review.relationCount",{count:relationCount});
 }
 
 function renderPeopleTable() {
@@ -24556,12 +24690,12 @@ function renderPeopleTable() {
 
     const edit = document.createElement("button");
     edit.type = "button";
-    edit.textContent = "Editar";
+    edit.textContent = t('action.edit');
     edit.onclick = () => editPerson(p.uid);
 
     const del = document.createElement("button");
     del.type = "button";
-    del.textContent = "Borrar";
+    del.textContent = t('action.delete');
     del.onclick = () => deletePerson(p.uid);
 
     actions.append(edit,del);
@@ -24747,7 +24881,7 @@ function updateDonationTargetOptions(
 
     $("donationTargetHelp")
       .textContent =
-        "Donante de esperma: marca uno o varios resultados. Cada resultado quedará vinculado al mismo donante D.";
+        t("help.donation.spermTarget");
 
     if (!candidates.length) {
       const empty =
@@ -24757,7 +24891,7 @@ function updateDonationTargetOptions(
         "field-help";
 
       empty.textContent =
-        "No hay hijos, fetos o embarazos disponibles para seleccionar.";
+        t("validation.donation.noOutcomes");
 
       checkboxContainer.appendChild(
         empty
@@ -24826,8 +24960,8 @@ function updateDonationTargetOptions(
   $("donationTargetHelp")
     .textContent =
       donorType === "ovum_donor_surrogate"
-        ? "Surrogate: aporta el óvulo y lleva la gestación. El resultado se colocará directamente debajo de D con una línea continua."
-        : "Donante de óvulos: se conserva la descendencia original y se añade la diagonal de la donante.";
+        ? t("help.donation.surrogateTarget")
+        : t("help.donation.ovumTarget");
 
   candidates.forEach(p => {
     select.appendChild(
@@ -24867,7 +25001,7 @@ function updateIntendedParentOptions(preferredValues=null) {
   if (!candidates.length) {
     const hint = document.createElement("small");
     hint.className = "field-help";
-    hint.textContent = "Primero añade los progenitores intencionales como individuos.";
+    hint.textContent = t("validation.intendedParent.addFirst");
     list.appendChild(hint);
     return;
   }
@@ -24984,49 +25118,63 @@ function updateRecordTypeFields() {
 
   updatePersonReproductiveFields();
 
+  refreshRecordFormTexts();
+}
+
+function refreshRecordFormTexts() {
+  // Update labels only: must never reset fields in an already-open form.
+  const type = $("recordType").value;
+  const isPerson = type === "person";
+  const isMultiple = type === "multiple";
+  const isFetus = type === "fetus";
+  const isStillbirth = type === "stillbirth";
+  const isGestationalCarrier = type === "gestational_carrier";
+  const isSurrogate = type === "ovum_donor_surrogate";
+  const isDonor = type === "sperm_donor" || type === "ovum_donor" || isSurrogate;
   if ($("editingUid").value) {
-    $("submitPersonBtn").textContent = "Guardar cambios";
+    $("submitPersonBtn").textContent = t("action.record.saveChanges");
+    $("personFormTitle").textContent = t("action.editor.editName",{name:displayName($("editingUid").value)});
   } else if (isPerson) {
-    $("submitPersonBtn").textContent = "Añadir individuo";
-    $("personFormTitle").textContent = "Añadir individuo";
+    $("submitPersonBtn").textContent = t("label.record.addPerson");
+    $("personFormTitle").textContent = t("label.record.addPerson");
   } else if (isMultiple) {
-    $("submitPersonBtn").textContent = "Añadir varios individuos";
-    $("personFormTitle").textContent = "Añadir varios individuos";
+    $("submitPersonBtn").textContent = t("label.record.addMultiple");
+    $("personFormTitle").textContent = t("label.record.addMultiple");
   } else if (isFetus) {
-    $("submitPersonBtn").textContent = "Añadir feto";
-    $("personFormTitle").textContent = "Añadir feto";
+    $("submitPersonBtn").textContent = t("label.record.addFetus");
+    $("personFormTitle").textContent = t("label.record.addFetus");
   } else if (isStillbirth) {
-    $("submitPersonBtn").textContent = "Añadir mortinato";
-    $("personFormTitle").textContent = "Añadir mortinato";
+    $("submitPersonBtn").textContent = t("label.record.addStillbirth");
+    $("personFormTitle").textContent = t("label.record.addStillbirth");
   } else if (isGestationalCarrier) {
-    $("submitPersonBtn").textContent = "Añadir gestante";
-    $("personFormTitle").textContent = "Añadir gestante";
+    $("submitPersonBtn").textContent = t("action.record.addGestationalCarrier");
+    $("personFormTitle").textContent = t("action.record.addGestationalCarrier");
   } else if (isSurrogate) {
-    $("submitPersonBtn").textContent = "Añadir surrogate";
-    $("personFormTitle").textContent = "Añadir surrogate";
+    $("submitPersonBtn").textContent = t("action.record.addSurrogate");
+    $("personFormTitle").textContent = t("action.record.addSurrogate");
   } else if (isDonor) {
     const donorLabel =
       type === "ovum_donor"
-        ? "donante de óvulos"
-        : "donante de esperma";
+        ? t("label.donor.ovum")
+        : t("label.donor.sperm");
 
     $("submitPersonBtn").textContent =
-      `Añadir ${donorLabel}`;
+      t(type === "ovum_donor" ? "label.record.addOvumDonor" : "label.record.addSpermDonor");
 
     $("personFormTitle").textContent =
-      `Añadir ${donorLabel}`;
+      t(type === "ovum_donor" ? "label.record.addOvumDonor" : "label.record.addSpermDonor");
   } else {
     const eventLabel = {
       sab:"SAB",
       top:"TOP",
       ect:"ECT"
-    }[type] || "evento gestacional";
+    }[type] || t("label.record.gestationalEvent");
 
     $("submitPersonBtn").textContent =
-      `Añadir ${eventLabel}`;
+      t("label.record.addPregnancyEvent",{event:eventLabel});
 
     $("personFormTitle").textContent =
-      `Añadir ${eventLabel}`;
+      t("label.record.addPregnancyEvent",{event:eventLabel});
   }
 }
 
@@ -25098,7 +25246,7 @@ function installManagementAccordion() {
 function resetPersonForm() {
   $("personForm").reset();
   $("editingUid").value = "";
-  $("personFormTitle").textContent = "Añadir individuo / evento";
+  $("personFormTitle").textContent = t("label.record.addPerson");
   $("cancelEditBtn").hidden = true;
 
   const advanced = $("personAdvancedDetails");
@@ -25141,7 +25289,7 @@ function editPerson(uid) {
   $("personReproductiveReason").value =
     p.reproductive_reason || "";
 
-  $("personFormTitle").textContent = "Editar " + displayName(uid);
+  $("personFormTitle").textContent = t("action.editor.editName",{name:displayName(uid)});
   $("cancelEditBtn").hidden = false;
   updateRecordTypeFields();
   updateIntendedParentOptions(intendedParentUids(p));
@@ -25196,7 +25344,7 @@ function editPerson(uid) {
 }
 
 function deletePerson(uid) {
-  if (!confirm("¿Borrar " + displayName(uid) + "?")) return;
+  if (!confirm(t('confirm.person.delete',{name:displayName(uid)}))) return;
 
   pushUndoState();
 
@@ -25305,7 +25453,7 @@ $("quickAddProbandManBtn").addEventListener(
       sexAtBirth:"male",
       proband:true
     },
-    "Hombre probando añadido."
+    t("message.person.probandMale")
   )
 );
 
@@ -25318,7 +25466,7 @@ $("quickAddProbandWomanBtn").addEventListener(
       sexAtBirth:"female",
       proband:true
     },
-    "Mujer probando añadida."
+    t("message.person.probandFemale")
   )
 );
 
@@ -25331,7 +25479,7 @@ $("quickAddConsultandManBtn").addEventListener(
       sexAtBirth:"male",
       consultand:true
     },
-    "Hombre consultante añadido."
+    t("message.person.consultandMale")
   )
 );
 
@@ -25344,7 +25492,7 @@ $("quickAddConsultandWomanBtn").addEventListener(
       sexAtBirth:"female",
       consultand:true
     },
-    "Mujer consultante añadida."
+    t("message.person.consultandFemale")
   )
 );
 
@@ -25570,8 +25718,8 @@ $("personForm").addEventListener("submit", e => {
   ) {
     message(
       recordType(p) === "sperm_donor"
-        ? "Selecciona al menos un hijo/feto/embarazo resultante de la donación."
-        : "Selecciona el hijo/feto/embarazo resultante de la donación.",
+        ? t("validation.donor.selectOutcomes")
+        : t("validation.donor.selectOutcome"),
       "error"
     );
     return;
@@ -25587,7 +25735,7 @@ $("personForm").addEventListener("submit", e => {
     )
   ) {
     message(
-      "Ese embarazo ya tiene una gestante/surrogate asignada.",
+      t("validation.pregnancy.carrierExists"),
       "error"
     );
     return;
@@ -25598,7 +25746,7 @@ $("personForm").addEventListener("submit", e => {
     !p.gestation_target
   ) {
     message(
-      "Selecciona el feto/embarazo que está gestando.",
+      t("validation.pregnancy.selectOutcome"),
       "error"
     );
     return;
@@ -25613,7 +25761,7 @@ $("personForm").addEventListener("submit", e => {
     )
   ) {
     message(
-      "Ese embarazo ya tiene una gestante/surrogate asignada.",
+      t("validation.pregnancy.carrierExists"),
       "error"
     );
     return;
@@ -25627,7 +25775,7 @@ $("personForm").addEventListener("submit", e => {
       (!Number.isInteger(count) || count < 2)
     ) {
       message(
-        "El número de individuos debe ser un entero de al menos 2 o 'n' si es desconocido/no especificado.",
+        t("validation.record.multipleCount"),
         "error"
       );
       return;
@@ -25642,7 +25790,7 @@ $("personForm").addEventListener("submit", e => {
      p.generation_override < 1 ||
      p.generation_override > 20)
   ) {
-    message("El nivel manual debe ser un número entero entre 1 y 20.", "error");
+    message(t("validation.layout.manualLevel"), "error");
     return;
   }
 
@@ -25652,7 +25800,7 @@ $("personForm").addEventListener("submit", e => {
      p.gestational_age_weeks < 1 ||
      p.gestational_age_weeks > 45)
   ) {
-    message("La edad gestacional debe ser un número entero entre 1 y 45 semanas.", "error");
+    message(t("validation.gestationalAge.requiredRange"), "error");
     return;
   }
 
@@ -25662,14 +25810,14 @@ $("personForm").addEventListener("submit", e => {
     personHasRegisteredChildren(p.uid)
   ) {
     message(
-      "No se puede marcar 'No descendencia' porque este individuo ya figura como progenitor/a de descendencia registrada.",
+      t("validation.child.noChildrenConflict"),
       "error"
     );
     return;
   }
 
   if (p.intended_parent_uids.length > 2) {
-    message("Selecciona como máximo dos progenitores intencionales.","error");
+    message(t("validation.intendedParent.maxSelect"),"error");
     return;
   }
 
@@ -25705,18 +25853,18 @@ $("personForm").addEventListener("submit", e => {
       isPerson
         ? "Individuo añadido."
         : (isMultiple
-            ? "Grupo de individuos añadido."
+            ? t("message.record.multipleAdded")
             : (isFetus
-                ? "Feto añadido."
+                ? t("message.record.fetusAdded")
                 : (isStillbirth
                     ? "Mortinato añadido."
                     : (isGestationalCarrier
-                        ? "Gestante añadida."
+                        ? t("message.record.carrierAdded")
                         : (isSurrogate
-                            ? "Surrogate añadida."
+                            ? t("message.record.surrogateAdded")
                             : (isDonor
-                                ? "Donante añadido."
-                                : "Evento gestacional añadido.")))))),
+                                ? t("message.record.donorAdded")
+                                : t("message.record.gestationalEventAdded"))))))),
       "success"
     );
   }
@@ -25939,10 +26087,10 @@ function updateRelationBList() {
     const empty = document.createElement("div");
     empty.className = "field-help";
     empty.textContent = relationType === "twin" && selectedA
-      ? "No hay hermanos disponibles para definir la gestación múltiple."
+      ? t("validation.multipleGestation.noSiblings")
       : (family.people.length
           ? "No hay otras personas disponibles."
-          : "Añade individuos para poder crear relaciones.");
+          : t("validation.relationship.addPeopleFirst"));
     box.appendChild(empty);
     return;
   }
@@ -26004,7 +26152,7 @@ function setUnionStatus(a,b,status="current") {
     : status;
 
   if (!["current","ended"].includes(normalizedStatus)) {
-    throw new Error("Estado de pareja no válido.");
+    throw new Error(t("validation.relationship.status"));
   }
 
   ensureUnion(a,b);
@@ -26166,7 +26314,7 @@ function unionChildren(a,b) {
 
 function setUnionReproductiveData(a,b,status="none",attribution="union",reason="") {
   if (!["none","no_children","infertility"].includes(status)) {
-    throw new Error("Situación reproductiva no válida.");
+    throw new Error(t("validation.reproductive.status"));
   }
 
   ensureUnion(a,b);
@@ -26175,7 +26323,7 @@ function setUnionReproductiveData(a,b,status="none",attribution="union",reason="
 
   if (status === "no_children" && unionChildren(a,b).length) {
     throw new Error(
-      "No se puede marcar 'No descendencia' porque esta pareja ya tiene descendencia registrada."
+      t("validation.reproductive.noChildrenCouple")
     );
   }
 
@@ -26248,10 +26396,10 @@ function removeParentFromOppositeDescent(parent,child,targetDescentType) {
 }
 
 function addParent(parent,child,descentType="biological") {
-  if (parent===child) throw new Error("Una persona no puede ser progenitora de sí misma.");
+  if (parent===child) throw new Error(t("validation.parentage.selfParent"));
 
   if (!["biological","adoptive"].includes(descentType)) {
-    throw new Error("Tipo de filiación no válido.");
+    throw new Error(t("validation.parentage.type"));
   }
 
   // Si el mismo vínculo progenitor-hijo existía con el tipo opuesto,
@@ -26259,7 +26407,7 @@ function addParent(parent,child,descentType="biological") {
   removeParentFromOppositeDescent(parent,child,descentType);
 
   if (descentType === "biological" && isAncestor(child,parent)) {
-    throw new Error("Esta relación produciría un ciclo genealógico.");
+    throw new Error(t("validation.parentage.cycle"));
   }
 
   let rel = family.relationships.find(r =>
@@ -26280,7 +26428,7 @@ function addParent(parent,child,descentType="biological") {
     if ((rel.parents||[]).includes(parent)) return;
 
     if ((rel.parents||[]).length >= 2) {
-      throw new Error("Este piloto admite como máximo dos progenitores por individuo.");
+      throw new Error(t("validation.parentage.maxTwo"));
     }
 
     if ((rel.children||[]).length > 1) {
@@ -26421,7 +26569,7 @@ function resolveSiblingGroupsWithParents() {
 }
 
 function addSibling(a,b) {
-  if (a === b) throw new Error("Una persona no puede ser hermana de sí misma.");
+  if (a === b) throw new Error(t("validation.sibling.self"));
 
   const relA = parentageOf(a);
   const relB = parentageOf(b);
@@ -26458,7 +26606,7 @@ function addSibling(a,b) {
 
     throw new Error(
       "Los dos individuos ya tienen progenitores distintos. " +
-      "No puedo convertirlos automáticamente en hermanos completos."
+      t("validation.sibling.noAutoFullSibling")
     );
   }
 
@@ -26522,8 +26670,8 @@ function addMultipleBirth(memberUids,zygosity) {
   if (members.length !== expectedMembers) {
     throw new Error(
       zygosity === "trizygotic"
-        ? "Para trillizos tricigóticos selecciona exactamente tres hermanos."
-        : "Para gemelos selecciona exactamente dos hermanos."
+        ? t("validation.triplets.selectThree")
+        : t("validation.twins.selectTwo")
     );
   }
 
@@ -26535,7 +26683,7 @@ function addMultipleBirth(memberUids,zygosity) {
     )
   ) {
     throw new Error(
-      "La gestación múltiple solo puede definirse entre individuos."
+      t("validation.multipleGestation.onlyIndividuals")
     );
   }
 
@@ -26543,7 +26691,7 @@ function addMultipleBirth(memberUids,zygosity) {
     for (let j=i+1; j<members.length; j++) {
       if (!areSiblings(members[i],members[j])) {
         throw new Error(
-          "Todos los miembros deben estar definidos previamente como hermanos o compartir los mismos progenitores."
+          t("validation.multipleGestation.needSiblings")
         );
       }
     }
@@ -26558,7 +26706,7 @@ function addMultipleBirth(memberUids,zygosity) {
     ].includes(zygosity)
   ) {
     throw new Error(
-      "Selecciona un tipo de gestación múltiple válido."
+      t("validation.multipleGestation.invalidType")
     );
   }
 
@@ -26577,7 +26725,7 @@ function addMultipleBirth(memberUids,zygosity) {
 
   if (conflicting) {
     throw new Error(
-      "Uno de los individuos ya pertenece a otra gestación múltiple. Elimina primero esa relación."
+      t("validation.multipleGestation.duplicate")
     );
   }
 
@@ -26620,29 +26768,29 @@ function updateRelationTypeFields() {
   if (isTwin) {
     if ($("twinZygosity").value === "trizygotic") {
       $("relationBHelp").textContent =
-        "Selecciona exactamente dos hermanos/as. Con Persona A formarán tres trillizos tricigóticos.";
+        t("validation.multiple.tripletsWithA");
     } else {
       $("relationBHelp").textContent =
-        "Selecciona exactamente un hermano/a. La relación de gemelos se define entre dos individuos.";
+        t("validation.multiple.twinsWithA");
     }
   } else if (isConsanguineous) {
     $("relationBHelp").textContent =
-      "Selecciona exactamente una pareja. La unión se representará con doble línea.";
+      t("validation.relationship.consanguineousOne");
   } else if (isEndedUnion) {
     $("relationBHelp").textContent =
-      "Selecciona exactamente una relación finalizada. Se representará con la interrupción // de Bennett.";
+      t("validation.relationship.endedOne");
   } else if (isChild) {
     $("relationBHelp").textContent =
-      "Selecciona uno o dos progenitores biológicos. Persona A quedará definida como hijo/a de ellos.";
+      t("validation.parentage.oneOrTwoBio");
   } else if (isAdoptiveChild) {
     $("relationBHelp").textContent =
-      "Selecciona uno o dos progenitores adoptivos. Persona A se representará como Adopted in: entre corchetes y con filiación discontinua.";
+      t("validation.parentage.oneOrTwoAdoptive");
   } else if (isAdoptedOutChild) {
     $("relationBHelp").textContent =
-      "Selecciona uno o dos progenitores biológicos. Persona A se representará como Adopted out: entre corchetes y con filiación biológica continua.";
+      t("validation.parentage.oneOrTwoBioOut");
   } else if (type === "adoptive_parent") {
     $("relationBHelp").textContent =
-      "Puedes seleccionar uno o varios individuos adoptados en la familia a la vez.";
+      t("validation.adoption.batch");
   } else {
     $("relationBHelp").textContent =
       "Puedes seleccionar varias personas y crear todas las relaciones de una sola vez.";
@@ -26813,7 +26961,7 @@ $("relationForm").addEventListener("submit", e => {
 
     if (!r || r.type !== "union" || !(r.people || []).length === 2) {
       resetRelationReproductiveEdit();
-      message("La relación que estabas editando ya no existe.", "error");
+      message(t("validation.relationship.editMissing"), "error");
       return;
     }
 
@@ -26830,7 +26978,7 @@ $("relationForm").addEventListener("submit", e => {
 
       resetRelationReproductiveEdit();
       renderPedigree();
-      message("Situación reproductiva actualizada.", "success");
+      message(t("message.relationship.reproductiveUpdated"), "success");
     } catch (err) {
       const previous = undoHistory.pop();
       if (previous) family = previous;
@@ -26843,17 +26991,17 @@ $("relationForm").addEventListener("submit", e => {
   }
 
   if (!a) {
-    message("Selecciona el Registro A.", "error");
+    message(t("validation.parentage.targetA"), "error");
     return;
   }
 
   if (!bs.length) {
-    message("Selecciona al menos una Persona B.", "error");
+    message(t("validation.parentage.targetB"), "error");
     return;
   }
 
   if (bs.includes(a)) {
-    message("La Persona A no puede aparecer también como Persona B.", "error");
+    message(t("validation.parentage.noSame"), "error");
     return;
   }
 
@@ -26865,8 +27013,8 @@ $("relationForm").addEventListener("submit", e => {
     if (bs.length !== requiredB) {
       message(
         zygosity === "trizygotic"
-          ? "Para definir trillizos tricigóticos selecciona exactamente dos Personas B."
-          : "Para definir gemelos selecciona exactamente una Persona B.",
+          ? t("validation.multiple.tripletsB")
+          : t("validation.multiple.twinsB"),
         "error"
       );
       return;
@@ -26874,12 +27022,12 @@ $("relationForm").addEventListener("submit", e => {
   }
 
   if (type === "consanguineous_union" && bs.length !== 1) {
-    message("Para una pareja consanguínea selecciona exactamente una Persona B.", "error");
+    message(t("validation.parentage.consanguinityPair"), "error");
     return;
   }
 
   if (type === "ended_union" && bs.length !== 1) {
-    message("Para una relación finalizada selecciona exactamente una Persona B.", "error");
+    message(t("validation.parentage.endedPair"), "error");
     return;
   }
 
@@ -26889,24 +27037,24 @@ $("relationForm").addEventListener("submit", e => {
     bs.length !== 1
   ) {
     message(
-      "Para definir no descendencia o infertilidad selecciona exactamente una Persona B.",
+      t("validation.reproductive.oneB"),
       "error"
     );
     return;
   }
 
   if (type === "child" && bs.length > 2) {
-    message("Para 'es hijo/a de' selecciona como máximo dos progenitores.", "error");
+    message(t("validation.parentage.twoParents"), "error");
     return;
   }
 
   if (type === "adoptive_child" && bs.length > 2) {
-    message("Para 'es adoptado/a en la familia por' selecciona como máximo dos progenitores adoptivos.", "error");
+    message(t("validation.parentage.twoAdoptive"), "error");
     return;
   }
 
   if (type === "adopted_out_child" && bs.length > 2) {
-    message("Para 'es hijo/a dado/a en adopción de' selecciona como máximo dos progenitores biológicos.", "error");
+    message(t("validation.parentage.twoBiological"), "error");
     return;
   }
 
@@ -26970,22 +27118,22 @@ $("relationForm").addEventListener("submit", e => {
     renderPedigree();
 
     const relationLabel = {
-      union: "pareja",
-      ended_union: "relación finalizada",
+      union: t("label.relationship.partner"),
+      ended_union: t("label.relationship.ended"),
       sibling: "hermano/a",
       twin: "gemelo/a o trillizo/a",
-      parent: "progenitor/a",
+      parent: t("label.relationship.parent"),
       child: "hijo/a",
-      adoptive_parent: "progenitor/a adoptivo/a",
-      adoptive_child: "adoptado/a en la familia",
-      adopted_out_child: "hijo/a dado/a en adopción",
-      consanguineous_union: "pareja consanguínea"
-    }[type] || "relación";
+      adoptive_parent: t("label.relationship.adoptiveParent"),
+      adoptive_child: t("label.relationship.adoptedIn"),
+      adopted_out_child: t("label.relationship.adoptedOut"),
+      consanguineous_union: t("label.relationship.consanguineousCouple")
+    }[type] || t("label.relationship.generic");
 
     message(
       bs.length === 1
         ? "Relación añadida."
-        : `${bs.length} relaciones de ${relationLabel} añadidas.`,
+        : t("relationship.addedByType",{count:bs.length,type:relationLabel}),
       "success"
     );
   } catch (err) {
@@ -27007,7 +27155,7 @@ function renderRelations() {
   box.replaceChildren();
 
   if (!family.relationships.length) {
-    box.textContent = "No hay relaciones.";
+    box.textContent = t('list.relationships.empty');
     return;
   }
 
@@ -27020,13 +27168,10 @@ function renderRelations() {
     if (r.type==="union") {
       const statusLabel = ["ended","separated","divorced"].includes(
         r.relationship_status || "current"
-      ) ? "relación finalizada" : "pareja";
+      ) ? t("label.relationship.ended") : t("label.relationship.partner");
 
-      const consanguinityLabel = r.consanguineous ? " · consanguínea" : "";
-      const intergenerationalLabel =
-        r.intergenerational
-          ? " · intergeneracional"
-          : "";
+      const consanguinityLabel = r.consanguineous ? ' · '+t('list.relationships.consanguineous') : '';
+      const intergenerationalLabel = r.intergenerational ? ' · '+t('list.relationships.intergenerational') : '';
 
       let reproductiveLabel = "";
       const reproductiveStatus = r.reproductive_status || "none";
@@ -27048,30 +27193,30 @@ function renderRelations() {
       text.textContent =
         `${displayName(r.people[0])} — ${statusLabel}${consanguinityLabel}${intergenerationalLabel} — ${displayName(r.people[1])}${reproductiveLabel}`;
     } else if (r.type==="sibling") {
-      text.textContent = `Hermanos: ${(r.members||[]).map(displayName).join(", ")}`;
+      text.textContent = t('list.relationships.siblings',{members:(r.members||[]).map(displayName).join(', ')});
     } else if (r.type==="twin") {
       if (
         r.zygosity === "trizygotic" &&
         (r.members || []).length === 3
       ) {
-        text.textContent =
-          `Trillizos tricigóticos: ${(r.members||[]).map(displayName).join(" + ")}`;
+        text.textContent = t('list.relationships.trizygotic',{members:(r.members||[]).map(displayName).join(' + ')});
       } else {
         const zygosityLabel = {
-          monozygotic:"monocigóticos",
-          dizygotic:"dicigóticos",
-          unknown:"cigosidad desconocida"
-        }[r.zygosity] || "cigosidad desconocida";
+          monozygotic:t("label.twin.monozygotic"),
+          dizygotic:t("label.twin.dizygotic"),
+          unknown:t('list.relationships.unknownZygosity')
+        }[r.zygosity] || t('list.relationships.unknownZygosity');
 
-        text.textContent =
-          `Gemelos ${zygosityLabel}: ${(r.members||[]).map(displayName).join(" + ")}`;
+        text.textContent = t('list.relationships.twins',{
+          zygosity:zygosityLabel,members:(r.members||[]).map(displayName).join(' + ')
+        });
       }
     } else {
       const parents=(r.parents||[]).map(displayName).join(" + ");
       const children=(r.children||[]).map(displayName).join(", ");
       const descentType = (r.descent_type || "biological") === "adoptive"
-        ? "filiación adoptiva"
-        : "filiación biológica";
+        ? t("label.parentage.adoptive")
+        : t("label.parentage.biological");
       text.textContent = `${parents} → ${children} (${descentType})`;
     }
 
@@ -27080,19 +27225,19 @@ function renderRelations() {
     if (r.type === "union") {
       editReproductive = document.createElement("button");
       editReproductive.type = "button";
-      editReproductive.textContent = "Situación reproductiva";
+      editReproductive.textContent = t('list.relationships.reproductiveStatus');
       editReproductive.onclick = () =>
         beginUnionReproductiveEdit(index);
     }
 
     const del = document.createElement("button");
     del.type="button";
-    del.textContent="Borrar";
+    del.textContent=t('action.delete');
     del.onclick = () => {
       pushUndoState();
       family.relationships.splice(index,1);
       renderPedigree();
-      message("Relación eliminada.", "success");
+      message(t('list.relationships.deleted'), 'success');
     };
 
     if (editReproductive) {
@@ -27160,8 +27305,8 @@ $("showPedigreeNumbers").addEventListener(
 
     message(
       family.show_pedigree_numbers
-        ? "Numeración del pedigree visible."
-        : "Numeración del pedigree oculta.",
+        ? t("message.numbering.visible")
+        : t("message.numbering.hidden"),
       "success"
     );
   }
@@ -27190,8 +27335,8 @@ function savedCaseMatchesSearch(
 
   const reviewText =
     item.reviewed === true
-      ? "revisado"
-      : "no revisado pendiente";
+      ? 'revisado reviewed'
+      : 'no revisado pendiente not reviewed pending';
 
   const haystack =
     normalizeSavedCaseSearch(
@@ -27238,17 +27383,17 @@ function updateSavedCaseReviewFilterButtons() {
     {
       id:"savedCaseFilterAllBtn",
       filter:"all",
-      label:`Todos (${savedCaseItems.length})`
+      label:t('savedCases.filter.all',{count:savedCaseItems.length})
     },
     {
       id:"savedCaseFilterReviewedBtn",
       filter:"reviewed",
-      label:`✓ Revisados (${reviewedCount})`
+      label:t('savedCases.filter.reviewed',{count:reviewedCount})
     },
     {
       id:"savedCaseFilterPendingBtn",
       filter:"pending",
-      label:`○ No revisados (${pendingCount})`
+      label:t('savedCases.filter.pending',{count:pendingCount})
     }
   ];
 
@@ -27365,14 +27510,12 @@ function setSelectedSavedCase(
       item.indication || ""
     ).trim();
 
-  const reviewLabel =
-    item.reviewed === true
-      ? "✓ Revisado"
-      : "○ No revisado";
+  const reviewLabel = item.reviewed === true
+    ? t('savedCases.reviewed') : t('savedCases.pending');
 
   $("savedCaseSelection").textContent =
     [
-      `Seleccionado: ${item.family_id}`,
+      t('savedCases.selected',{id:item.family_id}),
       indication,
       reviewLabel
     ]
@@ -27391,8 +27534,7 @@ function clearSelectedSavedCase(
     $("savedCaseSearch").value = "";
   }
 
-  $("savedCaseSelection").textContent =
-    "Escribe para buscar y selecciona un caso.";
+  $("savedCaseSelection").textContent = t('savedCases.selectHint');
 
   updateSavedCaseButtons();
 }
@@ -27415,8 +27557,8 @@ function renderSavedCaseResults() {
 
     empty.textContent =
       savedCaseItems.length
-        ? "No hay casos que coincidan con la búsqueda."
-        : "No hay casos guardados.";
+        ? t('savedCases.noMatches')
+        : t('savedCases.noSaved');
 
     box.appendChild(empty);
     box.classList.remove("hidden");
@@ -27470,10 +27612,8 @@ function renderSavedCaseResults() {
           : "is-pending"
       );
 
-    reviewBadge.textContent =
-      item.reviewed === true
-        ? "✓ Revisado"
-        : "○ No revisado";
+    reviewBadge.textContent = item.reviewed === true
+      ? t('savedCases.reviewed') : t('savedCases.pending');
 
     if (
       item.reviewed === true &&
@@ -27489,12 +27629,9 @@ function renderSavedCaseResults() {
           reviewDate.getTime()
         )
       ) {
-        reviewBadge.title =
-          `Revisado: ${
-            reviewDate.toLocaleString(
-              "es-ES"
-            )
-          }`;
+        reviewBadge.title = t('savedCases.reviewedAt',{
+          date:reviewDate.toLocaleString(window.PedigrAPPi18n?.current()==='en'?'en-GB':'es-ES')
+        });
       }
     }
 
@@ -27526,9 +27663,7 @@ function renderSavedCaseResults() {
         )
       ) {
         modified =
-          date.toLocaleDateString(
-            "es-ES"
-          );
+          date.toLocaleDateString(window.PedigrAPPi18n?.current()==='en'?'en-GB':'es-ES');
       }
     }
 
@@ -27536,12 +27671,12 @@ function renderSavedCaseResults() {
       [
         indication,
         modified
-          ? `Modificado: ${modified}`
-          : ""
+          ? t('savedCases.modified',{date:modified})
+          : '' 
       ]
         .filter(Boolean)
         .join(" · ") ||
-      "Sin indicación";
+      t('savedCases.noIndication');
 
     button.append(
       heading,
@@ -27602,7 +27737,7 @@ async function listSaved(
 
     if (!text.trim()) {
       throw new Error(
-        "api.php devolvió una respuesta vacía."
+        t("validation.storage.emptyApi")
       );
     }
 
@@ -27674,7 +27809,7 @@ function resolvedSavedCaseId() {
 async function deleteSavedFamily(id) {
   if (!id) {
     message(
-      "Selecciona primero un caso guardado.",
+      t("validation.storage.selectSaved"),
       "error"
     );
     return;
@@ -27696,7 +27831,7 @@ async function deleteSavedFamily(id) {
 
   if (
     !confirm(
-      `¿Borrar definitivamente el caso guardado ${id}?${detail}\n\nEl archivo JSON almacenado se eliminará.`
+      t("family.confirmDelete",{id,detail})
     )
   ) {
     return;
@@ -27723,7 +27858,7 @@ async function deleteSavedFamily(id) {
 
     if (!text.trim()) {
       throw new Error(
-        "api.php devolvió una respuesta vacía."
+        t("validation.storage.emptyApi")
       );
     }
 
@@ -27733,7 +27868,7 @@ async function deleteSavedFamily(id) {
     if (!payload.ok) {
       throw new Error(
         payload.error ||
-        "Error borrando el caso."
+        t("validation.storage.deleteError")
       );
     }
 
@@ -27746,7 +27881,7 @@ async function deleteSavedFamily(id) {
 
     message(
       family.family_id === id
-        ? `Caso ${id} borrado del almacenamiento. El caso abierto continúa en pantalla.`
+        ? t("family.deleted",{id})
         : `Caso ${id} borrado.`,
       "success"
     );
@@ -27780,7 +27915,7 @@ async function saveFamily(
 
     if (!family.family_id) {
       throw new Error(
-        "Indica un ID de familia."
+        t("validation.storage.saveId")
       );
     }
 
@@ -27804,7 +27939,7 @@ async function saveFamily(
 
     if (!text.trim()) {
       throw new Error(
-        "api.php devolvió una respuesta vacía."
+        t("validation.storage.emptyApi")
       );
     }
 
@@ -27814,7 +27949,7 @@ async function saveFamily(
     if (!payload.ok) {
       throw new Error(
         payload.error ||
-        "Error guardando."
+        t("validation.storage.saveError")
       );
     }
 
@@ -27854,9 +27989,9 @@ async function loadFamily(id) {
     );
 
     const text=await res.text();
-    if (!text.trim()) throw new Error("api.php devolvió una respuesta vacía.");
+    if (!text.trim()) throw new Error(t("validation.storage.emptyApi"));
     const payload=JSON.parse(text);
-    if (!payload.ok) throw new Error(payload.error || "Error cargando.");
+    if (!payload.ok) throw new Error(payload.error || t("validation.storage.loadError"));
 
     family=normalizeFamily(payload.family);
     validate(family);
@@ -27885,7 +28020,7 @@ $("loadFamilyBtn").onclick =
 
     if (!id) {
       message(
-        "Busca y selecciona un caso guardado.",
+        t("validation.storage.searchSaved"),
         "error"
       );
       return;
@@ -27901,7 +28036,7 @@ $("deleteFamilyBtn").onclick =
 
     if (!id) {
       message(
-        "Busca y selecciona un caso guardado.",
+        t("validation.storage.searchSaved"),
         "error"
       );
       return;
@@ -27952,7 +28087,7 @@ $("savedCaseSearch").addEventListener(
     } else {
       selectedSavedCaseId = "";
       $("savedCaseSelection").textContent =
-        "Selecciona uno de los resultados.";
+        t("validation.storage.chooseResult");
       updateSavedCaseButtons();
     }
 
@@ -28019,7 +28154,7 @@ document.addEventListener(
 );
 
 $("newFamilyBtn").onclick=()=>{
-  if (!confirm("¿Crear una familia nueva? Los cambios no guardados se perderán.")) return;
+  if (!confirm(t("confirm.family.new"))) return;
   family=emptyFamily();
   family.family_id="FAM"+String(Date.now()).slice(-6);
   selectedPersonUid = null;
@@ -28032,13 +28167,12 @@ $("newFamilyBtn").onclick=()=>{
 
 $("resetTreeBtn").onclick=()=>{
   if (!family.people.length && !family.relationships.length) {
-    message("El árbol ya está vacío.");
+    message(t('message.tree.alreadyEmpty'));
     return;
   }
 
   if (!confirm(
-    "¿Resetear el árbol? Se eliminarán todos los individuos y relaciones del pedigree. " +
-    "El ID de familia y la indicación se mantendrán."
+    t('confirm.tree.reset') + ' ' + t('message.family.idKept')
   )) return;
 
   syncHeaderToFamily();
@@ -28052,7 +28186,7 @@ $("resetTreeBtn").onclick=()=>{
   resetPersonForm();
   renderPedigree();
 
-  message("Árbol reseteado. Puedes empezar desde cero.","success");
+  message(t('message.tree.resetDone'),'success');
 };
 
 $("undoBtn").onclick =
@@ -28180,7 +28314,7 @@ function exportPedText() {
 
   (family.people || []).forEach(person => {
     if ((person.record_type || "person") !== "person") {
-      warnings.push(`${person.uid}: tipo ${person.record_type} omitido`);
+      warnings.push(t('ped.export.omittedType',{uid:person.uid,type:person.record_type}));
       return;
     }
 
@@ -28195,9 +28329,9 @@ function exportPedText() {
     // PED clásico exige PID/MID. Si el sexo no permite asignar el rol,
     // no inventamos padre/madre: se exporta 0 y se avisa al usuario.
     if (parents.length && !father && !mother) {
-      warnings.push(`${person.uid}: progenitor(es) sin sexo asignable a PID/MID`);
+      warnings.push(t("validation.ped.missingSexParents",{uid:person.uid}));
     } else if (parents.length > ((father ? 1 : 0) + (mother ? 1 : 0))) {
-      warnings.push(`${person.uid}: filiación no representable completamente en PED`);
+      warnings.push(t("validation.ped.parentageIncomplete",{uid:person.uid}));
     }
 
     lines.push([
@@ -28217,25 +28351,24 @@ $("exportPedBtn").onclick=()=>{
   syncHeaderToFamily();
   const result = exportPedText();
   if (!result.text.trim()) {
-    message("No hay individuos compatibles con PED para exportar.","error");
+    message(t("validation.export.noPEDCompatible"),"error");
     return;
   }
   if (result.warnings.length) {
     const preview = result.warnings.slice(0, 8).join("\n");
     const extra = result.warnings.length > 8
-      ? `\n… y ${result.warnings.length - 8} aviso(s) más.`
+      ? '\n' + t('ped.export.moreWarnings',{count:result.warnings.length - 8})
       : "";
     if (!confirm(
-      "El formato PED no puede representar toda la información del pedigree.\n\n" +
-      preview + extra +
-      "\n\nSe exportarán únicamente los datos PED compatibles. ¿Continuar?"
+      t('ped.export.incomplete') + '\n\n' +
+      preview + extra + '\n\n' + t('ped.export.confirm')
     )) return;
   }
   download(
     (family.family_id||"pedigree")+".ped",
     new Blob([result.text],{type:"text/plain;charset=utf-8"})
   );
-  message("PED exportado.","success");
+  message(t('ped.export.done'),'success');
 };
 
 function parsePedText(text) {
@@ -28250,49 +28383,49 @@ function parsePedText(text) {
     if (!line || line.startsWith("#")) return;
     const cols = line.split(/\s+/);
     if (cols.length < 6) {
-      errors.push(`Línea ${index + 1}: se esperaban al menos 6 columnas.`);
+      errors.push(t("ped.import.lineColumns",{line:index+1}));
       return;
     }
     const [fid, iid, pid, mid, sex, phenotype] = cols;
     if (!iid || iid === "0") {
-      errors.push(`Línea ${index + 1}: IID no válido.`);
+      errors.push(t("ped.import.iidInvalid",{line:index+1}));
       return;
     }
     if (seen.has(iid)) {
-      errors.push(`Línea ${index + 1}: IID duplicado (${iid}).`);
+      errors.push(t("ped.import.iidDuplicate",{line:index+1,iid}));
       return;
     }
     if (!["0","1","2"].includes(sex)) {
-      warnings.push(`Línea ${index + 1}: SEX=${sex}; se importará como desconocido.`);
+      warnings.push(t("ped.import.sexUnknown",{line:index+1,sex}));
     }
     if (!["0","-9","1","2"].includes(phenotype)) {
-      warnings.push(`Línea ${index + 1}: PHENOTYPE=${phenotype}; se importará como desconocido.`);
+      warnings.push(t("ped.import.phenotypeUnknown",{line:index+1,phenotype}));
     }
     if (!detectedFid) detectedFid = fid;
     if (fid !== detectedFid) {
-      errors.push(`Línea ${index + 1}: contiene FID ${fid}; sólo se admite una familia por importación.`);
+      errors.push(t("ped.import.fidMismatch",{line:index+1,fid}));
       return;
     }
     seen.add(iid);
     rows.push({ fid, iid, pid, mid, sex, phenotype, line:index + 1 });
   });
 
-  if (!rows.length && !errors.length) errors.push("El archivo PED está vacío.");
+  if (!rows.length && !errors.length) errors.push(t("validation.storage.emptyPED"));
 
   const ids = new Set(rows.map(r => r.iid));
   rows.forEach(r => {
-    [["padre",r.pid],["madre",r.mid]].forEach(([role,id]) => {
+    [['father',r.pid],['mother',r.mid]].forEach(([role,id]) => {
       if (id !== "0" && !ids.has(id)) {
-        errors.push(`Línea ${r.line}: ${role} ${id} no existe como IID en el archivo.`);
+        errors.push(t('ped.import.referenceMissing',{line:r.line,role:t('ped.import.role.'+role),id}));
       }
     });
     if (r.pid !== "0" && r.pid === r.mid) {
-      errors.push(`Línea ${r.line}: PID y MID no pueden ser el mismo individuo.`);
+      errors.push(t("ped.import.sameParents",{line:r.line}));
     }
   });
 
   if (errors.length) {
-    throw new Error(errors.slice(0,10).join("\n") + (errors.length > 10 ? `\n… y ${errors.length-10} error(es) más.` : ""));
+    throw new Error(errors.slice(0,10).join('\n') + (errors.length > 10 ? '\n' + t('ped.import.moreErrors',{count:errors.length-10}) : ''));
   }
 
   const imported = emptyFamily();
@@ -28358,18 +28491,17 @@ $("importPedInput").addEventListener("change", async e=>{
     const affected = parsed.rows.filter(r => r.phenotype === "2").length;
     const unknownSex = parsed.rows.filter(r => !["1","2"].includes(r.sex)).length;
     const warningText = parsed.warnings.length
-      ? `\n\nAvisos:\n${parsed.warnings.slice(0,8).join("\n")}${parsed.warnings.length>8 ? "\n…" : ""}`
+      ? '\n\n'+t('ped.import.warnings')+'\n'+parsed.warnings.slice(0,8).join('\n')+(parsed.warnings.length>8 ? '\n…' : '')
       : "";
 
     const ok = confirm(
-      `Importar PED\n\n` +
-      `Familia: ${parsed.family.family_id}\n` +
-      `Individuos: ${parsed.rows.length}\n` +
-      `Fundadores: ${founders}\n` +
-      `Afectados: ${affected}\n` +
-      `Sexo desconocido: ${unknownSex}` +
-      warningText +
-      `\n\nEl pedigree actual será sustituido. ¿Continuar?`
+      t('ped.import.title')+'\n\n'+
+      t('ped.import.family',{id:parsed.family.family_id})+'\n'+
+      t('ped.import.individuals',{count:parsed.rows.length})+'\n'+
+      t('ped.import.founders',{count:founders})+'\n'+
+      t('ped.import.affected',{count:affected})+'\n'+
+      t('ped.import.unknownSex',{count:unknownSex})+
+      warningText+'\n\n'+t('ped.import.confirm')
     );
     if (!ok) return;
 
@@ -28385,9 +28517,9 @@ $("importPedInput").addEventListener("change", async e=>{
     resetPersonForm();
     renderPedigree();
     fitPedigreeToWidthAfterLoad();
-    message("PED importado y pedigree generado.","success");
+    message(t('ped.import.done'),'success');
   } catch(err) {
-    message("No se pudo importar PED: "+err.message,"error");
+    message(t('ped.import.failed',{error:err.message}),'error');
   } finally {
     e.target.value="";
   }
@@ -29486,7 +29618,7 @@ function appendExportReport(svgNode) {
     x:left,
     y,
     class:"export-report-title"
-  },"Información del pedigree"));
+  },t("label.pdf.pedigreeInfo")));
 
   y += 28;
 
@@ -29536,7 +29668,7 @@ function appendExportReport(svgNode) {
     x:left,
     y,
     class:"export-report-section-title"
-  },"Leyenda explicativa del árbol"));
+  },t("label.pdf.legend")));
 
   y += 24;
 
@@ -29611,16 +29743,16 @@ function appendExportReport(svgNode) {
 
           if (status === "affected") {
             label =
-              `Afectado por ${condition.name || condition.id}`;
+              t("pdf.status.affected", {name:condition.name || condition.id});
           } else if (status === "carrier") {
             label =
-              `Portador no afectado de ${condition.name || condition.id}`;
+              t("pdf.status.carrier", {name:condition.name || condition.id});
           } else if (status === "presymptomatic") {
             label =
-              `Asintomático/presintomático para ${condition.name || condition.id}`;
+              t("pdf.status.presymptomatic", {name:condition.name || condition.id});
           } else {
             label =
-              `Estado respecto a ${condition.name || condition.id} desconocido/no documentado`;
+              t("pdf.status.unknown", {name:condition.name || condition.id});
           }
 
           conditionLegendRows.push({
@@ -29719,7 +29851,7 @@ function appendExportReport(svgNode) {
       x:left,
       y,
       class:"export-report-section-title"
-    },"Resumen de estados respecto a cada condición"));
+    },t("label.pdf.conditions")));
 
     y += 24;
 
@@ -29753,7 +29885,7 @@ function appendExportReport(svgNode) {
             const parts = [];
 
             parts.push(
-              `Estado: ${
+              `${t("pdf.label.status")} ${
                 CONDITION_STATUS_LABELS[
                   state.status
                 ] || state.status
@@ -29761,24 +29893,24 @@ function appendExportReport(svgNode) {
             );
 
             parts.push(
-              `Resultado molecular: ${
+              `${t("pdf.label.molecularResult")} ${
                 MOLECULAR_RESULT_LABELS[
                   state.molecular_result
                 ] ||
                 state.molecular_result ||
-                "No indicado"
+                t("pdf.label.notProvided")
               }`
             );
 
             if (state.variant) {
               parts.push(
-                `Variante: ${state.variant}`
+                `${t("pdf.label.variant")} ${state.variant}`
               );
             }
 
             if (state.zygosity) {
               parts.push(
-                `Cigosis: ${
+                `${t("pdf.label.zygosity")} ${
                   ZYGOSITY_LABELS[
                     state.zygosity
                   ] || state.zygosity
@@ -29788,13 +29920,13 @@ function appendExportReport(svgNode) {
 
             if (state.genotype) {
               parts.push(
-                `Detalle genotípico: ${state.genotype}`
+                `${t("pdf.label.genotype")} ${state.genotype}`
               );
             }
 
             if (state.documented_evaluation) {
               parts.push(
-                "Evaluación documentada / registros revisados: Sí"
+                t("pdf.label.documented")
               );
             }
 
@@ -29872,13 +30004,13 @@ function appendExportLegendOnly(svgNode) {
       let label;
 
       if (status === "affected") {
-        label = `Afectado por ${condition.name || condition.id}`;
+        label = t("pdf.status.affected", {name:condition.name || condition.id});
       } else if (status === "carrier") {
-        label = `Portador no afectado de ${condition.name || condition.id}`;
+        label = t("pdf.status.carrier", {name:condition.name || condition.id});
       } else if (status === "presymptomatic") {
-        label = `Asintomático/presintomático para ${condition.name || condition.id}`;
+        label = t("pdf.status.presymptomatic", {name:condition.name || condition.id});
       } else {
-        label = `Estado respecto a ${condition.name || condition.id} desconocido/no documentado`;
+        label = t("pdf.status.unknown", {name:condition.name || condition.id});
       }
 
       entries.push({
@@ -30225,7 +30357,7 @@ function exportCurrentPedigreePng() {
 
       if (!ctx) {
         throw new Error(
-          "El navegador no permite crear el canvas."
+          t("export.image.canvasUnavailable")
         );
       }
 
@@ -30359,7 +30491,7 @@ function svgExportToPngBlob(
 
         if (!ctx) {
           throw new Error(
-            "El navegador no permite crear el canvas."
+            t("export.image.canvasUnavailable")
           );
         }
 
@@ -30385,7 +30517,7 @@ function svgExportToPngBlob(
           if (!blob) {
             reject(
               new Error(
-                "No se pudo generar el PNG temporal."
+                t("export.image.pngBlobFailed")
               )
             );
             return;
@@ -30408,7 +30540,7 @@ function svgExportToPngBlob(
 
       reject(
         new Error(
-          "No se pudo rasterizar el pedigree para generar el PDF."
+          t("validation.export.noPDF")
         )
       );
     };
@@ -30422,6 +30554,7 @@ function buildPdfReportData() {
     exportGeneralLegendEntries()
       .map(entry => ({
         ...entry,
+        label: window.PedigrAPPi18n.uiText(entry.label),
         icon_svg:
           pdfGeneralLegendIconSvg(
             entry.kind
@@ -30432,7 +30565,7 @@ function buildPdfReportData() {
 
   const reportDateTime =
     reportDate.toLocaleString(
-      "es-ES",
+      (window.PedigrAPPi18n?.current()==="en" ? "en-GB" : "es-ES"),
       {
         day:"2-digit",
         month:"2-digit",
@@ -30454,21 +30587,21 @@ function buildPdfReportData() {
 
           if (status === "affected") {
             label =
-              `Afectado por ${condition.name || condition.id}`;
+              t("pdf.status.affected", {name:condition.name || condition.id});
             pattern = "solid";
           } else if (status === "carrier") {
             label =
-              `Portador no afectado de ${condition.name || condition.id}`;
+              t("pdf.status.carrier", {name:condition.name || condition.id});
             pattern =
               normalizeCarrierPattern(
                 condition.carrier_pattern
               );
           } else if (status === "presymptomatic") {
             label =
-              `Asintomático/presintomático para ${condition.name || condition.id}`;
+              t("pdf.status.presymptomatic", {name:condition.name || condition.id});
           } else {
             label =
-              `Estado respecto a ${condition.name || condition.id} desconocido/no documentado`;
+              t("pdf.status.unknown", {name:condition.name || condition.id});
           }
 
           conditionLegend.push({
@@ -30523,7 +30656,7 @@ function buildPdfReportData() {
               const lines = [];
 
               lines.push(
-                `Estado: ${
+                `${t("pdf.label.status")} ${
                   CONDITION_STATUS_LABELS[
                     state.status
                   ] || state.status
@@ -30531,24 +30664,24 @@ function buildPdfReportData() {
               );
 
               lines.push(
-                `Resultado molecular: ${
+                `${t("pdf.label.molecularResult")} ${
                   MOLECULAR_RESULT_LABELS[
                     state.molecular_result
                   ] ||
                   state.molecular_result ||
-                  "No indicado"
+                  t("pdf.label.notProvided")
                 }`
               );
 
               if (state.variant) {
                 lines.push(
-                  `Variante: ${state.variant}`
+                  `${t("pdf.label.variant")} ${state.variant}`
                 );
               }
 
               if (state.zygosity) {
                 lines.push(
-                  `Cigosis: ${
+                  `${t("pdf.label.zygosity")} ${
                     ZYGOSITY_LABELS[
                       state.zygosity
                     ] || state.zygosity
@@ -30558,13 +30691,13 @@ function buildPdfReportData() {
 
               if (state.genotype) {
                 lines.push(
-                  `Detalle genotípico: ${state.genotype}`
+                  `${t("pdf.label.genotype")} ${state.genotype}`
                 );
               }
 
               if (state.documented_evaluation) {
                 lines.push(
-                  "Evaluación documentada / registros revisados: Sí"
+                  t("pdf.label.documented")
                 );
               }
 
@@ -30684,7 +30817,7 @@ function pdfPrintPedigreeCommentsHtml(comment) {
   if (!clean) return "";
 
   return `<section class="report-section pedigree-comments-section">
-    <h2>COMENTARIOS DEL PEDIGREE</h2>
+    <h2>${pdfPrintEscape(t("pdf.section.pedigreeComments"))}</h2>
     <div class="pedigree-comments-text">${pdfPrintEscape(clean).replace(/\n/g,"<br>")}</div>
   </section>`;
 }
@@ -30693,7 +30826,7 @@ function pdfPrintPeopleHtml(people) {
   if (!(people || []).length) return "";
 
   return `<section class="report-section clinical-section">
-    <h2>RESUMEN DE INDIVIDUOS SELECCIONADOS</h2>
+    <h2>${pdfPrintEscape(t("pdf.section.selectedIndividuals"))}</h2>
     <div class="people-grid">${people.map(person => `
       <div class="person-block">
         <div class="person-title">${pdfPrintEscape(person.title || "")}</div>
@@ -30710,7 +30843,7 @@ function pdfPrintCommentsHtml(comments) {
   if (!(comments || []).length) return "";
 
   return `<section class="report-section comments-section">
-    <h2>COMENTARIOS EXTENDIDOS DE LOS PACIENTES</h2>
+    <h2>${pdfPrintEscape(t("pdf.section.extendedComments"))}</h2>
     ${comments.map(item => `
       <div class="extended-comment-block">
         <div class="extended-comment-title">${pdfPrintEscape(item.title || "")}</div>
@@ -30719,22 +30852,53 @@ function pdfPrintCommentsHtml(comments) {
   </section>`;
 }
 
-/* Cabecera pública neutra: el PDF no depende de imágenes externas. */
+/*
+ * v1.0.4 — Cabecera del informe con el logo propio de PedigrAPP.
+ * Incrustamos en el HTML de impresión una copia PNG del logo ya cargado
+ * en la cabecera de la aplicación. Así no depende de rutas relativas,
+ * de una descarga posterior ni de imágenes corporativas externas.
+ * La URL absoluta original queda como alternativa si el logo todavía
+ * no estuviese disponible cuando se pulse Exportar PDF.
+ */
+function pdfPrintLogoSource() {
+  const image = document.querySelector(".app-logo");
+
+  if (image && image.complete && image.naturalWidth > 0) {
+    try {
+      const canvas = document.createElement("canvas");
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+      const context = canvas.getContext("2d");
+      if (context) {
+        context.drawImage(image, 0, 0);
+        return canvas.toDataURL("image/png");
+      }
+    } catch (err) {
+      // Sin acceso a canvas: utilizar el mismo PNG por URL absoluta.
+    }
+  }
+
+  return new URL("images/PedigrAPP_logo.png", document.baseURI).href;
+}
+
 function pdfPrintAppHeader(version) {
   return `<div class="report-app-header">
-    <span class="report-app-name">PedigrAPP</span>
+    <span class="report-app-brand">
+      <img class="report-app-logo" src="${pdfPrintEscape(pdfPrintLogoSource())}" alt="PedigrAPP" onerror="this.hidden=true;this.nextElementSibling.hidden=false;">
+      <span class="report-app-name" hidden>PedigrAPP</span>
+    </span>
     <span class="report-app-version">v${pdfPrintEscape(version || APP_VERSION)}</span>
   </div>`;
 }
 
 function pdfPrintMeta(report) {
   return `<div class="report-meta-line">
-      <span>${report.report_datetime ? `Fecha y hora del informe: ${pdfPrintEscape(report.report_datetime)}` : ""}</span>
+      <span>${report.report_datetime ? `${pdfPrintEscape(t("pdf.label.date"))} ${pdfPrintEscape(report.report_datetime)}` : ""}</span>
     </div>
     <div class="report-title-spacer" aria-hidden="true"></div>
     <div class="meta">
       <div class="meta-inline"><strong>ID:</strong> ${pdfPrintEscape(report.family_id || "—")}</div>
-      <div class="meta-inline"><strong>INDICACIÓN:</strong> ${pdfPrintEscape(report.indication || "—")}</div>
+      <div class="meta-inline"><strong>${pdfPrintEscape(t("pdf.label.indication"))}</strong> ${pdfPrintEscape(report.indication || "—")}</div>
     </div>`;
 }
 
@@ -30876,10 +31040,13 @@ async function exportCurrentPedigreePdf() {
   if (!currentSvg) return;
 
   const button = $("exportPdfBtn");
+  const originalTitle = button ? button.title : "";
 
   if (button) {
     button.disabled = true;
-    button.textContent = "Preparando PDF...";
+    button.setAttribute("aria-busy", "true");
+    button.title = t("pdf.export.title");
+    // NO sustituir textContent: eliminaría el SVG del botón.
   }
 
   try {
@@ -30928,7 +31095,7 @@ async function exportCurrentPedigreePdf() {
 
     if (!printWindow) {
       throw new Error(
-        "El navegador ha bloqueado la ventana de impresión. Permite ventanas emergentes para esta aplicación."
+        t("pdf.export.popupBlocked")
       );
     }
 
@@ -30990,7 +31157,7 @@ async function exportCurrentPedigreePdf() {
       : portraitBody;
 
     const html = `<!doctype html>
-<html lang="es">
+<html lang="${window.PedigrAPPi18n?.current()||"es"}">
 <head>
 <meta charset="utf-8">
 <title>${pdfPrintEscape(report.family_id || "pedigree")}</title>
@@ -31036,15 +31203,19 @@ body { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 .report-app-header {
   width:100%;
   display:flex;
-  align-items:baseline;
+  align-items:center;
   justify-content:space-between;
   border-bottom:0.5pt solid #bfc5ce;
   padding:0 0 5pt;
   margin:0 0 10pt;
 }
+.report-app-brand { display:flex; align-items:center; min-width:0; }
+.report-app-logo { display:block; width:138pt; height:auto; max-width:100%; }
+.report-app-logo[hidden], .report-app-name[hidden] { display:none !important; }
 .report-app-name { font-size:12pt; font-weight:700; letter-spacing:-.02em; }
-.report-app-version { font-size:6.5pt; color:#707781; }
+.report-app-version { font-size:6.5pt; color:#707781; white-space:nowrap; margin-left:10pt; }
 .landscape-page .report-app-header { margin-bottom:4pt; padding-bottom:3pt; }
+.landscape-page .report-app-logo { width:126pt; }
 .landscape-page .report-app-name { font-size:10pt; }
 .landscape-page .report-app-version { font-size:5.5pt; }
 
@@ -31313,7 +31484,7 @@ h2 {
 </style>
 </head>
 <body>
-<div class="print-help"><strong>PDF vectorial ${pdfPrintEscape(report.app_version || APP_VERSION)}.</strong> Selecciona «Guardar como PDF» y <strong>desactiva «Encabezados y pies de página»</strong> en el diálogo de impresión. Esta versión no añade numeración de páginas.</div>
+<div class="print-help"><strong>PDF vectorial ${pdfPrintEscape(report.app_version || APP_VERSION)}.</strong> ${pdfPrintEscape(t("pdf.print.instructions"))}</div>
 ${bodyHtml}
 <script>
 (function(){
@@ -31336,18 +31507,20 @@ ${bodyHtml}
     printWindow.document.close();
 
     message(
-      `Vista de impresión vectorial ${report.app_version || APP_VERSION} preparada.`,
+      t("pdf.export.success",{version:report.app_version||APP_VERSION}),
       "success"
     );
   } catch (err) {
     message(
-      "No se pudo preparar el PDF vectorial: " + err.message,
+      t("pdf.export.error",{error:err.message}),
       "error"
     );
   } finally {
     if (button) {
       button.disabled = false;
-      button.textContent = "Exportar PDF";
+      button.removeAttribute("aria-busy");
+      button.title = originalTitle;
+      // El icono SVG original nunca se altera.
     }
   }
 }

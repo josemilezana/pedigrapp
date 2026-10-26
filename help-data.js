@@ -1,6 +1,6 @@
 window.PEDIGRAPP_HELP_DATA = {
-  helpVersion: "1.0.2",
-  updatedAt: "20/10/2026",
+  helpVersion: "1.0.5",
+  updatedAt: "23/10/2026",
   title: "Ayuda y nomenclatura de PedigrAPP",
   intro: "Guía de uso y referencia de los símbolos, relaciones y convenciones implementadas en PedigrAPP. La aplicación se apoya en la nomenclatura estandarizada de pedigree de la National Society of Genetic Counselors (NSGC), con las revisiones y correcciones indicadas en la bibliografía.",
   notes: [
@@ -13,7 +13,7 @@ window.PEDIGRAPP_HELP_DATA = {
     {title:"Información clínica y genética",text:"Desde la tarjeta contextual pulse «Introducir información clínica y genética». Allí se registran estados por condición, resultados moleculares, variantes, cigosis y comentarios."},
     {title:"Progenitores intencionales",text:"En un embarazo o descendiente, abre Opciones avanzadas y selecciona los progenitores intencionales. PedigrAPP escribirá sus números genealógicos bajo el símbolo y actualizará el texto si cambia la numeración; no dibuja línea genética desde ellos. Es una anotación propia para aclarar la filiación intencional, distinta de las líneas de donación D y gestación G de Bennett 2025."},
     {title:"Situación reproductiva de una pareja",text:"Pulsa directamente la línea de unión; debajo de Relación finalizada y Relación consanguínea aparece Situación reproductiva. Elige No descendencia por elección/motivo desconocido o Infertilidad, atribúyelo a la pareja o a uno de sus integrantes, indica un motivo si procede y pulsa Guardar situación reproductiva. El marcador de una o dos barras se representa automáticamente. Esta información es la misma que en Relaciones avanzadas."},
-    {title:"Crear relaciones",text:"Use los atajos del tooltip para relaciones habituales, entre ellos Añadir feto como descendencia (sexo desconocido). Si un individuo tiene varias parejas, el atajo Feto no pide elegir una: registra como progenitor solo al individuo seleccionado, y permite indicar otro progenitor posteriormente mediante «Relaciones avanzadas». Para adopción, filiaciones específicas, gemelos y situaciones menos frecuentes también puede usar «Relaciones avanzadas»."},
+    {title:"Crear relaciones",text:"Use los atajos del tooltip para relaciones habituales, entre ellos Añadir feto y Añadir mortinato (SB) como descendencia, ambos con sexo desconocido por defecto. Si un individuo tiene varias parejas, ninguno de los dos atajos presupone cuál es la otra filiación: solo registra como progenitor al individuo seleccionado y permite indicar otro posteriormente mediante «Relaciones avanzadas». Para adopción, filiaciones específicas, gemelos y situaciones menos frecuentes también puede usar «Relaciones avanzadas»."},
     {title:"Moverse por el árbol",text:"El visor permite zoom, desplazamiento, ajuste al ancho, encuadre completo y búsqueda de individuos. Al cargar un caso, el pedigree se ajusta automáticamente al ancho. Para ajustar una posición, mantén pulsado el ratón sobre un individuo y arrástralo horizontalmente: las conexiones se actualizan y los vecinos de su fila dejan espacio sin intercambiar su orden. El clic breve sigue abriendo la ficha. Los ajustes se guardan con la familia y se pueden deshacer; el botón ↺ restablece posiciones y ordenación gráfica. El botón ⇄ activa el modo «Reordenar horizontalmente»: arrastra cualquier individuo a otra posición dentro de su misma generación, aunque atraviese fratrías o donantes. Las parejas y gemelos se trasladan como unidades, sin cambiar filiaciones ni orden de nacimiento registrado; vuelve a pulsarlo para recuperar el arrastre normal. El QC puede avisar si se modifica el orden de nacimiento representado."},
     {title:"Control de calidad en directo (QC)",text:"El piloto luminoso único de QC cambia automáticamente de color al editar: rojo para errores, ámbar para avisos, azul para información, verde sin incidencias y gris para pedigree vacío o pendiente de comprobar. Una pequeña marca violeta indica incidencias gráficas. Pulse el piloto o el resumen de QC para consultar los detalles; el panel permanece cerrado por defecto. El QC no modifica el árbol ni equivale a revisión clínica."},
     {title:"Guardar y exportar",text:"Puede guardar casos, importar/exportar JSON y PED, exportar SVG/PNG y generar un PDF clínico desde el navegador."}
@@ -144,6 +144,15 @@ window.PEDIGRAPP_HELP_DATA = {
   exploitationRightsHolder:"Fundación Investigación Biomédica Hospital 12 de Octubre",
   registry:"Safe Creative 2610197365707 (20/10/2026 08:01 UTC)",
   changelog:[
+    {version:"1.0.5",text:""},
+    {version:"1.0.5-rc8",text:""},
+    {version:"1.0.5-rc7",text:""},
+    {version:"1.0.5-rc6",text:""},
+    {version:"1.0.5-rc5",text:""},
+    {version:"1.0.5-rc4",text:""},
+    {version:"1.0.5-rc3",text:""},
+    {version:"1.0.4",text:"La cabecera del informe PDF incorpora el logotipo propio de PedigrAPP, incrustado en el documento para que aparezca en la impresión. Al exportar PDF se conserva el icono del botón, sin que aparezca texto permanente. Sin cambios en el esquema JSON 4.16."},
+    {version:"1.0.3",text:"Nuevo atajo Mortinato (SB) en Añadir familiar: crea descendencia con sexo desconocido por defecto, símbolo de mortinato y filiación automática con la pareja cuando es inequívoca; con varias uniones solo asigna al progenitor seleccionado. Conserva Deshacer/Rehacer, edición de sexo y esquema JSON 4.16."},
     {version:"1.0.2",text:"Actualización exclusivamente documental y de metadatos de publicación: DOI Zenodo y metadatos de citación. No cambia el funcionamiento, el QC, el layout, las exportaciones ni el esquema JSON 4.16."},
     {version:"1.0.1",text:"Actualización exclusivamente legal, documental y de metadatos: EUPL-1.2, autoría registrada, equipo clínico/científico y registro Safe Creative. No cambia el funcionamiento, el QC, el layout, las exportaciones ni el esquema JSON 4.16."},
     {version:"1.0.0",text:"Primera versión pública independiente de identidad institucional: cabecera de aplicación simplificada, PDF sin membretes ni logos corporativos y documentación preparada para distribución pública. Sin cambios en el formato JSON, el layout ni las reglas clínicas."},
