@@ -6205,3 +6205,13 @@ body.clinical-drawer-open .toast-container {
 .language-choice .language-flag {font-family:system-ui, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;font-size:15px;line-height:1;}
 .language-choice .language-code {font-size:10px;font-weight:750;}
 @media (max-width:540px) {.app-language-switch .language-choice {min-width:43px;padding:3px 4px;gap:3px;}}
+
+/* v1.0.6: explicit mutually exclusive age / birth-year quick editor. */
+.condition-hover-quick-edit-top.chronology-aux {
+  grid-template-columns: minmax(0,1fr) 66px 65px;
+}
+.condition-hover-chronology-mode {
+  padding: 2px 1px;
+  font-size: 10px;
+  text-overflow: ellipsis;
+}

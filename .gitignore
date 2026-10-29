@@ -1,13 +1,17 @@
 # ============================================================
-# PedigrAPP - archivos que NUNCA deben publicarse
+# PedigrAPP - files that must never be published
 # ============================================================
 
-# Datos clínicos / familias locales
+# Clinical/local family data
 /data/**
-!/data/.gitkeep
 !/data/.htaccess
 
-# Credenciales y configuración privada
+# Non-public examples and test material
+/examples/
+/tests/
+/test/
+
+# Credentials and private configuration
 .env
 .env.*
 !.env.example
@@ -20,7 +24,7 @@
 *.cnf
 *.kdbx
 
-# Bases de datos, volcados y logs
+# Databases, dumps and logs
 *.sql
 *.sqlite
 *.sqlite3
@@ -28,15 +32,24 @@
 *.dump
 *.log
 
-# Cachés y archivos del sistema/editor
-.DS_Store
-Thumbs.db
+# Python/test/editor/system caches
 __pycache__/
 *.pyc
+*.pyo
+.pytest_cache/
+.coverage
+.DS_Store
+Thumbs.db
 *.bak
+*.tmp
+*.old
+*.orig
+*.rej
+*.swp
+*.swo
 *~
 
-# Paquetes y copias locales
+# Local archives and packages
 *.zip
 *.tar
 *.tar.gz

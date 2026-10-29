@@ -2,11 +2,11 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23498335.svg)](https://doi.org/10.5281/zenodo.23498335)
 
-**Version 1.0.5** · Static browser edition of PedigrAPP for creating, editing, reviewing, and exporting pedigrees for clinical genetics.
+**Version 1.1** · Static browser edition of PedigrAPP for creating, editing, reviewing, and exporting pedigrees for clinical genetics.
 
 PedigrAPP online runs entirely in the browser and does **not** require PHP, a database, or a PedigrAPP backend. Saved cases are stored in the browser's `localStorage` for the current web origin.
 
-Version **1.0.5** provides complete **English/Spanish internationalization** across the editor, clinical forms, QC, help, tooltips, legends, and generated PDF content. Existing PedigrAPP family files remain compatible; the family schema is still **JSON 4.16** and language switching never translates or alters user-entered clinical data.
+Version **1.1** retains complete **English/Spanish internationalization** and adds mutually exclusive age or birth year, explicit partnerships involving donors and gestational carriers, explicit gestation by eligible AFAB individuals, and shared gamete donors across multiple outcomes while preserving documented sibships. Existing PedigrAPP family files remain compatible; the native family schema is **JSON 4.19** and language switching never translates or alters user-entered clinical data.
 
 **Public application:** https://josemilezana.github.io/pedigrapp/
 

@@ -1,6 +1,6 @@
 # Third-party notices and scientific references
 
-This notice originated with the review of **PedigrAPP v1.0.1 (`main`)** and the assets distributed with v1.0.0. It is carried forward into v1.0.5. It does not replace license review for components added in future releases.
+This notice originated with the review of **PedigrAPP v1.0.1 (`main`)** and the assets distributed with v1.0.0. It is carried forward into v1.1. It does not replace license review for components added in future releases.
 
 ## Included software components
 

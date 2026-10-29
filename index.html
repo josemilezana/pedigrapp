@@ -4,9 +4,9 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>PedigrAPP · 1.0.5</title>
+<title>PedigrAPP · 1.1</title>
 <link href="images/PedigrAPP_icono_small.png" rel="icon" type="image/png"/>
-<link href="pedigree.css?v=10058" rel="stylesheet"/>
+<link href="pedigree.css?v=1100" rel="stylesheet"/>
 </head>
 <body>
 <main class="app-shell">
@@ -15,7 +15,7 @@
 <div class="app-branding">
 <img alt="PedigrAPP" class="app-logo" onerror="this.style.display='none';this.nextElementSibling.hidden=false" src="images/PedigrAPP_logo.png"/>
 <strong class="app-name-fallback" hidden="">PedigrAPP</strong>
-<div class="app-version">v1.0.5</div>
+<div class="app-version">v1.1</div>
 </div>
 </div><div aria-label="Language / Idioma" class="app-language-switch" role="group"><button aria-pressed="true" class="language-choice" data-language="es" title="Español" type="button"><span class="language-flag" aria-hidden="true">🇪🇸</span><span class="language-code">ES</span></button><button aria-pressed="false" class="language-choice" data-language="en" title="English" type="button"><span class="language-flag" aria-hidden="true">🇬🇧</span><span class="language-code">EN</span></button></div>
 </header>
@@ -488,6 +488,10 @@
 <label data-i18n="app.personForm.div1.div10.label1.text" for="age">Edad</label>
 <input id="age" max="130" min="0" step="1" type="number"/>
 </div>
+<div class="field person-basic-field">
+<label data-i18n="individual.birthYear" for="birthYear">Año de nacimiento (alternativo a edad)</label>
+<input id="birthYear" min="1000" max="2100" step="1" type="number" data-i18n-placeholder="individual.birthYearPlaceholder" placeholder="AAAA"/>
+</div>
 <div class="field pregnancy-loss-only-field hidden">
 <label data-i18n="app.personForm.div1.div11.label1.text" for="gestationalAge">Edad gestacional (semanas)</label>
 <input id="gestationalAge" max="45" min="1" placeholder="p. ej. 8" step="1" type="number"/>
@@ -610,6 +614,8 @@
 <option data-i18n="app.relationType.option8.text" value="union">es pareja de</option>
 <option data-i18n="app.relationType.option9.text" value="ended_union">relación finalizada con</option>
 <option data-i18n="app.relationType.option10.text" value="consanguineous_union">es pareja consanguínea de</option>
+<option data-i18n="app.relationType.option11.text" value="gestates">gesta el embarazo de / gestó a</option>
+<option data-i18n="app.relationType.donates" value="donates">es donante de gametos para</option>
 </select>
 </div>
 <div class="field hidden" id="consanguinityDegreeField">
@@ -736,8 +742,8 @@
 </section>
 </section>
 </main>
-<script src="locales/catalog.js?v=10058"></script>
-<script src="i18n.js?v=10058"></script><script src="pedigree-qc.js?v=10058"></script>
-<script src="pedigree.js?v=10058"></script>
+<script src="locales/catalog.js?v=1100"></script>
+<script src="i18n.js?v=1100"></script><script src="pedigree-qc.js?v=1100"></script>
+<script src="pedigree.js?v=1100"></script>
 </body>
 </html>
