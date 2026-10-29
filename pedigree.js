@@ -1,7 +1,7 @@
 (() => {
 "use strict";
 
-const APP_VERSION = "1.0.5";
+const APP_VERSION = "1.1";
 // Changes to language do not modify the family model or history.
 function refreshLocalizedPresentation() {
   // Called once dictionaries are loaded, and whenever the language changes.
@@ -43,6 +43,15 @@ function refreshLocalizedPresentation() {
   const emptyStatus=document.getElementById('status');
   if(emptyStatus && !family.people.length)emptyStatus.textContent=t('layout.empty');
 
+  // Translate only automatic chronology SVG labels in place: no relayout,
+  // no geometry changes, no free-text edits and no history changes.
+  if(currentSvg && typeof personByUid==='function'){
+    currentSvg.querySelectorAll('.person[data-uid]').forEach(node=>{
+      const p=personByUid(node.getAttribute('data-uid'));
+      const label=node.querySelector('.person-chronology-label');
+      if(label && p)label.textContent=personalChronologyLabel(p);
+    });
+  }
   if(typeof renderClinicalLegend==='function')renderClinicalLegend();
   if(typeof recalculateLivePedigreeQc==='function')recalculateLivePedigreeQc();
   if(typeof buildConditionHoverCard==='function' && typeof conditionHoverActiveUid!=='undefined' && conditionHoverActiveUid){
@@ -54,7 +63,26 @@ function refreshLocalizedPresentation() {
       const moreExpanded=card.querySelector('.condition-hover-more-button')?.getAttribute('aria-expanded')==='true';
       const marked=[...card.querySelectorAll('.condition-hover-relation-list input:checked')].map(el=>el.value);
       const twinType=card.querySelector('.condition-hover-twin-type')?.value;
+      // Preserve unsaved quick-edit values (including age/year mode) while
+      // rebuilding only translated text. Nothing is written to the family.
+      const quickValues={
+        label:card.querySelector('.condition-hover-quick-label')?.value,
+        brief:card.querySelector('.condition-hover-quick-brief')?.value,
+        mode:card.querySelector('.condition-hover-chronology-mode')?.value,
+        aux:card.querySelector('.condition-hover-quick-age, .condition-hover-quick-meta')?.value
+      };
       buildConditionHoverCard(record);
+      const quickLabel=card.querySelector('.condition-hover-quick-label');
+      const quickBrief=card.querySelector('.condition-hover-quick-brief');
+      const quickMode=card.querySelector('.condition-hover-chronology-mode');
+      const quickAux=card.querySelector('.condition-hover-quick-age, .condition-hover-quick-meta');
+      if(quickLabel && quickValues.label!==undefined)quickLabel.value=quickValues.label;
+      if(quickBrief && quickValues.brief!==undefined)quickBrief.value=quickValues.brief;
+      if(quickMode && quickValues.mode){
+        quickMode.value=quickValues.mode;
+        quickMode.dispatchEvent(new Event('change'));
+      }
+      if(quickAux && quickValues.aux!==undefined)quickAux.value=quickValues.aux;
       if(twinType){
         const twin=card.querySelector('.condition-hover-twin-type');
         if(twin)twin.value=twinType;
@@ -117,7 +145,7 @@ let savedFamilySignature = JSON.stringify(family);
 
 function emptyFamily() {
   return {
-    schema_version: "4.16",
+    schema_version: "4.19",
     family_id: "FAM001",
     indication: "",
     pedigree_comments: "",
@@ -673,6 +701,7 @@ function quickDefaultRecord(
     birth_order:null,
     generation_override:null,
     age:null,
+    birth_year:null,
     gestational_age_weeks:null,
     notes:"",
     condition_states:[],
@@ -1211,6 +1240,33 @@ function supportsRecordBriefInfo(p) {
   return supportsRecordLabel(p);
 }
 
+// v1.0.6: a relationship is distinct from a reproductive contribution.
+// D and G may form a couple; this NEVER creates biological parentage.
+const PARTNER_RECORD_TYPES = new Set([
+  "person", "sperm_donor", "ovum_donor", "gestational_carrier"
+]);
+function canFormPartnership(p) {
+  return !!p && PARTNER_RECORD_TYPES.has(recordType(p));
+}
+
+function normalizedBirthYear(value) {
+  if (value === null || value === undefined || value === "") return null;
+  const n = Number(value);
+  return Number.isInteger(n) && n >= 1000 && n <= new Date().getFullYear()
+    ? n : null;
+}
+
+function personalChronologyLabel(p) {
+  if (!supportsQuickAge(p)) return "";
+  if (p.birth_year !== null && p.birth_year !== undefined && p.birth_year !== "") {
+    return t("individual.birthYearShort", {year:p.birth_year});
+  }
+  if (p.age !== null && p.age !== undefined && p.age !== "") {
+    return t("individual.ageShort", {age:p.age});
+  }
+  return "";
+}
+
 function supportsQuickAge(p) {
   if (!p) return false;
 
@@ -1355,10 +1411,7 @@ function donationTargetUids(p) {
 
   const values = [];
 
-  if (
-    recordType(p) === "sperm_donor" &&
-    Array.isArray(p.donation_targets)
-  ) {
+  if (Array.isArray(p.donation_targets)) {
     p.donation_targets
       .forEach(uid => {
         const value =
@@ -1373,7 +1426,8 @@ function donationTargetUids(p) {
   /*
    * Compatibilidad hacia atrás:
    * hasta schema 3.9 todo donante tenía donation_target singular.
-   * Para donante de esperma se migra automáticamente al array.
+   * Los dos tipos de donantes admiten ahora el array. El campo
+   * singular antiguo sigue siendo legible sin duplicar el resultado.
    */
   const legacy =
     String(
@@ -1387,13 +1441,9 @@ function donationTargetUids(p) {
   const unique =
     [...new Set(values)];
 
-  if (
-    recordType(p) === "ovum_donor"
-  ) {
-    return unique.slice(0,1);
-  }
-
-  return unique;
+  // Si además gesta, la donante de óvulos solo puede estar
+  // vinculada a ese embarazo; no asumir otras gestaciones.
+  return isSurrogateOvumDonor(p) ? unique.slice(0,1) : unique;
 }
 
 function donationTargetUid(p) {
@@ -1409,6 +1459,35 @@ function donorRecordsForTarget(uid,donorType=null) {
       recordType(p) === donorType
     )
   );
+}
+
+// Reutilizar D conserva exactamente las filiaciones y las fratrías actuales.
+// El registro del donante es el único origen de verdad de esta asociación.
+function assignExistingDonorTargets(donorUid,targetUids) {
+  const donor = personByUid(donorUid);
+  if (!isDonorRecord(donor)) {
+    throw new Error(t("validation.sharedDonor.donorRequired"));
+  }
+  if (isSurrogateOvumDonor(donor)) {
+    throw new Error(t("validation.sharedDonor.surrogateSingle"));
+  }
+  const targets = [...new Set((targetUids || []).map(String).filter(Boolean))];
+  if (!targets.length) {
+    throw new Error(t("validation.sharedDonor.targetRequired"));
+  }
+  for (const uid of targets) {
+    const outcome = personByUid(uid);
+    if (uid === donorUid || !outcome ||
+        !["person","fetus","stillbirth","sab","top","ect"].includes(recordType(outcome))) {
+      throw new Error(t("validation.donation.outcomeType"));
+    }
+    if (donorRecordsForTarget(uid,recordType(donor))
+        .some(other => other.uid !== donorUid)) {
+      throw new Error(t("validation.sharedDonor.sameTypeExists",{person:displayName(uid)}));
+    }
+  }
+  donor.donation_targets = targets;
+  donor.donation_target = null;
 }
 
 function hasDonorForTarget(uid) {
@@ -2100,7 +2179,7 @@ function synchronizeAffectedFromConditions(
 function normalizeFamily(data) {
   if (!data || !Array.isArray(data.people)) return data;
 
-  data.schema_version = "4.16";
+  data.schema_version = "4.19";
 
   // <=4.0: la numeración I-1, II-1... siempre era visible.
   // Por compatibilidad, cualquier JSON sin esta opción conserva ese comportamiento.
@@ -2145,6 +2224,10 @@ function normalizeFamily(data) {
 
   data.relationships = Array.isArray(data.relationships) ? data.relationships : [];
   data.relationships.forEach(r => {
+    if (r.type === "gestation") {
+      r.carrier = String(r.carrier || "");
+      r.target = String(r.target || "");
+    }
     if (r.type === "union") {
       r.intergenerational = !!r.intergenerational;
       r.consanguineous = !!r.consanguineous;
@@ -2210,20 +2293,18 @@ function normalizeFamily(data) {
         multiple_count:grouped
           ? normalizedMultipleCount(p)
           : null,
-        donation_targets:
-          recordTypeValue === "sperm_donor"
-            ? donationTargetUids(p)
-            : [],
-        donation_target:
-          recordTypeValue === "ovum_donor"
-            ? (donationTargetUids(p)[0] || null)
-            : null,
+        donation_targets: donor ? donationTargetUids(p) : [],
+        donation_target: isSurrogateOvumDonor(p)
+          ? (donationTargetUid(p) || null) : null,
         gestation_target:gestationalCarrier
           ? (String(p.gestation_target || "").trim() || null)
           : null,
         surrogate:
           recordTypeValue === "ovum_donor" &&
           p.surrogate === true,
+        age: supportsQuickAge(p) && normalizedBirthYear(p.birth_year) === null
+          ? (p.age ?? null) : null,
+        birth_year: supportsQuickAge(p) ? normalizedBirthYear(p.birth_year) : null,
         gestational_age_weeks:p.gestational_age_weeks ?? null,
         intended_parent_uids:intendedParentUids(p),
         notes:String(p.notes || ""),
@@ -2327,13 +2408,10 @@ function normalizeFamily(data) {
           ? normalizedMultipleCount(p)
           : null,
       donation_targets:
-        (p.record_type || "person") === "sperm_donor"
-          ? donationTargetUids(p)
-          : [],
+        ["sperm_donor","ovum_donor"].includes(p.record_type || "person")
+          ? donationTargetUids(p) : [],
       donation_target:
-        (p.record_type || "person") === "ovum_donor"
-          ? (donationTargetUids(p)[0] || null)
-          : null,
+        isSurrogateOvumDonor(p) ? (donationTargetUid(p) || null) : null,
       gestation_target:
         (p.record_type || "person") === "gestational_carrier"
           ? (String(p.gestation_target || "").trim() || null)
@@ -2376,10 +2454,9 @@ function normalizeFamily(data) {
           : String(p.reproductive_reason || ""),
       birth_order:p.birth_order ?? null,
       generation_override:p.generation_override ?? null,
-      age:
-        ["person","gestational_carrier"].includes(p.record_type || "person")
-          ? (p.age ?? null)
-          : null,
+      age: supportsQuickAge(p) && normalizedBirthYear(p.birth_year) === null
+        ? (p.age ?? null) : null,
+      birth_year: supportsQuickAge(p) ? normalizedBirthYear(p.birth_year) : null,
       gestational_age_weeks:p.gestational_age_weeks ?? null,
       intended_parent_uids:intendedParentUids(p).map(uid => idMap.get(uid) || uid),
       notes:String(p.notes || ""),
@@ -2411,6 +2488,14 @@ function normalizeFamily(data) {
             ? (idMap.get(r.reproductive_attribution) || r.reproductive_attribution)
             : "union",
         reproductive_reason: String(r.reproductive_reason || "")
+      };
+    }
+
+    if (r.type === "gestation") {
+      return {
+        type:"gestation",
+        carrier:idMap.get(r.carrier) || r.carrier,
+        target:idMap.get(r.target) || r.target
       };
     }
 
@@ -2514,13 +2599,8 @@ function validate(data) {
         );
       }
 
-      if (
-        recordType(p) === "ovum_donor" &&
-        targets.length > 1
-      ) {
-        throw new Error(
-          t("validation.ovumDonor.oneOutcome")
-        );
+      if (isSurrogateOvumDonor(p) && targets.length > 1) {
+        throw new Error(t("validation.ovumDonor.oneOutcome"));
       }
     }
 
@@ -2649,7 +2729,29 @@ function validate(data) {
     }
   });
 
+  const gestationTargets = new Set();
   data.relationships.forEach(r => {
+    if (r.type === "gestation") {
+      const carrier = data.people.find(p => p.uid === r.carrier);
+      const target = data.people.find(p => p.uid === r.target);
+      if (!canBeExplicitGestator(carrier)) {
+        throw new Error(t("validation.gestation.afabRequired"));
+      }
+      if (!eligibleGestationOutcome(target) || r.carrier === r.target) {
+        throw new Error(t("validation.gestation.outcomeRequired"));
+      }
+      if (gestationTargets.has(r.target)) {
+        throw new Error(t("validation.gestation.duplicate"));
+      }
+      if (isAncestor(r.target,r.carrier,data.relationships)) {
+        throw new Error(t("validation.gestation.cycle"));
+      }
+      if (data.people.some(p => isPregnancyCarrierRecord(p) &&
+          pregnancyCarrierTargetUid(p) === r.target)) {
+        throw new Error(t("validation.gestation.carrierConflict"));
+      }
+      gestationTargets.add(r.target);
+    }
     if (r.type === "union") {
       (r.people || []).forEach(uid => {
         if (!uids.has(uid)) throw new Error(t("validation.relationship.personNotFound"));
@@ -2769,6 +2871,7 @@ function generationMap() {
       isPregnancyCarrierRecord(p) &&
       pregnancyCarrierTargetUid(p)
   );
+  const explicitGestations = family.relationships.filter(r => r.type === "gestation");
   const unions = family.relationships.filter(r => r.type === "union");
   const siblings = family.relationships.filter(r => r.type === "sibling");
   const twins = family.relationships.filter(r => r.type === "twin");
@@ -2905,6 +3008,17 @@ function generationMap() {
       const wanted = (g.get(carrier.uid) || 0) + 1;
       if ((g.get(target) || 0) < wanted) {
         g.set(target,wanted);
+        changed = true;
+      }
+    });
+
+    // Una gestación explícita también determina una generación inferior
+    // aunque todavía no se haya registrado filiación genética.
+    explicitGestations.forEach(rel => {
+      if (!g.has(rel.carrier) || !g.has(rel.target) || fixed.has(rel.target)) return;
+      const wanted = (g.get(rel.carrier) || 0) + 1;
+      if ((g.get(rel.target) || 0) < wanted) {
+        g.set(rel.target,wanted);
         changed = true;
       }
     });
@@ -9425,7 +9539,8 @@ function placeDonorsBesideRecipientCouples(byGen,pos) {
       isDonorRecord(p) &&
       !isSurrogateOvumDonor(p) &&
       donationTargetUids(p).length &&
-      pos.has(p.uid)
+      pos.has(p.uid) &&
+      !family.relationships.some(r => r.type === "union" && (r.people || []).includes(p.uid))
     )
     .sort((a,b) => {
       const ag =
@@ -10109,6 +10224,48 @@ function placeReproductiveSupportNearRecipients(byGen,pos) {
   // Se aplica DESPUÉS de la nueva posición de G/surrogate. Nunca
   // movemos el feto bajo un donante que no haya llevado la gestación.
   alignGestationTargetsUnderCarriers(pos);
+}
+
+/* Bennett et al., 2025 correction, Fig. 5.1.d:
+ * Keep the pregnancy below the explicitly assigned AFAB gestator, with
+ * a single sperm donor diagonally to the left. This is intentionally
+ * restricted to a standalone, single-outcome donor and a pregnancy that
+ * has no sibling on the same parentage relation; shared donors and
+ * complex sibships retain the existing layout algorithms.
+ */
+function alignFigureFiveGestationWithSpermDonor(pos) {
+  family.relationships.filter(r => r.type === "gestation").forEach(r => {
+    const carrierPoint = pos.get(r.carrier);
+    const targetPoint = pos.get(r.target);
+    const target = personByUid(r.target);
+    if (!carrierPoint || !targetPoint ||
+        !target || !["fetus","stillbirth","sab","top","ect"].includes(recordType(target))) return;
+    if (hasPregnancyCarrierForTarget(r.target)) return;
+    if (parentagesOf(r.target).some(rel => (rel.children || []).length > 1)) return;
+    const donorRecords = donorRecordsForTarget(r.target,"sperm_donor");
+    if (donorRecords.length !== 1) return;
+    const donor = donorRecords[0];
+    if (donationTargetUids(donor).length !== 1 || !pos.has(donor.uid) ||
+        family.relationships.some(rel => rel.type === "union" && (rel.people || []).includes(donor.uid))) return;
+    const donorPoint = pos.get(donor.uid);
+    if (donorPoint.generation !== carrierPoint.generation) return;
+
+    const clearance = C.coupleGap * .83;
+    const proposedDonorX = carrierPoint.x - C.coupleGap;
+    const donorSpaceClear = [...pos.entries()].every(([uid,point]) =>
+      uid === donor.uid || uid === r.carrier ||
+      point.generation !== donorPoint.generation ||
+      Math.abs(point.x-proposedDonorX) >= clearance
+    );
+    const targetSpaceClear = [...pos.entries()].every(([uid,point]) =>
+      uid === r.target || point.generation !== targetPoint.generation ||
+      Math.abs(point.x-carrierPoint.x) >= C.siblingGap * .76
+    );
+    if (donorSpaceClear && targetSpaceClear) {
+      donorPoint.x = proposedDonorX;
+      targetPoint.x = carrierPoint.x;
+    }
+  });
 }
 
 function normalizeLayoutBounds(pos) {
@@ -11985,6 +12142,9 @@ function calculateLayout() {
   // el destino no permite identificar progenitores receptores.
   placeReproductiveSupportNearRecipients(byGen,pos);
 
+  // Reproducción asistida: sólo Figura 5.1.d con gestación explícita.
+  alignFigureFiveGestationWithSpermDonor(pos);
+
   // 0.8.12: última corrección visual para adopciones complejas. Se ejecuta
   // después de todos los centrados para que éstos no vuelvan a cerrar el hueco.
   resolveComplexAdoptionNeighborSpacing(
@@ -12687,18 +12847,8 @@ function annotations(p) {
     if (code) a.push(code);
   }
 
-  if (
-    (
-      type === "person" ||
-      isDonorRecord(p) ||
-      isGestationalCarrierRecord(p)
-    ) &&
-    p.age !== null &&
-    p.age !== undefined &&
-    p.age !== ""
-  ) {
-    a.push(`${p.age} a`);
-  }
+  const chronology = personalChronologyLabel(p);
+  if (chronology) a.push(chronology);
 
   return a;
 }
@@ -12820,7 +12970,11 @@ const HOVER_RELATION_TYPES = [
   {value:"twin", i18nKey:"tooltip.relation.type.twin"},
   {value:"union", i18nKey:"tooltip.relation.type.union"},
   {value:"ended_union", i18nKey:"tooltip.relation.type.ended_union"},
-  {value:"consanguineous_union", i18nKey:"tooltip.relation.type.consanguineous_union"}
+  {value:"consanguineous_union", i18nKey:"tooltip.relation.type.consanguineous_union"},
+  {value:"gestates", i18nKey:"tooltip.relation.type.gestates"},
+  {value:"donates", i18nKey:"tooltip.relation.type.donates"},
+  // Este flujo poco frecuente solo está dentro de ⋯ Más; no en los atajos.
+  {value:"existing_donor", i18nKey:"tooltip.relation.type.existingDonor"}
 ];
 
 function hoverRelationCandidates(
@@ -12829,9 +12983,11 @@ function hoverRelationCandidates(
 ) {
   return family.people
     .filter(p => {
-      if (p.uid === aUid) {
-        return false;
-      }
+      if (p.uid === aUid) return false;
+      if (type === "gestates") return eligibleGestationOutcome(p);
+      if (type === "donates") return ["person","fetus","stillbirth","sab","top","ect"].includes(recordType(p));
+      if (type === "existing_donor") return isDonorRecord(p) && !isSurrogateOvumDonor(p) &&
+        donorRecordsForTarget(aUid,recordType(p)).every(other => other.uid === p.uid);
 
       if (
         type === "twin"
@@ -12845,25 +13001,9 @@ function hoverRelationCandidates(
         );
       }
 
-      if (
-        (
-          type === "union" ||
-          type === "child" ||
-          type === "adoptive_parent" ||
-          type === "adoptive_child" ||
-          type === "adopted_out_child" ||
-          type === "ended_union" ||
-          type === "consanguineous_union"
-        ) &&
-        ![
-          "person",
-          "gestational_carrier"
-        ].includes(
-          recordType(p)
-        )
-      ) {
-        return false;
-      }
+      if (unionLikeRelationType(type) && !canFormPartnership(p)) return false;
+      if (["child","adoptive_parent","adoptive_child","adopted_out_child"].includes(type) &&
+          !["person","gestational_carrier"].includes(recordType(p))) return false;
 
       return true;
     });
@@ -12926,6 +13066,24 @@ function quickAddHoverRelations(
   /*
    * Las mismas restricciones que el editor avanzado.
    */
+  if (unionLikeRelationType(type) &&
+      (!canFormPartnership(personByUid(a)) ||
+       targets.some(uid => !canFormPartnership(personByUid(uid))))) {
+    message(t("validation.union.eligible"), "error");
+    return false;
+  }
+  if (type === "donates" && (!isDonorRecord(personByUid(a)) ||
+      isSurrogateOvumDonor(personByUid(a)))) {
+    message(t("validation.sharedDonor.donorRequired"),"error"); return false;
+  }
+  if (type === "existing_donor" &&
+      (targets.length !== 1 || !["person","fetus","stillbirth","sab","top","ect"].includes(recordType(personByUid(a))))) {
+    message(t("validation.sharedDonor.chooseOneDonor"),"error"); return false;
+  }
+  if (type === "gestates" && targets.length !== 1) {
+    message(t("validation.gestation.oneOutcome"),"error");
+    return false;
+  }
   if (
     type === "twin"
   ) {
@@ -12994,7 +13152,15 @@ function quickAddHoverRelations(
     pushUndoState();
     undoPushed = true;
 
-    if (
+    if (type === "donates") {
+      assignExistingDonorTargets(a,targets);
+    } else if (type === "existing_donor") {
+      const donorUid = targets[0];
+      const donor = personByUid(donorUid);
+      assignExistingDonorTargets(donorUid,[...donationTargetUids(donor),a]);
+    } else if (type === "gestates") {
+      assignGestation(a, targets[0]);
+    } else if (
       type === "twin"
     ) {
       addMultipleBirth(
@@ -13102,9 +13268,10 @@ function quickAddHoverRelations(
     conditionHoverInteractionLock = false;
 
     message(
-      targets.length === 1
+      type === "existing_donor" ? t("message.sharedDonor.linked") :
+      (targets.length === 1
         ? "Relación añadida."
-        : t("relationship.addedCount",{count:targets.length}),
+        : t("relationship.addedCount",{count:targets.length})),
       "success"
     );
 
@@ -13428,15 +13595,7 @@ function quickCreateRelativeFromHover(
   } else if (
     kind === "partner"
   ) {
-    const partnerAnchorAllowed =
-      [
-        "person",
-        "gestational_carrier"
-      ].includes(
-        recordType(
-          anchorPerson
-        )
-      );
+    const partnerAnchorAllowed = canFormPartnership(anchorPerson);
 
     if (
       !partnerAnchorAllowed ||
@@ -13892,6 +14051,8 @@ function appendHoverRelationControls(
     ![
       "person",
       "gestational_carrier",
+      "sperm_donor",
+      "ovum_donor",
       "multiple",
       "fetus",
       "stillbirth",
@@ -13933,6 +14094,14 @@ function appendHoverRelationControls(
     "condition-hover-relation-type";
 
   HOVER_RELATION_TYPES
+    .filter(item => item.value !== "gestates" || canBeExplicitGestator(p))
+    .filter(item => item.value !== "donates" || (isDonorRecord(p) && !isSurrogateOvumDonor(p)))
+    .filter(item => item.value !== "existing_donor" ||
+      (["person","fetus","stillbirth","sab","top","ect"].includes(recordType(p)) &&
+       family.people.some(d => isDonorRecord(d) && !isSurrogateOvumDonor(d))))
+    .filter(item => isDonorRecord(p)
+      ? (unionLikeRelationType(item.value) || item.value === "donates")
+      : (!unionLikeRelationType(item.value) || canFormPartnership(p)))
     .forEach(item => {
       typeSelect.appendChild(
         new Option(
@@ -14058,6 +14227,9 @@ function appendHoverRelationControls(
     const type =
       typeSelect.value;
 
+    if (type === "gestates") return t("validation.gestation.oneOutcome");
+    if (type === "donates") return t("help.sharedDonor.advanced");
+    if (type === "existing_donor") return t("help.sharedDonor.fromRecipient");
     if (
       type === "twin"
     ) {
@@ -14182,6 +14354,11 @@ function appendHoverRelationControls(
     twinSelect.hidden =
       typeSelect.value !==
       "twin";
+    if (typeSelect.value === "donates") {
+      const chosen = new Set(donationTargetUids(p));
+      targetList.querySelectorAll('input[type="checkbox"]')
+        .forEach(el => { el.checked = chosen.has(el.value); });
+    }
 
     /*
      * "Todos" solo tiene sentido para relaciones realmente múltiples.
@@ -14190,7 +14367,9 @@ function appendHoverRelationControls(
       [
         "union",
         "ended_union",
-        "consanguineous_union"
+        "consanguineous_union",
+        "gestates",
+        "existing_donor"
       ].includes(
         typeSelect.value
       ) ||
@@ -14388,18 +14567,11 @@ function appendHoverRelationControls(
         )
     );
 
-  createShortcuts.append(
-    brotherButton,
-    sisterButton
-  );
+  if (!isDonorRecord(p)) {
+    createShortcuts.append(brotherButton, sisterButton);
+  }
 
-  const canAddOppositePartner =
-    [
-      "person",
-      "gestational_carrier"
-    ].includes(
-      recordType(p)
-    ) &&
+  const canAddOppositePartner = canFormPartnership(p) &&
     [
       "man",
       "woman"
@@ -14647,7 +14819,7 @@ function appendHoverRelationControls(
     !existingBiologicalParents ||
     !(existingBiologicalParents.parents || []).length;
 
-  if (canAddParentsShortcut) {
+  if (canAddParentsShortcut && !isDonorRecord(p)) {
     const parentsButton =
       hoverQuickCreateButton(
         "parents",
@@ -14897,7 +15069,7 @@ function appendHoverQuickPersonFields(card,p) {
   const topRow = document.createElement("div");
   topRow.className =
     "condition-hover-quick-edit-row condition-hover-quick-edit-top" +
-    (includeAuxiliary ? "" : " no-aux") +
+    (includeAuxiliary ? (includeAge ? " chronology-aux" : "") : " no-aux") +
     (
       includeGestationalAge ||
       includeMultipleCount
@@ -14920,18 +15092,32 @@ function appendHoverQuickPersonFields(card,p) {
 
   let auxiliaryInput = null;
 
+  let chronologyMode = null;
   if (includeAge) {
+    chronologyMode = document.createElement("select");
+    chronologyMode.className = "condition-hover-quick-input condition-hover-chronology-mode";
+    chronologyMode.setAttribute("aria-label", t("individual.chronologyMode"));
+    chronologyMode.append(
+      new Option(t("individual.ageOption"), "age"),
+      new Option(t("individual.birthYearOption"), "birth_year")
+    );
+    chronologyMode.value = p.birth_year != null ? "birth_year" : "age";
     auxiliaryInput = document.createElement("input");
     auxiliaryInput.type = "number";
     auxiliaryInput.className =
       "condition-hover-quick-input condition-hover-quick-age";
-    auxiliaryInput.value = p.age ?? "";
-    auxiliaryInput.placeholder = "Edad";
-    auxiliaryInput.title = "Edad";
-    auxiliaryInput.setAttribute("aria-label","Edad");
-    auxiliaryInput.min = "0";
-    auxiliaryInput.max = "130";
     auxiliaryInput.step = "1";
+    const setChronologyMode = () => {
+      const year = chronologyMode.value === "birth_year";
+      auxiliaryInput.value = year ? (p.birth_year ?? "") : (p.age ?? "");
+      auxiliaryInput.placeholder = t(year ? "individual.birthYearPlaceholder" : "individual.ageOption");
+      auxiliaryInput.title = t(year ? "individual.birthYear" : "individual.age");
+      auxiliaryInput.setAttribute("aria-label", auxiliaryInput.title);
+      auxiliaryInput.min = year ? "1000" : "0";
+      auxiliaryInput.max = year ? String(new Date().getFullYear()) : "130";
+    };
+    chronologyMode.addEventListener("change", setChronologyMode);
+    setChronologyMode();
   } else if (includeGestationalAge) {
     auxiliaryInput = document.createElement("input");
     auxiliaryInput.type = "number";
@@ -14969,6 +15155,7 @@ function appendHoverQuickPersonFields(card,p) {
   topRow.appendChild(labelInput);
 
   if (auxiliaryInput) {
+    if (chronologyMode) topRow.appendChild(chronologyMode);
     topRow.appendChild(auxiliaryInput);
   }
 
@@ -15004,6 +15191,7 @@ function appendHoverQuickPersonFields(card,p) {
     const brief = briefInput.value.trim();
 
     let age = p.age ?? null;
+    let birthYear = p.birth_year ?? null;
     let gestationalAge =
       p.gestational_age_weeks ?? null;
     let multipleCount =
@@ -15011,27 +15199,23 @@ function appendHoverQuickPersonFields(card,p) {
 
     if (includeAge) {
       const raw = auxiliaryInput.value.trim();
-
+      const yearMode = chronologyMode.value === "birth_year";
       age = null;
-
+      birthYear = null;
       if (raw !== "") {
         const parsed = Number(raw);
-
-        if (
-          !Number.isInteger(parsed) ||
-          parsed < 0 ||
-          parsed > 130
-        ) {
-          auxiliaryInput.setCustomValidity(
-            t("validation.age.integerRange")
-          );
+        const valid = Number.isInteger(parsed) && (yearMode
+          ? parsed >= 1000 && parsed <= new Date().getFullYear()
+          : parsed >= 0 && parsed <= 130);
+        if (!valid) {
+          auxiliaryInput.setCustomValidity(t(yearMode
+            ? "validation.birthYear.range" : "validation.age.integerRange"));
           auxiliaryInput.reportValidity();
           return;
         }
-
-        age = parsed;
+        if (yearMode) birthYear = parsed;
+        else age = parsed;
       }
-
       auxiliaryInput.setCustomValidity("");
     }
 
@@ -15096,6 +15280,7 @@ function appendHoverQuickPersonFields(card,p) {
       label === String(p.label || "") &&
       brief === String(p.brief_info || "") &&
       age === (p.age ?? null) &&
+      birthYear === (p.birth_year ?? null) &&
       gestationalAge ===
         (p.gestational_age_weeks ?? null) &&
       sameMultipleCount
@@ -15110,6 +15295,7 @@ function appendHoverQuickPersonFields(card,p) {
 
     if (includeAge) {
       p.age = age;
+      p.birth_year = birthYear;
     }
 
     if (includeGestationalAge) {
@@ -15145,10 +15331,7 @@ function appendHoverQuickPersonFields(card,p) {
       );
     }
 
-    message(
-      "Datos del registro actualizados.",
-      "success"
-    );
+    message(t("individual.quickSaved"), "success");
   };
 
   saveButton.addEventListener(
@@ -15238,14 +15421,8 @@ function hoverCardMetaText(p) {
     parts.push(descriptor);
   }
 
-  if (
-    p.age !== null &&
-    p.age !== undefined &&
-    p.age !== ""
-  ) {
-    parts.push(
-      t(Number(p.age)===1 ? "label.person.ageSingular" : "label.person.agePlural",{count:p.age})
-    );
+  if (personalChronologyLabel(p)) {
+    parts.push(personalChronologyLabel(p));
   } else if (
     p.gestational_age_weeks !== null &&
     p.gestational_age_weeks !== undefined &&
@@ -16398,11 +16575,13 @@ function drawPerson(svg,p,position,numbers,pos) {
     }, String(p.brief_info).trim()));
   }
 
+  const chronologyAnnotation = personalChronologyLabel(p);
   annotations(p).forEach(txt => {
     g.appendChild(svgEl("text", {
       x:textX,
       y:nextTextY(12),
-      class:"person-subtext"
+      class:"person-subtext" +
+        (chronologyAnnotation && txt === chronologyAnnotation ? " person-chronology-label" : "")
     }, txt));
   });
 
@@ -18762,7 +18941,52 @@ function donorLowerCornerAnchor(
 }
 
 
+function explicitGestatingPersonUid(targetUid) {
+  const relation = family.relationships.find(r =>
+    r.type === "gestation" && r.target === targetUid
+  );
+  return relation ? relation.carrier : null;
+}
+
+function canBeExplicitGestator(p) {
+  return !!p && recordType(p) === "person" &&
+    p.sex_at_birth === "female";
+}
+
+function eligibleGestationOutcome(p) {
+  return !!p && ["person","fetus","stillbirth","sab","top","ect"]
+    .includes(recordType(p));
+}
+
+function assignGestation(carrierUid,targetUid) {
+  const carrier = personByUid(carrierUid);
+  const target = personByUid(targetUid);
+  if (!canBeExplicitGestator(carrier)) {
+    throw new Error(t("validation.gestation.afabRequired"));
+  }
+  if (!eligibleGestationOutcome(target) || carrierUid === targetUid) {
+    throw new Error(t("validation.gestation.outcomeRequired"));
+  }
+  if (hasPregnancyCarrierForTarget(targetUid)) {
+    throw new Error(t("validation.gestation.carrierConflict"));
+  }
+  if (isAncestor(targetUid,carrierUid)) {
+    throw new Error(t("validation.gestation.cycle"));
+  }
+  const previous = family.relationships.find(r =>
+    r.type === "gestation" && r.target === targetUid
+  );
+  if (previous) previous.carrier = carrierUid;
+  else family.relationships.push({
+    type:"gestation",carrier:carrierUid,target:targetUid
+  });
+}
+
 function spermRecipientMotherUid(targetUid) {
+  // Figure 5.1.d (2025): a transgender man (AFAB) may carry a
+  // pregnancy. An explicit gestator always takes precedence over gender.
+  const assigned = explicitGestatingPersonUid(targetUid);
+  if (assigned) return assigned;
   const parentUids = [];
 
   // Preferimos filiación biológica; si no existe, usamos cualquier
@@ -18790,19 +19014,14 @@ function spermRecipientMotherUid(targetUid) {
     .map(personByUid)
     .filter(Boolean);
 
-  const byGender = parents.find(p =>
-    p.gender === "woman"
-  );
-
-  if (byGender) return byGender.uid;
-
   const bySexAtBirth = parents.find(p =>
     p.sex_at_birth === "female"
   );
+  if (bySexAtBirth) return bySexAtBirth.uid;
 
-  return bySexAtBirth
-    ? bySexAtBirth.uid
-    : null;
+  // Backward compatibility for legacy records with unknown sex at birth.
+  const byGender = parents.find(p => p.gender === "woman");
+  return byGender ? byGender.uid : null;
 }
 
 function maternalBottomAnchor(
@@ -18968,6 +19187,72 @@ function drawGestationalCarrierLinks(
 }
 
 
+function drawExplicitGestationWithoutSpermLinks(svg,pos,pregnancyLossVisualY=null) {
+  family.relationships.filter(r => r.type === "gestation").forEach(r => {
+    if (hasSpermDonorForTarget(r.target) ||
+        hasPregnancyCarrierForTarget(r.target) ||
+        parentagesOf(r.target).length ||
+        !pos.has(r.carrier)) return;
+    const target = donationTargetTopAnchor(r.target,pos,pregnancyLossVisualY);
+    if (!target) return;
+    const carrier = personByUid(r.carrier);
+    const start = maternalBottomAnchor(carrier,pos.get(r.carrier));
+    if (!start) return;
+    svg.appendChild(svgEl("line",{
+      x1:start.x,y1:start.y,x2:target.x,y2:target.y,
+      class:"pedigree-line"
+    }));
+  });
+}
+
+// Bennett 2025 fig. 5.1.c: a single sperm donor + one recorded parent
+// share a horizontal genetic-origin connector and ONE sibling bar. The
+// synthetic connector is visual only; it never creates a union in JSON.
+function sharedSpermDonorConnector(rel,pos) {
+  if (rel.type !== "parentage" || (rel.parents||[]).length !== 1 ||
+      (rel.children||[]).length < 2 || rel.descent_type === "adoptive") return null;
+  const parent = personByUid(rel.parents[0]);
+  if (!parent || !pos.has(parent.uid)) return null;
+  const donor = family.people.find(p => recordType(p) === "sperm_donor" &&
+      (rel.children||[]).every(uid => donationTargetUids(p).includes(uid)) &&
+      donationTargetUids(p).length >= 2 && pos.has(p.uid) &&
+      !family.relationships.some(r => r.type === "union" && (r.people||[]).includes(p.uid)));
+  if (!donor) return null;
+  const a=pos.get(parent.uid), b=pos.get(donor.uid);
+  if (a.generation !== b.generation || Math.abs(a.y-b.y)>1 ||
+      Math.abs(a.x-b.x)>C.coupleGap*1.5 ||
+      Math.abs(a.x-b.x)<C.symbolSize*1.25) return null;
+  // No horizontal synthetic connector may pass through another symbol.
+  if ([...pos].some(([uid,q]) => uid !== parent.uid && uid !== donor.uid &&
+      q.generation === a.generation &&
+      q.x>Math.min(a.x,b.x)+C.symbolSize/2 &&
+      q.x<Math.max(a.x,b.x)-C.symbolSize/2)) return null;
+  return {parent,donor,parentPoint:a,donorPoint:b,midX:(a.x+b.x)/2};
+}
+
+function sharedDonorFraternityGroups(donor,pos,parentageLaneMap=null,siblingLaneMap=null) {
+  const remaining = new Set(donationTargetUids(donor).filter(uid => pos.has(uid)));
+  const groups = [];
+  family.relationships.filter(r => r.type === "parentage" || r.type === "sibling")
+    .forEach(r => {
+      const members = r.type === "parentage" ? (r.children || []) : (r.members || []);
+      const covered = members.filter(uid => remaining.has(uid));
+      if (covered.length < 2) return;
+      const points = covered.map(uid => pos.get(uid));
+      if (points.some(p => !p) || new Set(points.map(p => p.generation)).size !== 1) return;
+      const barY = r.type === "parentage"
+        ? (parentageBaseGeometry(r,pos)?.baseSibY ?? null) +
+          (parentageLaneMap?.get(r) || 0)
+        : Math.min(...members.filter(uid => pos.has(uid)).map(uid => pos.get(uid).y)) -
+          C.symbolSize/2 - 28 + (siblingLaneMap?.get(r) || 0);
+      if (!Number.isFinite(barY)) return;
+      groups.push({relation:r,targets:covered,barY,x:
+        (Math.min(...points.map(p => p.x))+Math.max(...points.map(p => p.x)))/2});
+      covered.forEach(uid => remaining.delete(uid));
+    });
+  return {groups,remaining};
+}
+
 function drawSpermDonorMaternalLinks(
   svg,
   pos,
@@ -18985,6 +19270,8 @@ function drawSpermDonorMaternalLinks(
           // el óvulo, su línea vertical D→resultado ya representa el
           // vínculo genético/gestacional materno.
           if (hasSurrogateForTarget(targetUid)) return;
+          if (sharedDonorFraternityGroups(donor,pos).groups.some(group =>
+              group.relation.type === "parentage" && group.targets.includes(targetUid))) return;
 
           const motherUid =
             spermRecipientMotherUid(
@@ -19034,7 +19321,9 @@ function drawSpermDonorMaternalLinks(
 function drawDonorLinks(
   svg,
   pos,
-  pregnancyLossVisualY=null
+  pregnancyLossVisualY=null,
+  parentageLaneMap=null,
+  siblingLaneMap=null
 ) {
   family.people
     .filter(p =>
@@ -19044,11 +19333,27 @@ function drawDonorLinks(
       pos.has(p.uid)
     )
     .forEach(donor => {
-      const donorPoint =
-        pos.get(donor.uid);
-
-      donationTargetUids(donor)
-        .forEach(targetUid => {
+      const donorPoint = pos.get(donor.uid);
+      const sharing = sharedDonorFraternityGroups(donor,pos,parentageLaneMap,siblingLaneMap);
+      sharing.groups.forEach(group => {
+        const special = sharedSpermDonorConnector(group.relation,pos);
+        if (special && special.donor.uid === donor.uid) {
+          const a=special.parentPoint, b=special.donorPoint;
+          const direction=Math.sign(b.x-a.x);
+          svg.appendChild(svgEl("line",{
+            x1:a.x+direction*C.symbolSize/2,y1:a.y,
+            x2:b.x-direction*C.symbolSize/2,y2:b.y,
+            class:"donor-link-line shared-donor-fraternity-link"
+          }));
+        } else {
+          const start=donorLowerCornerAnchor(donor,donorPoint,group.x);
+          svg.appendChild(svgEl("line",{
+            x1:start.x,y1:start.y,x2:group.x,y2:group.barY,
+            class:"donor-link-line shared-donor-fraternity-link"
+          }));
+        }
+      });
+      [...sharing.remaining].forEach(targetUid => {
           const target =
             donationTargetTopAnchor(
               targetUid,
@@ -19095,7 +19400,11 @@ function parentageBaseGeometry(
       (
         includeArtTargets ||
         (
-          !hasSpermDonorForTarget(uid) &&
+          (!hasSpermDonorForTarget(uid) ||
+            family.people.some(donor =>
+              recordType(donor) === "sperm_donor" &&
+              donationTargetUids(donor).filter(id => (r.children||[]).includes(id)).length >= 2 &&
+              donationTargetUids(donor).includes(uid))) &&
           !hasGestationalCarrierForTarget(uid)
         )
       )
@@ -19128,6 +19437,14 @@ function parentageBaseGeometry(
       // La descendencia parte directamente de la línea de pareja.
       pBottom = (parents[0].y + parents[1].y) / 2;
     }
+  }
+
+  // In the narrow figure-5.1.c pattern, stem drops from the middle
+  // of the donor–parent connector instead of an individual child link.
+  const sharedConnector = sharedSpermDonorConnector(r,pos);
+  if (sharedConnector && !includeArtTargets) {
+    px = sharedConnector.midX;
+    pBottom = sharedConnector.parentPoint.y;
   }
 
   const cTop = cy - C.symbolSize/2;
@@ -22118,21 +22435,8 @@ function clinicalSelectedIndicatorText(p) {
     parts.push(descriptor);
   }
 
-  if (
-    p.age !== null &&
-    p.age !== undefined &&
-    p.age !== ""
-  ) {
-    const age =
-      Number(p.age);
-
-    parts.push(
-      `${p.age} ${
-        age === 1
-          ? t("label.unit.yearSingular")
-          : t("label.unit.yearPlural")
-      }`
-    );
+  if (personalChronologyLabel(p)) {
+    parts.push(personalChronologyLabel(p));
   } else if (
     p.gestational_age_weeks !== null &&
     p.gestational_age_weeks !== undefined &&
@@ -24529,17 +24833,15 @@ function renderPedigree() {
       layout.pos,
       pregnancyLossVisualY
     );
+    // In the absence of a sperm donor or existing parentage, still
+    // show the gestation explicitly recorded for this outcome.
+    drawExplicitGestationWithoutSpermLinks(svg,layout.pos,pregnancyLossVisualY);
 
     // Donación de esperma y de óvulos:
     // diagonal desde el donante hasta la parte superior del resultado.
-    drawDonorLinks(
-      svg,
-      layout.pos,
-      pregnancyLossVisualY
-    );
-
-    const siblingLaneMap =
-      buildSiblingLaneMap(layout.pos);
+    const siblingLaneMap = buildSiblingLaneMap(layout.pos);
+    drawDonorLinks(svg,layout.pos,pregnancyLossVisualY,
+      parentageLaneMap,siblingLaneMap);
 
     family.relationships
       .filter(r=>r.type==="sibling")
@@ -24767,9 +25069,7 @@ function selectedDonationTargetUids() {
   const donorType =
     $("recordType").value;
 
-  if (
-    donorType === "sperm_donor"
-  ) {
+  if (false && donorType === "sperm_donor") {
     const container =
       $("donationTargetsCheckboxes");
 
@@ -24823,8 +25123,8 @@ function updateDonationTargetOptions(
   const donorType =
     $("recordType").value;
 
-  const isSpermDonor =
-    donorType === "sperm_donor";
+  // Gestión multidescendiente solo en Relaciones avanzadas / … Más.
+  const isSpermDonor = false;
 
   let wanted;
 
@@ -24973,8 +25273,14 @@ function updateDonationTargetOptions(
   });
 
   if (wanted.length) {
-    select.value =
-      wanted[0];
+    select.value = wanted[0];
+  }
+  if (editingUid && isDonorRecord(personByUid(editingUid)) &&
+      donationTargetUids(personByUid(editingUid)).length > 1) {
+    select.disabled = true;
+    $("donationTargetHelp").textContent = t("help.sharedDonor.editAdvanced");
+  } else {
+    select.disabled = false;
   }
 }
 
@@ -25277,6 +25583,7 @@ function editPerson(uid) {
   $("multipleCount").value =
     p.multiple_count ?? "";
   $("age").value = p.age ?? "";
+  $("birthYear").value = p.birth_year ?? "";
   $("gestationalAge").value = p.gestational_age_weeks ?? "";
   $("birthOrder").value = p.birth_order ?? "";
   $("generationOverride").value = p.generation_override ?? "";
@@ -25361,21 +25668,10 @@ function deletePerson(uid) {
     if (Array.isArray(p.intended_parent_uids)) {
       p.intended_parent_uids = p.intended_parent_uids.filter(id => id !== uid);
     }
-    if (
-      recordType(p) === "sperm_donor"
-    ) {
-      p.donation_targets =
-        donationTargetUids(p)
-          .filter(targetUid =>
-            targetUid !== uid
-          );
-
-      p.donation_target = null;
-    } else if (
-      recordType(p) === "ovum_donor" &&
-      donationTargetUid(p) === uid
-    ) {
-      p.donation_target = null;
+    if (isDonorRecord(p)) {
+      p.donation_targets = donationTargetUids(p).filter(targetUid => targetUid !== uid);
+      p.donation_target = isSurrogateOvumDonor(p)
+        ? (p.donation_targets[0] || null) : null;
     }
 
     if (
@@ -25415,6 +25711,9 @@ function deletePerson(uid) {
 
     return r;
   }).filter(r => {
+    if (r.type === "gestation") {
+      return r.carrier !== uid && r.target !== uid;
+    }
     if (r.type === "union") return (r.people||[]).length === 2;
     if (r.type === "parentage") {
       return (r.parents||[]).length > 0 && (r.children||[]).length > 0;
@@ -25600,16 +25899,12 @@ $("personForm").addEventListener("submit", e => {
           )
         : null,
     donation_targets:
-      type === "sperm_donor"
-        ? selectedDonationTargetUids()
-        : [],
+      isDonor && editing && isDonorRecord(personByUid(editing)) &&
+      donationTargetUids(personByUid(editing)).length > 1
+        ? donationTargetUids(personByUid(editing))
+        : (isDonor ? selectedDonationTargetUids() : []),
     donation_target:
-      type === "ovum_donor"
-        ? (
-            selectedDonationTargetUids()[0] ||
-            null
-          )
-        : null,
+      isSurrogate ? (selectedDonationTargetUids()[0] || null) : null,
     gestation_target:
       isGestationalCarrier
         ? ($("gestationTarget").value || null)
@@ -25656,15 +25951,11 @@ $("personForm").addEventListener("submit", e => {
       $("generationOverride").value === ""
         ? null
         : Number($("generationOverride").value),
-    age:
-      (
-        isPerson ||
-        isDonor ||
-        isGestationalCarrier
-      ) &&
-      $("age").value !== ""
-        ? Number($("age").value)
-        : null,
+    age: (isPerson || isDonor || isGestationalCarrier) &&
+      $("birthYear").value === "" && $("age").value !== ""
+      ? Number($("age").value) : null,
+    birth_year: (isPerson || isDonor || isGestationalCarrier) &&
+      $("birthYear").value !== "" ? Number($("birthYear").value) : null,
     gestational_age_weeks:
       isPregnancyEvent &&
       $("gestationalAge").value !== ""
@@ -25764,6 +26055,11 @@ $("personForm").addEventListener("submit", e => {
       t("validation.pregnancy.carrierExists"),
       "error"
     );
+    return;
+  }
+
+  if (p.birth_year !== null && normalizedBirthYear(p.birth_year) !== p.birth_year) {
+    message(t("validation.birthYear.range"), "error");
     return;
   }
 
@@ -25879,18 +26175,13 @@ function updateRelationSelectors() {
   selectA.replaceChildren(new Option("— Seleccionar —",""));
 
   family.people
-    .filter(p =>
-      [
-        "person",
-        "gestational_carrier",
-        "multiple",
-        "fetus",
-        "stillbirth",
-        "sab",
-        "top",
-        "ect"
-      ].includes(recordType(p))
-    )
+    .filter(p => $("relationType").value === "donates"
+      ? isDonorRecord(p) && !isSurrogateOvumDonor(p)
+      : ($( "relationType" ).value === "gestates"
+      ? canBeExplicitGestator(p)
+      : (unionLikeRelationType($("relationType").value)
+        ? canFormPartnership(p)
+        : ["person","gestational_carrier","multiple","fetus","stillbirth","sab","top","ect"].includes(recordType(p)))))
     .forEach(p => {
       selectA.appendChild(
         new Option(
@@ -25905,6 +26196,11 @@ function updateRelationSelectors() {
   }
 
   updateRelationBList();
+  if ($("relationType").value === "donates") {
+    const selected = new Set(donationTargetUids(personByUid(selectA.value)));
+    document.querySelectorAll('#relationBList input[type="checkbox"]')
+      .forEach(input => { input.checked = selected.has(input.value); });
+  }
 }
 
 function selectedRelationB() {
@@ -26046,6 +26342,8 @@ function updateRelationBList() {
 
   const candidates = family.people.filter(p => {
     if (p.uid === selectedA) return false;
+    if (relationType === "gestates") return eligibleGestationOutcome(p);
+    if (relationType === "donates") return ["person","fetus","stillbirth","sab","top","ect"].includes(recordType(p));
 
     if (
       relationType === "twin" &&
@@ -26054,23 +26352,9 @@ function updateRelationBList() {
       return false;
     }
 
-    if (
-      (
-        relationType === "union" ||
-        relationType === "child" ||
-        relationType === "adoptive_parent" ||
-        relationType === "adoptive_child" ||
-        relationType === "adopted_out_child" ||
-        relationType === "ended_union" ||
-        relationType === "consanguineous_union"
-      ) &&
-      ![
-        "person",
-        "gestational_carrier"
-      ].includes(recordType(p))
-    ) {
-      return false;
-    }
+    if (unionLikeRelationType(relationType) && !canFormPartnership(p)) return false;
+    if (["child","adoptive_parent","adoptive_child","adopted_out_child"].includes(relationType) &&
+        !["person","gestational_carrier"].includes(recordType(p))) return false;
 
     if (
       relationType === "twin" &&
@@ -26262,6 +26546,9 @@ function shouldCreateIntergenerationalUnion(
 
 function ensureUnion(a,b) {
   if (a===b) return;
+  if (!canFormPartnership(personByUid(a)) || !canFormPartnership(personByUid(b))) {
+    throw new Error(t("validation.union.eligible"));
+  }
 
   const existing =
     family.relationships.find(r =>
@@ -26461,7 +26748,7 @@ function addParent(parent,child,descentType="biological") {
   }
 }
 
-function isAncestor(candidateAncestor, person) {
+function isAncestor(candidateAncestor, person, relationships=family.relationships) {
   const seen = new Set();
   const stack = [candidateAncestor];
 
@@ -26471,7 +26758,7 @@ function isAncestor(candidateAncestor, person) {
     if (seen.has(current)) continue;
     seen.add(current);
 
-    family.relationships
+    relationships
       .filter(r=>r.type==="parentage" && (r.parents||[]).includes(current))
       .forEach(r => (r.children||[]).forEach(c=>stack.push(c)));
   }
@@ -26743,6 +27030,8 @@ function addTwin(a,b,zygosity) {
 function updateRelationTypeFields() {
   const type = $("relationType").value;
   const isTwin = type === "twin";
+  const isGestation = type === "gestates";
+  const isDonation = type === "donates";
   const isChild = type === "child";
   const isConsanguineous = type === "consanguineous_union";
   const isAdoptiveChild = type === "adoptive_child";
@@ -26757,6 +27046,7 @@ function updateRelationTypeFields() {
 
   $("selectAllBBtn").disabled =
     isTwin ||
+    isGestation ||
     isChild ||
     isConsanguineous ||
     isAdoptiveChild ||
@@ -26779,6 +27069,10 @@ function updateRelationTypeFields() {
   } else if (isEndedUnion) {
     $("relationBHelp").textContent =
       t("validation.relationship.endedOne");
+  } else if (isGestation) {
+    $("relationBHelp").textContent = t("help.gestation.explicitAssignment");
+  } else if (isDonation) {
+    $("relationBHelp").textContent = t("help.sharedDonor.advanced");
   } else if (isChild) {
     $("relationBHelp").textContent =
       t("validation.parentage.oneOrTwoBio");
@@ -26874,6 +27168,13 @@ $("recordType").addEventListener("change", () => {
   }
   updateRecordTypeFields();
 });
+// Both fields are editable in the detailed form, but never stored together.
+$("age").addEventListener("input", () => {
+  if ($("age").value !== "") $("birthYear").value = "";
+});
+$("birthYear").addEventListener("input", () => {
+  if ($("birthYear").value !== "") $("age").value = "";
+});
 $("personReproductiveStatus").addEventListener(
   "change",
   updatePersonReproductiveFields
@@ -26940,8 +27241,18 @@ $("personNotes").addEventListener(
   }
 );
 
-$("relationA").addEventListener("change", updateRelationBList);
-$("relationType").addEventListener("change", updateRelationTypeFields);
+$("relationA").addEventListener("change", () => {
+  updateRelationBList();
+  if ($("relationType").value === "donates") {
+    const chosen = new Set(donationTargetUids(personByUid($("relationA").value)));
+    document.querySelectorAll('#relationBList input[type="checkbox"]')
+      .forEach(el => { el.checked = chosen.has(el.value); });
+  }
+});
+$("relationType").addEventListener("change", () => {
+  updateRelationSelectors();
+  updateRelationTypeFields();
+});
 $("twinZygosity").addEventListener("change", updateRelationTypeFields);
 $("reproductiveStatus").addEventListener("change", updateRelationTypeFields);
 $("relationBList").addEventListener("change", updateReproductiveRelationFields);
@@ -27005,6 +27316,14 @@ $("relationForm").addEventListener("submit", e => {
     return;
   }
 
+  if (type === "donates" && !isDonorRecord(personByUid(a))) {
+    message(t("validation.sharedDonor.donorRequired"),"error"); return;
+  }
+  if (type === "gestates" && bs.length !== 1) {
+    message(t("validation.gestation.oneOutcome"),"error");
+    return;
+  }
+
   if (type === "twin") {
     const zygosity = $("twinZygosity").value;
     const requiredB =
@@ -27065,7 +27384,11 @@ $("relationForm").addEventListener("submit", e => {
     pushUndoState();
     undoPushed = true;
 
-    if (type === "twin") {
+    if (type === "donates") {
+      assignExistingDonorTargets(a,bs);
+    } else if (type === "gestates") {
+      assignGestation(a,bs[0]);
+    } else if (type === "twin") {
       addMultipleBirth(
         [a, ...bs],
         $("twinZygosity").value
@@ -27127,7 +27450,9 @@ $("relationForm").addEventListener("submit", e => {
       adoptive_parent: t("label.relationship.adoptiveParent"),
       adoptive_child: t("label.relationship.adoptedIn"),
       adopted_out_child: t("label.relationship.adoptedOut"),
-      consanguineous_union: t("label.relationship.consanguineousCouple")
+      consanguineous_union: t("label.relationship.consanguineousCouple"),
+      gestates: t("label.relationship.gestates"),
+      donates: t("label.relationship.donates")
     }[type] || t("label.relationship.generic");
 
     message(
@@ -27192,6 +27517,10 @@ function renderRelations() {
 
       text.textContent =
         `${displayName(r.people[0])} — ${statusLabel}${consanguinityLabel}${intergenerationalLabel} — ${displayName(r.people[1])}${reproductiveLabel}`;
+    } else if (r.type === "gestation") {
+      text.textContent = t("list.relationships.gestation",{
+        carrier:displayName(r.carrier),target:displayName(r.target)
+      });
     } else if (r.type==="sibling") {
       text.textContent = t('list.relationships.siblings',{members:(r.members||[]).map(displayName).join(', ')});
     } else if (r.type==="twin") {

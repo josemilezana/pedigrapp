@@ -1,6 +1,6 @@
 window.PEDIGRAPP_HELP_DATA = {
-  helpVersion: "1.0.5",
-  updatedAt: "23/10/2026",
+  helpVersion: "1.1",
+  updatedAt: "29/10/2026",
   title: "Ayuda y nomenclatura de PedigrAPP",
   intro: "Guía de uso y referencia de los símbolos, relaciones y convenciones implementadas en PedigrAPP. La aplicación se apoya en la nomenclatura estandarizada de pedigree de la National Society of Genetic Counselors (NSGC), con las revisiones y correcciones indicadas en la bibliografía.",
   notes: [
@@ -144,6 +144,10 @@ window.PEDIGRAPP_HELP_DATA = {
   exploitationRightsHolder:"Fundación Investigación Biomédica Hospital 12 de Octubre",
   registry:"Safe Creative 2610197365707 (20/10/2026 08:01 UTC)",
   changelog:[
+    {version:"1.1",text:""},
+    {version:"1.0.6-rc3",text:""},
+    {version:"1.0.6-rc2",text:""},
+    {version:"1.0.6",text:""},
     {version:"1.0.5",text:""},
     {version:"1.0.5-rc8",text:""},
     {version:"1.0.5-rc7",text:""},

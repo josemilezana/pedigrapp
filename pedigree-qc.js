@@ -40,6 +40,10 @@
   const str = x => x == null ? '' : String(x).trim();
   const unique = values => [...new Set(values)];
   const array = x => Array.isArray(x) ? x : [];
+  // Compatible con la clave singular anterior y con la plural de donantes
+  // de gametos; una donante que además gesta sigue vinculada a 1 embarazo.
+  const donationIds = p => unique(array(p.donation_targets).map(str)
+    .concat(str(p.donation_target)).filter(Boolean));
   const type = p => (p && p.record_type) || 'person';
   const key = ids => unique(ids).sort().join('\u0001');
 
@@ -258,12 +262,14 @@
     for (const p of people) {
       const uid = str(p && p.uid);
       const rt = type(p);
+      const donorTargets = (rt === 'sperm_donor' || rt === 'ovum_donor')
+        ? donationIds(p) : [];
       const target = rt === 'gestational_carrier'
         ? str(p.gestation_target)
-        : rt === 'ovum_donor' ? str(p.donation_target) : '';
-      const targetIds = rt === 'sperm_donor'
-        ? unique(array(p.donation_targets).map(str).concat(str(p.donation_target)).filter(Boolean))
-        : target ? [target] : [];
+        : (rt === 'ovum_donor' && p.surrogate === true)
+          ? (donorTargets[0] || '') : '';
+      const targetIds = rt === 'gestational_carrier'
+        ? (target ? [target] : []) : donorTargets;
       if (rt === 'sperm_donor' || rt === 'ovum_donor' || rt === 'gestational_carrier') {
         if (!targetIds.length) add('error', 'ART_TARGET_EMPTY', 'Donante o gestante sin resultado vinculado', qci("qc.issue.ART_TARGET_EMPTY.detail", {p0:(label(uid))}, `${label(uid)} necesita un registro de descendencia o embarazo al que vincularse.`), SRC.art, [uid]);
         for (const dest of targetIds) {
@@ -281,7 +287,7 @@
         add('warning', 'ART_G_SURROGATE', 'Gestante G y surrogate no equivalentes',
           qci("qc.issue.ART_G_SURROGATE.detail", {p0:(label(uid))}, `${label(uid)} figura como gestante G y como surrogate/donante. La convención de 2025 distingue la gestante sin aporte de óvulo (G) de quien aporta óvulo y gesta (D).`), SRC.art, [uid]);
       }
-      if (rt === 'ovum_donor' && p.surrogate === true && !str(p.donation_target)) {
+      if (rt === 'ovum_donor' && p.surrogate === true && !target) {
         add('warning', 'ART_SURROGATE_NO_PREGNANCY', 'Surrogate sin embarazo vinculado',
           qci("qc.issue.ART_SURROGATE_NO_PREGNANCY.detail", {p0:(label(uid))}, `${label(uid)} consta como donante y gestante, pero carece de embarazo vinculado.`), SRC.art, [uid]);
       }
@@ -330,7 +336,7 @@
     const carrierByPregnancy = new Map();
     for (const p of people) {
       const target = type(p) === 'gestational_carrier' ? str(p.gestation_target)
-        : (type(p) === 'ovum_donor' && p.surrogate === true) ? str(p.donation_target) : '';
+        : (type(p) === 'ovum_donor' && p.surrogate === true) ? (donationIds(p)[0] || '') : '';
       if (!target) continue;
       if (!carrierByPregnancy.has(target)) carrierByPregnancy.set(target, []);
       carrierByPregnancy.get(target).push(str(p.uid));
@@ -354,8 +360,8 @@
       }
       const donors = people.filter(p => {
         const rt=type(p);
-        return (rt==='sperm_donor' && unique(array(p.donation_targets).map(str).concat(str(p.donation_target)).filter(Boolean)).includes(str(child.uid))) ||
-               (rt==='ovum_donor' && str(p.donation_target)===str(child.uid));
+        return (rt === 'sperm_donor' || rt === 'ovum_donor') &&
+          donationIds(p).includes(str(child.uid));
       });
       const hasSperm = donors.some(p=>type(p)==='sperm_donor');
       const hasOvum = donors.some(p=>type(p)==='ovum_donor');

@@ -2,13 +2,19 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23498335.svg)](https://doi.org/10.5281/zenodo.23498335)
 
-**Version 1.0.5** · **A bilingual (English/Spanish) web application for creating and editing clinical genetics pedigrees.**
+**Version 1.1** · **A bilingual (English/Spanish) web application for creating and editing clinical genetics pedigrees.**
 
-PedigrAPP draws pedigrees in accordance with the standardized nomenclature recommendations of Bennett/NSGC (1995, 2008, 2022, and the 2025 correction). It supports complex family relationships, adoption, twins and other multiple births, assisted reproduction, clinical and genetic information, exports, and advisory quality-control (QC) checks.
+PedigrAPP draws pedigrees in accordance with the standardized nomenclature recommendations of Bennett/NSGC (1995, 2008, 2022, and the 2025 correction). It supports complex relationships, adoption, multiple gestations, assisted reproduction, clinical/genetic annotations, exports, and advisory QC.
 
-Version **1.0.5** introduces an integrated ES/EN interface, localized QC, interactive help, clinical cards, and PDF reports. Users can switch languages without reloading or altering the family record. The pedigree JSON schema remains **4.16**. Version 1.0.4 restored the PedigrAPP logo in PDF reports and preserved the PDF button icon; 1.0.3 introduced the stillbirth (SB) quick-add shortcut.
+### Highlights of v1.1
 
-> **Release validation:** Automated checks use synthetic data. Deployment-specific access controls, historical clinical cases, and physical-phone testing remain the responsibility of the deploying organization. See [Internationalization](I18N.md) and [Security](SECURITY.md).
+- Mutually exclusive **age** or **birth year** per eligible record (`XX a` / `n. YYYY` in Spanish; `XX y` / `b. YYYY` in English).
+- Donors and gestational-carrier records may have documented partnerships without automatically implying genetic parentage.
+- **Explicit gestation assignment** to an individual assigned female at birth (AFAB), including transgender men, independent of recorded gender and of genetic parentage (Bennett/French 2025 correction, Fig. 5.1.d).
+- **A single existing sperm or egg donor** can be associated with several offspring or pregnancy outcomes through Advanced relationships or **⋯ More**, preserving an already recorded sibling bar (2025 correction, Fig. 5.1.c); a gestational egg donor remains restricted to one pregnancy.
+- Bilingual ES/EN editor, help, QC and clinical PDF. Existing family JSON files are supported; **native JSON schema 4.19**.
+
+> **Release validation:** This public release is derived exclusively from the installed and user-accepted v1.1 server version. The public distribution excludes stored family records and non-public test/example material. Deployment-specific access controls remain the responsibility of the deploying organization. See [Internationalization](I18N.md) and [Security](SECURITY.md).
 
 ## License, ownership, and registration
 
@@ -40,7 +46,7 @@ For software citation information, see [CITATION.cff](CITATION.cff).
 - **Archived DOI for PedigrAPP v1.0.1:** [`10.5281/zenodo.23498336`](https://doi.org/10.5281/zenodo.23498336).
 - **Archived DOI for PedigrAPP v1.0.2:** [`10.5281/zenodo.23499180`](https://doi.org/10.5281/zenodo.23499180).
 
-The concept DOI represents the PedigrAPP version series and resolves to the latest version available on Zenodo. For citation of a specific archived release, use its version-specific DOI when available.
+The concept DOI represents the PedigrAPP version series and resolves to the latest version available on Zenodo. A version-specific DOI for v1.1 will be reported only after it has been assigned and confirmed by Zenodo.
 
 ## Languages and internationalization
 
@@ -60,7 +66,7 @@ php -S 127.0.0.1:8080
 
 Open `http://127.0.0.1:8080/`. Editing and browser-side export work locally. The PHP process must be able to write to `data/` if you wish to save families.
 
-**For upgrades, preserve your existing `data/` directory and back it up first.** Release ZIPs contain only `data/.htaccess` and `data/.gitkeep`, not stored family records. Do not expose the application or the PHP API to untrusted networks without additional access controls.
+**For upgrades, preserve your existing `data/` directory and back it up first.** Release ZIPs contain only `data/.htaccess` under `data/`, not stored family records. Do not expose the application or the PHP API to untrusted networks without additional access controls.
 
 The optional brand assets are `images/PedigrAPP_logo.png` and `images/PedigrAPP_icono_small.png`. A text fallback is used if the logo is unavailable. PDF reports embed the application's own logo and do not contain institutional letterhead.
 
@@ -81,7 +87,7 @@ Choose **Export PDF** and then **Save as PDF** in the browser's print dialog. Di
 
 ## Privacy and security
 
-**Never commit identifiable patient information, family histories, or genetic data to the repository.** Real `data/` records must stay outside version control; the original `.gitignore` rules are retained.
+**Never commit identifiable patient information, family histories, or genetic data to the repository.** Real `data/` records must stay outside version control; `.gitignore` explicitly excludes `data/`, `examples/`, `tests/`, and `test/` except for `data/.htaccess`.
 
 `data/.htaccess` is intended to block direct HTTP downloads when Apache honors the directive, but **is not a substitute for authentication or authorization**. `api.php` has no built-in access-control system. Protect the server and verify applicable legal and organizational requirements before handling real patient data.
 
@@ -104,4 +110,23 @@ These are scientific nomenclature references, not statements of endorsement or c
 - [I18N.md](I18N.md) — maintaining both languages.
 - [help.html](help.html) — interactive help and nomenclature.
 
-**History:** PedigrAPP 1.0.0 followed the 0.8.75 development line and removed institutional branding without changing the clinical model. Version 1.0.1 established its legal and documentary framework. Version 1.0.2 added DOI/Zenodo and citation metadata without functional changes. Versions 1.0.3 and 1.0.4 were local functional refinements. Version 1.0.5 adds internationalization. For details and release/publication distinctions, see the changelog.
+**History:** PedigrAPP 1.0.0 followed the 0.8.75 development line and removed institutional branding without changing the clinical model. Version 1.0.1 established its legal and documentary framework. Version 1.0.2 added DOI/Zenodo and citation metadata without functional changes. Versions 1.0.3 and 1.0.4 were local functional refinements. Version 1.0.5 adds internationalization; v1.1 adds gestation and shared-donor workflows, an exclusive birth-year field, and partner support for donors and carriers. For details and release/publication distinctions, see the changelog.
+
+
+### v1.0.6-rc3 — Shared gamete donors (local candidate)
+
+- From **Advanced relationships** or the donor tooltip **⋯ More**, select a pre-existing gamete donor and multiple offspring, including pregnancy outcomes. A recipient’s **⋯ More** also offers **Link an existing gamete donor**.
+- When offspring share a recorded sibling group, that group retains one continuous sibling bar. Donor linkage does not create parentage or a couple.
+- Gestational egg donors remain restricted to one pregnancy; schema 4.19, ES/EN.
+
+### v1.0.6-rc2 — Explicit gestation assignment (local candidate)
+
+- From **Advanced relationships** or an eligible AFAB person's **More (…)** menu, select **“gestates the pregnancy / gave birth to”** and choose an outcome.
+- Explicit gestation is independent of gender and does not create genetic parentage or a partnership. A transgender man recorded AFAB may be the gestator (Bennett et al., 2025 correction, Fig. 5.1.d).
+- With a sperm donor, the pregnancy line starts at the explicitly assigned person rather than inferred from the female partner.
+- A pregnancy can have only one explicitly recorded gestator; a surrogate or gestational carrier G cannot be assigned simultaneously.
+- Clinical JSON schema 4.18 adds optional `{type:"gestation",carrier:uid,target:uid}`; pre-existing family data remain readable. This is *not* the discarded shared-donor v1.0.6-b.
+
+### v1.0.6 local candidate
+
+The pedigree editor supports either an age or a birth year for eligible records. Explicit couple relationships are now possible for donor and gestational-carrier records; they do not imply biological parentage or gamete donation. The native family JSON remains authoritative.

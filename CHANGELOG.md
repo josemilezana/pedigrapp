@@ -1,5 +1,40 @@
 # Changelog
 
+## v1.1 — October 29, 2026
+
+- Promotes the user-accepted **v1.0.6-rc3** to the v1.1 stable local baseline, without further changes to the pedigree drawing engine or relationship rules.
+- Records either **age** or **birth year** (mutually exclusive) and displays the corresponding compact annotation in the pedigree and clinical PDF.
+- Allows explicit partner relationships involving sperm/egg donors and gestational-carrier records without inferring genetic parentage.
+- Supports explicit assignment of a pregnancy to an individual recorded AFAB regardless of gender, including transgender men (2025 correction, Fig. 5.1.d), independent of gamete contribution and partnership.
+- Allows multiple offspring or pregnancy outcomes to share an existing sperm/egg donor, while retaining a sibling bar for an already documented sibship (2025 correction, Fig. 5.1.c). Configured only through **Advanced relationships** or the **⋯ More** menu; it does not automatically create sibling, parentage, or partner relationships.
+- Retains restriction to one pregnancy for an egg donor who also gestates, bilingual ES/EN translation coverage, QC support for shared donors and **JSON schema 4.19**. Older saved families remain readable.
+- **Public distribution:** the release contains no clinical family records. Existing deployments must preserve and back up `data/` before upgrading.
+
+
+### v1.0.6-rc3 — Shared donors and sibling groups (local candidate)
+
+- Existing sperm or egg donors can now be linked to multiple outcomes using Advanced relationships or the ⋯ More menu.
+- Shared donation no longer removes sibling branches from the standard parentage bar; the donor gets one connector per shared sibling group.
+- Gestational egg donors remain restricted to one pregnancy. JSON schema 4.19, bilingual labels.
+
+## v1.0.6-rc2 — Explicit gestation assignment (local candidate)
+
+- From **Advanced relationships** or an eligible AFAB person's **More (…)** menu, select **“gestates the pregnancy / gave birth to”** and choose an outcome.
+- Explicit gestation is independent of gender and does not create genetic parentage or a partnership. A transgender man recorded AFAB may be the gestator (Bennett et al., 2025 correction, Fig. 5.1.d).
+- With a sperm donor, the pregnancy line starts at the explicitly assigned person rather than inferred from the female partner.
+- A pregnancy can have only one explicitly recorded gestator; a surrogate or gestational carrier G cannot be assigned simultaneously.
+- Clinical JSON schema 4.18 adds optional `{type:"gestation",carrier:uid,target:uid}`; pre-existing family data remain readable. This is *not* the discarded shared-donor v1.0.6-b.
+
+
+## v1.0.6 — October 28, 2026 (local development candidate)
+
+- Introduces mutually exclusive age and birth year for individual, sperm/egg donors and gestational carriers, with compact tooltip selector, full-form editing, and ES/EN annotations (age or born in YYYY).
+- Allows donor and gestational-carrier records to be explicit partners of other eligible individuals without implying parentage or reproductive contribution.
+- Keeps existing family data backward compatible; family JSON schema now 4.17, with an optional `birth_year` field.
+- Retains the existing layout and clinical drawing conventions while preventing the special donor positioning logic from overriding explicit partner relationships.
+- Adds focused tests and new ES/EN dictionary entries.
+
+
 ## v1.0.5 — October 26, 2026
 
 - Introduces one integrated English/Spanish application, with a 🇪🇸 ES / 🇬🇧 EN selector, immediate switching, and the selected language stored locally in the browser.

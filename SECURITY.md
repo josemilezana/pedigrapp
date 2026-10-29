@@ -2,7 +2,7 @@
 
 ## Scope and current status
 
-PedigrAPP v1.0.5 does not implement user authentication, roles, or fine-grained authorization in `api.php`. **Do not expose an installation containing real clinical data directly to the Internet without appropriate external access controls and security measures.**
+PedigrAPP v1.1 does not implement user authentication, roles, or fine-grained authorization in `api.php`. **Do not expose an installation containing real clinical data directly to the Internet without appropriate external access controls and security measures.**
 
 The `data/.htaccess` rule is intended for Apache installations configured to honor it; it does not protect alternative paths or deployments on other servers by itself.
 
