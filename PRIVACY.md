@@ -6,8 +6,8 @@ PedigrAPP is a web application for representing clinical family pedigrees. Depen
 
 - When server-side saving is enabled, `api.php` reads and writes JSON files within the installation's local `data/` directory.
 - Users can import/export JSON and PED and create SVG, PNG, and PDF files. These copies require protection equivalent to the original records.
-- Published source code must not contain actual patient information. The fixtures in `examples/` are intended for development and validation.
-- **PedigrAPP v1.0.5 does not include built-in user accounts or access authorization.** Security depends on deployment configuration.
+- Published source code must not contain actual patient information. The public distribution excludes examples, tests and stored family records. Only `data/.htaccess` and the empty `data/.gitkeep` are distributed.
+- **PedigrAPP v1.2 does not include built-in user accounts or access authorization.** Security depends on deployment configuration.
 - The selected interface language is stored in browser `localStorage` (`pedigrapp.language`); this does not change the saved family records.
 
 ## Responsibilities of each deployment
@@ -25,3 +25,7 @@ A pedigree can indirectly identify individuals or families even after names have
 Public release of the **source code** under EUPL-1.2 is not permission to disclose personal information or family records held by users of the software.
 
 To report vulnerabilities, see [SECURITY.md](SECURITY.md).
+
+## Publication figures
+
+The publication-figure export omits explicit identifiers and free text by default. Optional chronology and the family structure may still identify people. This is not a guarantee of anonymization; review every figure before sharing.

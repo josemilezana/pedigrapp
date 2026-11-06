@@ -1,7 +1,7 @@
 (() => {
 "use strict";
 
-const APP_VERSION = "1.1";
+const APP_VERSION = "1.2";
 // Changes to language do not modify the family model or history.
 function refreshLocalizedPresentation() {
   // Called once dictionaries are loaded, and whenever the language changes.
@@ -63,19 +63,27 @@ function refreshLocalizedPresentation() {
       const moreExpanded=card.querySelector('.condition-hover-more-button')?.getAttribute('aria-expanded')==='true';
       const marked=[...card.querySelectorAll('.condition-hover-relation-list input:checked')].map(el=>el.value);
       const twinType=card.querySelector('.condition-hover-twin-type')?.value;
+      const partnerChooser=card.querySelector('.condition-hover-partner-chooser');
+      const partnerValues={
+        open:!!partnerChooser && !partnerChooser.hidden,
+        gender:partnerChooser?.querySelector('.condition-hover-partner-gender')?.value,
+        sex:partnerChooser?.querySelector('.condition-hover-partner-sex')?.value
+      };
       // Preserve unsaved quick-edit values (including age/year mode) while
       // rebuilding only translated text. Nothing is written to the family.
       const quickValues={
         label:card.querySelector('.condition-hover-quick-label')?.value,
         brief:card.querySelector('.condition-hover-quick-brief')?.value,
         mode:card.querySelector('.condition-hover-chronology-mode')?.value,
-        aux:card.querySelector('.condition-hover-quick-age, .condition-hover-quick-meta')?.value
+        aux:card.querySelector('.condition-hover-quick-age, .condition-hover-quick-meta')?.value,
+        death:card.querySelector('.condition-hover-death-year-input')?.value
       };
       buildConditionHoverCard(record);
       const quickLabel=card.querySelector('.condition-hover-quick-label');
       const quickBrief=card.querySelector('.condition-hover-quick-brief');
       const quickMode=card.querySelector('.condition-hover-chronology-mode');
       const quickAux=card.querySelector('.condition-hover-quick-age, .condition-hover-quick-meta');
+      const quickDeath=card.querySelector('.condition-hover-death-year-input');
       if(quickLabel && quickValues.label!==undefined)quickLabel.value=quickValues.label;
       if(quickBrief && quickValues.brief!==undefined)quickBrief.value=quickValues.brief;
       if(quickMode && quickValues.mode){
@@ -83,9 +91,16 @@ function refreshLocalizedPresentation() {
         quickMode.dispatchEvent(new Event('change'));
       }
       if(quickAux && quickValues.aux!==undefined)quickAux.value=quickValues.aux;
+      if(quickDeath && quickValues.death!==undefined)quickDeath.value=quickValues.death;
       if(twinType){
         const twin=card.querySelector('.condition-hover-twin-type');
         if(twin)twin.value=twinType;
+      }
+      const newPartnerChooser=card.querySelector('.condition-hover-partner-chooser');
+      if(newPartnerChooser){
+        if(partnerValues.gender) newPartnerChooser.querySelector('.condition-hover-partner-gender').value=partnerValues.gender;
+        if(partnerValues.sex!==undefined) newPartnerChooser.querySelector('.condition-hover-partner-sex').value=partnerValues.sex;
+        newPartnerChooser.hidden=!partnerValues.open;
       }
       card.querySelectorAll('.condition-hover-relation-list input').forEach(input=>{
         input.checked=marked.includes(input.value);
@@ -145,10 +160,18 @@ let savedFamilySignature = JSON.stringify(family);
 
 function emptyFamily() {
   return {
-    schema_version: "4.19",
+    schema_version: "4.22",
     family_id: "FAM001",
     indication: "",
     pedigree_comments: "",
+    clinical_documentation: {
+      collected_date: "",
+      updated_date: "",
+      recorded_by: "",
+      informant: "",
+      ancestry_maternal: "",
+      ancestry_paternal: ""
+    },
     show_pedigree_numbers: true,
     review_status: {
       reviewed: false,
@@ -702,6 +725,7 @@ function quickDefaultRecord(
     generation_override:null,
     age:null,
     birth_year:null,
+    death_year:null,
     gestational_age_weeks:null,
     notes:"",
     condition_states:[],
@@ -1256,13 +1280,31 @@ function normalizedBirthYear(value) {
     ? n : null;
 }
 
+function normalizedDeathYear(value) {
+  if (value === null || value === undefined || value === "") return null;
+  const n = Number(value);
+  return Number.isInteger(n) && n >= 1000 && n <= new Date().getFullYear()
+    ? n : null;
+}
+
 function personalChronologyLabel(p) {
   if (!supportsQuickAge(p)) return "";
   if (p.birth_year !== null && p.birth_year !== undefined && p.birth_year !== "") {
     return t("individual.birthYearShort", {year:p.birth_year});
   }
+  // v1.2-rc9: a deceased individual must not be presented with a live age.
+  // Preserve legacy age in JSON, but only show an explicitly recorded birth year.
+  if (recordType(p) === "person" && p.deceased) return "";
   if (p.age !== null && p.age !== undefined && p.age !== "") {
     return t("individual.ageShort", {age:p.age});
+  }
+  return "";
+}
+
+function personalDeathYearLabel(p) {
+  if (!p || recordType(p) !== "person" || !p.deceased) return "";
+  if (p.death_year !== null && p.death_year !== undefined && p.death_year !== "") {
+    return t("individual.deathYearShort", {year:p.death_year});
   }
   return "";
 }
@@ -1946,7 +1988,11 @@ function normalizeConditionStates(p) {
           "documented_evaluation"
         )
           ? !!s.documented_evaluation
-          : legacyDocumented
+          : legacyDocumented,
+      // Absent in earlier JSON versions. Never assume the old default
+      // 'unaffected' was entered as an explicit phenotype assessment.
+      ped_unaffected_confirmed:
+        s.status === "unaffected" && s.ped_unaffected_confirmed === true
     }));
 }
 
@@ -1958,7 +2004,9 @@ function conditionStateForPerson(p, conditionId) {
     return {
       ...found,
       documented_evaluation:
-        !!found.documented_evaluation
+        !!found.documented_evaluation,
+      ped_unaffected_confirmed:
+        found.status === "unaffected" && found.ped_unaffected_confirmed === true
     };
   }
 
@@ -1974,7 +2022,8 @@ function conditionStateForPerson(p, conditionId) {
         p &&
         p.clinical &&
         p.clinical.documented_evaluation
-      )
+      ),
+    ped_unaffected_confirmed:false
   };
 }
 
@@ -2179,7 +2228,7 @@ function synchronizeAffectedFromConditions(
 function normalizeFamily(data) {
   if (!data || !Array.isArray(data.people)) return data;
 
-  data.schema_version = "4.19";
+  data.schema_version = "4.22";
 
   // <=4.0: la numeración I-1, II-1... siempre era visible.
   // Por compatibilidad, cualquier JSON sin esta opción conserva ese comportamiento.
@@ -2188,6 +2237,21 @@ function normalizeFamily(data) {
 
   // <=4.7: no existía el comentario general del pedigree.
   data.pedigree_comments = String(data.pedigree_comments || "");
+
+  // 4.20: optional clinical provenance; never infer from file/report timestamps.
+  const documented = data.clinical_documentation &&
+    typeof data.clinical_documentation === "object" &&
+    !Array.isArray(data.clinical_documentation)
+      ? data.clinical_documentation : {};
+  data.clinical_documentation = {
+    ...documented,
+    collected_date: String(documented.collected_date || ""),
+    updated_date: String(documented.updated_date || ""),
+    recorded_by: String(documented.recorded_by || ""),
+    informant: String(documented.informant || ""),
+    ancestry_maternal: String(documented.ancestry_maternal || ""),
+    ancestry_paternal: String(documented.ancestry_paternal || "")
+  };
 
   // 4.12: revisión general persistente del pedigree.
   const reviewStatus =
@@ -2305,6 +2369,7 @@ function normalizeFamily(data) {
         age: supportsQuickAge(p) && normalizedBirthYear(p.birth_year) === null
           ? (p.age ?? null) : null,
         birth_year: supportsQuickAge(p) ? normalizedBirthYear(p.birth_year) : null,
+        death_year: recordType(p) === "person" ? normalizedDeathYear(p.death_year) : null,
         gestational_age_weeks:p.gestational_age_weeks ?? null,
         intended_parent_uids:intendedParentUids(p),
         notes:String(p.notes || ""),
@@ -2457,6 +2522,7 @@ function normalizeFamily(data) {
       age: supportsQuickAge(p) && normalizedBirthYear(p.birth_year) === null
         ? (p.age ?? null) : null,
       birth_year: supportsQuickAge(p) ? normalizedBirthYear(p.birth_year) : null,
+      death_year: (p.record_type || "person") === "person" ? normalizedDeathYear(p.death_year) : null,
       gestational_age_weeks:p.gestational_age_weeks ?? null,
       intended_parent_uids:intendedParentUids(p).map(uid => idMap.get(uid) || uid),
       notes:String(p.notes || ""),
@@ -12850,6 +12916,9 @@ function annotations(p) {
   const chronology = personalChronologyLabel(p);
   if (chronology) a.push(chronology);
 
+  const deathYear = personalDeathYearLabel(p);
+  if (deathYear) a.push(deathYear);
+
   return a;
 }
 
@@ -13336,12 +13405,20 @@ function hoverChildShortcutPartnerUid(
       uid !== anchorUid
     );
 
-  return (
-    partnerUid &&
-    personByUid(partnerUid)
-  )
-    ? partnerUid
-    : null;
+  const anchor = personByUid(anchorUid);
+  const partner = personByUid(partnerUid);
+  if (!anchor || !partner) return null;
+  // A partnership alone is not evidence of genetic parentage. Preserve
+  // historical shortcut behavior for ordinary binary records, but in
+  // gender-diverse, unassigned-sex or trans cases never infer the second
+  // biological parent; it must be entered explicitly in Advanced relations.
+  const safeShortcutIdentity = person =>
+    ["man","woman"].includes(person.gender) &&
+    person.sex_at_birth !== "unassigned" &&
+    (person.sex_at_birth !== "male" || person.gender === "man") &&
+    (person.sex_at_birth !== "female" || person.gender === "woman");
+  if (!safeShortcutIdentity(anchor) || !safeShortcutIdentity(partner)) return null;
+  return partnerUid;
 }
 
 
@@ -13387,7 +13464,8 @@ function quickCreateDonorFromHover(anchorUid, donorType) {
 
 function quickCreateRelativeFromHover(
   anchorUid,
-  kind
+  kind,
+  partnerOptions=null
 ) {
   if (kind === "sperm_donor" || kind === "ovum_donor") {
     return quickCreateDonorFromHover(anchorUid, kind);
@@ -13595,44 +13673,27 @@ function quickCreateRelativeFromHover(
   } else if (
     kind === "partner"
   ) {
-    const partnerAnchorAllowed = canFormPartnership(anchorPerson);
-
-    if (
-      !partnerAnchorAllowed ||
-      ![
-        "man",
-        "woman"
-      ].includes(
-        anchorPerson.gender
-      )
-    ) {
-      message(
-        t("validation.partner.genderRequired"),
-        "error"
-      );
+    if (!canFormPartnership(anchorPerson)) {
+      message(t("validation.union.eligible"), "error");
       return false;
     }
 
-    const oppositeGender =
-      anchorPerson.gender === "man"
-        ? "woman"
-        : "man";
-
-    const oppositeSex =
-      oppositeGender === "man"
-        ? "male"
-        : "female";
-
-    newPerson =
-      quickDefaultPerson(
-        oppositeGender,
-        oppositeSex
-      );
-
-    successText =
-      oppositeGender === "man"
-        ? t("message.partner.maleAdded")
-        : t("message.partner.femaleAdded");
+    // v1.2-rc6: the tooltip is a one-click shortcut for a conventional
+    // new partner (man/AMAB or woman/AFAB), regardless of the anchor's
+    // gender or assigned sex. Unusual partner profiles are edited using
+    // Advanced relationships; unions never imply reproductive parentage.
+    // Keep the historical no-options invocation for older internal callers.
+    const fallbackGender = anchorPerson.gender === "man" ? "woman" : "man";
+    const requestedGender = partnerOptions ? partnerOptions.gender : fallbackGender;
+    const requestedSex = partnerOptions ? partnerOptions.sexAtBirth :
+      (requestedGender === "man" ? "male" : "female");
+    if (!((requestedGender === "man" && requestedSex === "male") ||
+          (requestedGender === "woman" && requestedSex === "female"))) {
+      message(t("validation.partner.invalidDetails"), "error");
+      return false;
+    }
+    newPerson = quickDefaultPerson(requestedGender, requestedSex);
+    successText = t("message.partner.anyGenderAdded");
   } else {
     return false;
   }
@@ -14356,7 +14417,7 @@ function appendHoverRelationControls(
       "twin";
     if (typeSelect.value === "donates") {
       const chosen = new Set(donationTargetUids(p));
-      targetList.querySelectorAll('input[type="checkbox"]')
+      targetList.querySelectorAll("input[type=checkbox]")
         .forEach(el => { el.checked = chosen.has(el.value); });
     }
 
@@ -14571,39 +14632,28 @@ function appendHoverRelationControls(
     createShortcuts.append(brotherButton, sisterButton);
   }
 
-  const canAddOppositePartner = canFormPartnership(p) &&
-    [
-      "man",
-      "woman"
-    ].includes(
-      p.gender
-    );
-
-  if (
-    canAddOppositePartner
-  ) {
-    const oppositeClass =
-      p.gender === "man"
-        ? "female"
-        : "male";
-
-    const partnerButton =
+  // v1.2-rc6: instant, conventional partner shortcuts. Both choices
+  // are shown for every partnership-eligible individual, including AFAB,
+  // AMAB, UAAB, gender-diverse or unspecified records. More complex
+  // partner profiles are handled through Advanced relationships.
+  if (canFormPartnership(p)) {
+    createShortcuts.append(
       hoverQuickCreateButton(
-        "partner",
-        p.gender === "man"
-          ? "Añadir pareja mujer"
-          : "Añadir pareja hombre",
-        `partner ${oppositeClass}`,
-        "",
-        () =>
-          quickCreateRelativeFromHover(
-            p.uid,
-            "partner"
-          )
-      );
-
-    createShortcuts.appendChild(
-      partnerButton
+        "partner-man",
+        t("tooltip.partner.addMan"),
+        "partner male", "",
+        () => quickCreateRelativeFromHover(p.uid, "partner", {
+          gender:"man", sexAtBirth:"male"
+        })
+      ),
+      hoverQuickCreateButton(
+        "partner-woman",
+        t("tooltip.partner.addWoman"),
+        "partner female", "",
+        () => quickCreateRelativeFromHover(p.uid, "partner", {
+          gender:"woman", sexAtBirth:"female"
+        })
+      )
     );
   }
 
@@ -15069,7 +15119,7 @@ function appendHoverQuickPersonFields(card,p) {
   const topRow = document.createElement("div");
   topRow.className =
     "condition-hover-quick-edit-row condition-hover-quick-edit-top" +
-    (includeAuxiliary ? (includeAge ? " chronology-aux" : "") : " no-aux") +
+    (includeAuxiliary ? (includeAge && !(recordType(p) === "person" && p.deceased) ? " chronology-aux" : "") : " no-aux") +
     (
       includeGestationalAge ||
       includeMultipleCount
@@ -15094,21 +15144,24 @@ function appendHoverQuickPersonFields(card,p) {
 
   let chronologyMode = null;
   if (includeAge) {
-    chronologyMode = document.createElement("select");
-    chronologyMode.className = "condition-hover-quick-input condition-hover-chronology-mode";
-    chronologyMode.setAttribute("aria-label", t("individual.chronologyMode"));
-    chronologyMode.append(
-      new Option(t("individual.ageOption"), "age"),
-      new Option(t("individual.birthYearOption"), "birth_year")
-    );
-    chronologyMode.value = p.birth_year != null ? "birth_year" : "age";
+    const deceasedPerson = recordType(p) === "person" && p.deceased;
+    if (!deceasedPerson) {
+      chronologyMode = document.createElement("select");
+      chronologyMode.className = "condition-hover-quick-input condition-hover-chronology-mode";
+      chronologyMode.setAttribute("aria-label", t("individual.chronologyMode"));
+      chronologyMode.append(
+        new Option(t("individual.ageOption"), "age"),
+        new Option(t("individual.birthYearOption"), "birth_year")
+      );
+      chronologyMode.value = p.birth_year != null ? "birth_year" : "age";
+    }
     auxiliaryInput = document.createElement("input");
     auxiliaryInput.type = "number";
     auxiliaryInput.className =
       "condition-hover-quick-input condition-hover-quick-age";
     auxiliaryInput.step = "1";
     const setChronologyMode = () => {
-      const year = chronologyMode.value === "birth_year";
+      const year = deceasedPerson || chronologyMode.value === "birth_year";
       auxiliaryInput.value = year ? (p.birth_year ?? "") : (p.age ?? "");
       auxiliaryInput.placeholder = t(year ? "individual.birthYearPlaceholder" : "individual.ageOption");
       auxiliaryInput.title = t(year ? "individual.birthYear" : "individual.age");
@@ -15116,7 +15169,7 @@ function appendHoverQuickPersonFields(card,p) {
       auxiliaryInput.min = year ? "1000" : "0";
       auxiliaryInput.max = year ? String(new Date().getFullYear()) : "130";
     };
-    chronologyMode.addEventListener("change", setChronologyMode);
+    if (chronologyMode) chronologyMode.addEventListener("change", setChronologyMode);
     setChronologyMode();
   } else if (includeGestationalAge) {
     auxiliaryInput = document.createElement("input");
@@ -15176,6 +15229,33 @@ function appendHoverQuickPersonFields(card,p) {
   );
   briefInput.autocomplete = "off";
 
+  // v1.2-rc8: one compact, optional death-year field in the existing quick editor.
+  // It is shown only for deceased persons: no dialogs and no extra action.
+  let deathYearInput = null;
+  let deathYearField = null;
+  if (recordType(p) === "person" && p.deceased) {
+    deathYearField = document.createElement("label");
+    deathYearField.className = "condition-hover-death-year";
+    deathYearField.title = t("individual.deathYear");
+    deathYearField.setAttribute("aria-label", t("individual.deathYear"));
+    const cross = document.createElement("span");
+    cross.className = "condition-hover-death-cross";
+    cross.setAttribute("aria-hidden", "true");
+    cross.textContent = "✝";
+    deathYearInput = document.createElement("input");
+    deathYearInput.type = "number";
+    deathYearInput.className = "condition-hover-death-year-input";
+    deathYearInput.value = p.death_year ?? "";
+    deathYearInput.min = "1000";
+    deathYearInput.max = String(new Date().getFullYear());
+    deathYearInput.step = "1";
+    deathYearInput.placeholder = t("individual.deathYearPlaceholder");
+    deathYearInput.title = t("individual.deathYear");
+    deathYearInput.setAttribute("aria-label", t("individual.deathYear"));
+    deathYearField.append(cross,deathYearInput);
+    bottomRow.classList.add("with-death-year");
+  }
+
   const saveButton = document.createElement("button");
   saveButton.type = "button";
   saveButton.className = "condition-hover-quick-save";
@@ -15196,11 +15276,25 @@ function appendHoverQuickPersonFields(card,p) {
       p.gestational_age_weeks ?? null;
     let multipleCount =
       p.multiple_count ?? null;
+    let deathYear = p.death_year ?? null;
+
+    if (deathYearInput) {
+      const raw = deathYearInput.value.trim();
+      deathYear = raw === "" ? null : Number(raw);
+      if (raw !== "" && normalizedDeathYear(deathYear) !== deathYear) {
+        deathYearInput.setCustomValidity(t("validation.deathYear.range"));
+        deathYearInput.reportValidity();
+        return;
+      }
+      deathYearInput.setCustomValidity("");
+    }
 
     if (includeAge) {
       const raw = auxiliaryInput.value.trim();
-      const yearMode = chronologyMode.value === "birth_year";
-      age = null;
+      const yearMode = !chronologyMode || chronologyMode.value === "birth_year";
+      // Legacy age on a deceased individual is retained if the year is empty,
+      // but never shown; setting a real birth year replaces it.
+      if (chronologyMode) age = null;
       birthYear = null;
       if (raw !== "") {
         const parsed = Number(raw);
@@ -15213,7 +15307,7 @@ function appendHoverQuickPersonFields(card,p) {
           auxiliaryInput.reportValidity();
           return;
         }
-        if (yearMode) birthYear = parsed;
+        if (yearMode) { birthYear = parsed; age = null; }
         else age = parsed;
       }
       auxiliaryInput.setCustomValidity("");
@@ -15281,6 +15375,7 @@ function appendHoverQuickPersonFields(card,p) {
       brief === String(p.brief_info || "") &&
       age === (p.age ?? null) &&
       birthYear === (p.birth_year ?? null) &&
+      deathYear === (p.death_year ?? null) &&
       gestationalAge ===
         (p.gestational_age_weeks ?? null) &&
       sameMultipleCount
@@ -15297,6 +15392,7 @@ function appendHoverQuickPersonFields(card,p) {
       p.age = age;
       p.birth_year = birthYear;
     }
+    if (deathYearInput) p.death_year = deathYear;
 
     if (includeGestationalAge) {
       p.gestational_age_weeks =
@@ -15347,7 +15443,8 @@ function appendHoverQuickPersonFields(card,p) {
   [
     labelInput,
     briefInput,
-    ...(auxiliaryInput ? [auxiliaryInput] : [])
+    ...(auxiliaryInput ? [auxiliaryInput] : []),
+    ...(deathYearInput ? [deathYearInput] : [])
   ].forEach(input => {
     input.addEventListener(
       "keydown",
@@ -15361,10 +15458,9 @@ function appendHoverQuickPersonFields(card,p) {
     );
   });
 
-  bottomRow.append(
-    briefInput,
-    saveButton
-  );
+  bottomRow.appendChild(briefInput);
+  if (deathYearField) bottomRow.appendChild(deathYearField);
+  bottomRow.appendChild(saveButton);
 
   wrap.append(
     topRow,
@@ -16581,7 +16677,8 @@ function drawPerson(svg,p,position,numbers,pos) {
       x:textX,
       y:nextTextY(12),
       class:"person-subtext" +
-        (chronologyAnnotation && txt === chronologyAnnotation ? " person-chronology-label" : "")
+        (chronologyAnnotation && txt === chronologyAnnotation ? " person-chronology-label" : "") +
+        (personalDeathYearLabel(p) && txt === personalDeathYearLabel(p) ? " person-death-year-label" : "")
     }, txt));
   });
 
@@ -21104,6 +21201,27 @@ function renderPersonConditionAssignments() {
     );
     documentedField.appendChild(documentedLabel);
 
+    const pedField = document.createElement("div");
+    pedField.className = "person-condition-ped field";
+    const pedLabel = document.createElement("label");
+    pedLabel.className = "checkbox-row";
+    const pedInput = document.createElement("input");
+    pedInput.type = "checkbox";
+    pedInput.className = "person-condition-ped-unaffected";
+    pedInput.checked = state.status === "unaffected" &&
+      state.ped_unaffected_confirmed === true;
+    const pedText = document.createElement("span");
+    pedText.textContent = t("ped.condition.confirmUnaffected");
+    pedText.setAttribute("data-i18n","ped.condition.confirmUnaffected");
+    pedLabel.append(pedInput,pedText);
+    pedField.appendChild(pedLabel);
+    pedField.hidden = state.status !== "unaffected";
+    const syncPedField = () => {
+      pedField.hidden = statusSelect.value !== "unaffected";
+      if (pedField.hidden) pedInput.checked = false;
+    };
+    statusSelect.addEventListener("change", syncPedField);
+
     const validation = document.createElement("div");
     validation.className = "condition-validation";
 
@@ -21114,6 +21232,7 @@ function renderPersonConditionAssignments() {
       molecularField,
       details,
       documentedField,
+      pedField,
       validation
     );
     container.appendChild(row);
@@ -21124,7 +21243,8 @@ function renderPersonConditionAssignments() {
       variantInput,
       zygositySelect,
       genotypeInput,
-      documentedInput
+      documentedInput,
+      pedInput
     ].forEach(control => {
       control.addEventListener("input", () => {
         $("notesStatus").textContent = "";
@@ -21161,7 +21281,10 @@ function collectPersonConditionAssignments() {
       documented_evaluation:
         row.querySelector(
           ".person-condition-documented-evaluation"
-        ).checked
+        ).checked,
+      ped_unaffected_confirmed:
+        row.querySelector(".person-condition-status").value === "unaffected" &&
+        row.querySelector(".person-condition-ped-unaffected").checked
     }));
 }
 
@@ -25423,8 +25546,20 @@ function updateRecordTypeFields() {
   }
 
   updatePersonReproductiveFields();
+  updatePersonDeathYearField();
 
   refreshRecordFormTexts();
+}
+
+function updatePersonDeathYearField() {
+  const field = $("deathYearField");
+  if (!field) return;
+  const visible = $("recordType").value === "person" && $("deceased").checked;
+  field.classList.toggle("hidden", !visible);
+  const ageField = $("age").closest(".field");
+  if (ageField) ageField.classList.toggle("hidden", visible);
+  // Do not erase legacy ages when toggling deceased; the published notation
+  // and quick editor prioritize the explicitly entered year of birth.
 }
 
 function refreshRecordFormTexts() {
@@ -25584,6 +25719,7 @@ function editPerson(uid) {
     p.multiple_count ?? "";
   $("age").value = p.age ?? "";
   $("birthYear").value = p.birth_year ?? "";
+  $("deathYear").value = p.death_year ?? "";
   $("gestationalAge").value = p.gestational_age_weeks ?? "";
   $("birthOrder").value = p.birth_order ?? "";
   $("generationOverride").value = p.generation_override ?? "";
@@ -25956,6 +26092,9 @@ $("personForm").addEventListener("submit", e => {
       ? Number($("age").value) : null,
     birth_year: (isPerson || isDonor || isGestationalCarrier) &&
       $("birthYear").value !== "" ? Number($("birthYear").value) : null,
+    death_year: isPerson && $("deathYear").value !== ""
+      ? Number($("deathYear").value)
+      : null,
     gestational_age_weeks:
       isPregnancyEvent &&
       $("gestationalAge").value !== ""
@@ -26060,6 +26199,11 @@ $("personForm").addEventListener("submit", e => {
 
   if (p.birth_year !== null && normalizedBirthYear(p.birth_year) !== p.birth_year) {
     message(t("validation.birthYear.range"), "error");
+    return;
+  }
+
+  if (p.death_year !== null && normalizedDeathYear(p.death_year) !== p.death_year) {
+    message(t("validation.deathYear.range"), "error");
     return;
   }
 
@@ -26814,138 +26958,111 @@ function removeSiblingRelationMember(uid) {
     .filter(r => r.type !== "sibling" || (r.members || []).length >= 2);
 }
 
+function addExplicitSiblingRelation(a,b) {
+  // Siblinghood does not, by itself, prove genetic or adoptive parentage.
+  const groupA = siblingGroupOf(a);
+  const groupB = siblingGroupOf(b);
+  if (groupA && groupB && groupA !== groupB) {
+    groupA.members = [...new Set([...(groupA.members || []),...(groupB.members || [])])];
+    family.relationships = family.relationships.filter(r => r !== groupB);
+  } else if (groupA) {
+    groupA.members = [...new Set([...(groupA.members || []),b])];
+  } else if (groupB) {
+    groupB.members = [...new Set([...(groupB.members || []),a])];
+  } else {
+    family.relationships.push({type:"sibling",members:[a,b]});
+  }
+}
+
 function resolveSiblingGroupsWithParents() {
   const siblingGroups = family.relationships.filter(r => r.type === "sibling");
-
   siblingGroups.forEach(group => {
     const members = [...(group.members || [])];
+    // If any member has adoptive parentage, their sibling link is not
+    // evidence that the other members share either legal or genetic parents.
+    if (members.some(uid => isAdoptedPerson(personByUid(uid)))) return;
     const known = members
-      .map(uid => ({uid, rel:parentageOf(uid)}))
+      .map(uid => ({uid,rel:parentageOf(uid,"biological")}))
       .find(x => x.rel && (x.rel.parents || []).length);
-
     if (!known) return;
-
     const parents = [...(known.rel.parents || [])];
-
+    let allResolved = true;
     members.forEach(uid => {
-      const existing = parentageOf(uid);
-
-      if (!existing) {
-        known.rel.children.push(uid);
+      const biological = parentageOf(uid,"biological");
+      if (!biological) {
+        // Explicit adoption of a member is not evidence of genetic
+        // siblinghood. Leave the sibship annotation unmerged.
+        if (parentageOf(uid,"adoptive")) {allResolved=false;return;}
+        if (!known.rel.children.includes(uid)) known.rel.children.push(uid);
         return;
       }
-
-      if (existing === known.rel) return;
-
-      if (sameSet(existing.parents || [], parents)) {
+      if (biological === known.rel) return;
+      if (sameSet(biological.parents || [],parents)) {
         if (!known.rel.children.includes(uid)) known.rel.children.push(uid);
-        existing.children = (existing.children || []).filter(x => x !== uid);
+        biological.children = (biological.children || []).filter(x=>x!==uid);
+      } else {
+        allResolved=false;
       }
     });
-
-    group._resolved = true;
+    if (allResolved) group._resolved = true;
   });
-
   family.relationships = family.relationships.filter(r => {
     if (r.type === "sibling" && r._resolved) return false;
     if (r.type === "parentage" && !(r.children || []).length) return false;
     return true;
   });
-
   mergeSiblingGroups();
 }
 
 function addSibling(a,b) {
   if (a === b) throw new Error(t("validation.sibling.self"));
-
+  if (areSiblings(a,b)) return;
   const relA = parentageOf(a);
   const relB = parentageOf(b);
-
-  // Si ambos ya comparten progenitores, ya son hermanos.
-  if (relA && relB && relA === relB) return;
-
-  // Si uno tiene progenitores y el otro no, incorporamos al segundo
-  // directamente a la misma línea de descendencia.
+  // With adoption on either side, a sibling shortcut must not silently
+  // assign a *new* genetic or adoptive parentage. The explicit link is safe.
+  if (isAdoptedPerson(personByUid(a)) ||
+      isAdoptedPerson(personByUid(b))) {
+    addExplicitSiblingRelation(a,b);
+    return;
+  }
   if (relA && !relB) {
     if (!relA.children.includes(b)) relA.children.push(b);
     removeSiblingRelationMember(b);
     mergeSiblingGroups();
     return;
   }
-
   if (relB && !relA) {
     if (!relB.children.includes(a)) relB.children.push(a);
     removeSiblingRelationMember(a);
     mergeSiblingGroups();
     return;
   }
-
-  // Si ambos tienen filiaciones distintas, no las fusionamos silenciosamente.
   if (relA && relB) {
-    if (sameSet(relA.parents || [], relB.parents || [])) {
-      relA.children = Array.from(new Set(
-        (relA.children || []).concat(relB.children || [])
-      ));
-      family.relationships = family.relationships.filter(r => r !== relB);
+    if (sameSet(relA.parents || [],relB.parents || [])) {
+      relA.children = [...new Set([...(relA.children || []),...(relB.children || [])])];
+      family.relationships = family.relationships.filter(r=>r!==relB);
       mergeSiblingGroups();
       return;
     }
-
-    throw new Error(
-      "Los dos individuos ya tienen progenitores distintos. " +
-      t("validation.sibling.noAutoFullSibling")
-    );
+    throw new Error(t("validation.sibling.noAutoFullSibling"));
   }
-
-  // Ninguno tiene progenitores conocidos: mantenemos un grupo explícito
-  // de hermanos hasta que se documenten los padres de alguno.
-  let groupA = siblingGroupOf(a);
-  let groupB = siblingGroupOf(b);
-
-  if (groupA && groupB && groupA !== groupB) {
-    groupA.members = Array.from(new Set(
-      (groupA.members || []).concat(groupB.members || [])
-    ));
-    family.relationships = family.relationships.filter(r => r !== groupB);
-  } else if (groupA) {
-    if (!groupA.members.includes(b)) groupA.members.push(b);
-  } else if (groupB) {
-    if (!groupB.members.includes(a)) groupB.members.push(a);
-  } else {
-    family.relationships.push({
-      type:"sibling",
-      members:[a,b]
-    });
-  }
+  addExplicitSiblingRelation(a,b);
 }
 
 function areSiblings(a,b) {
-  const relA = parentageOf(a);
-  const relB = parentageOf(b);
-
-  if (
-    relA &&
-    relB &&
-    sameSet(relA.parents || [], relB.parents || [])
-  ) {
-    return true;
+  // Recognise an existing sibship through biological *or* adoptive
+  // parentage, but do not infer one kind of parentage from the other.
+  for (const descentType of ["biological","adoptive"]) {
+    const relA=parentageOf(a,descentType),relB=parentageOf(b,descentType);
+    if (relA && relB && (relA.parents || []).length &&
+      (relB.parents || []).length && (relA === relB ||
+      sameSet(relA.parents || [],relB.parents || []))) return true;
   }
-
-  if (
-    family.relationships.some(r =>
-      r.type === "sibling" &&
-      (r.members || []).includes(a) &&
-      (r.members || []).includes(b)
-    )
-  ) {
-    return true;
-  }
-
-  return family.relationships.some(r =>
-    r.type === "twin" &&
-    (r.members || []).includes(a) &&
-    (r.members || []).includes(b)
-  );
+  if (family.relationships.some(r=>r.type==="sibling" &&
+       (r.members || []).includes(a) && (r.members || []).includes(b))) return true;
+  return family.relationships.some(r=>r.type==="twin" &&
+       (r.members || []).includes(a) && (r.members || []).includes(b));
 }
 
 function addMultipleBirth(memberUids,zygosity) {
@@ -27175,6 +27292,7 @@ $("age").addEventListener("input", () => {
 $("birthYear").addEventListener("input", () => {
   if ($("birthYear").value !== "") $("age").value = "";
 });
+$("deceased").addEventListener("change", updatePersonDeathYearField);
 $("personReproductiveStatus").addEventListener(
   "change",
   updatePersonReproductiveFields
@@ -27583,12 +27701,29 @@ function syncHeaderToFamily() {
   family.family_id = $("familyId").value.trim();
   family.indication = $("indication").value.trim();
   family.pedigree_comments = $("pedigreeComments").value.trim();
+  const current = family.clinical_documentation || {};
+  family.clinical_documentation = {
+    ...current,
+    collected_date: $("pedigreeCollectedDate").value,
+    updated_date: $("pedigreeUpdatedDate").value,
+    recorded_by: $("pedigreeRecordedBy").value.trim(),
+    informant: $("pedigreeInformant").value.trim(),
+    ancestry_maternal: $("pedigreeAncestryMaternal").value.trim(),
+    ancestry_paternal: $("pedigreeAncestryPaternal").value.trim()
+  };
 }
 
 function syncFamilyToHeader() {
   $("familyId").value = family.family_id || "";
   $("indication").value = family.indication || "";
   $("pedigreeComments").value = family.pedigree_comments || "";
+  const docs = family.clinical_documentation || {};
+  $("pedigreeCollectedDate").value = docs.collected_date || "";
+  $("pedigreeUpdatedDate").value = docs.updated_date || "";
+  $("pedigreeRecordedBy").value = docs.recorded_by || "";
+  $("pedigreeInformant").value = docs.informant || "";
+  $("pedigreeAncestryMaternal").value = docs.ancestry_maternal || "";
+  $("pedigreeAncestryPaternal").value = docs.ancestry_paternal || "";
 
   $("showPedigreeNumbers").checked =
     pedigreeNumbersVisible();
@@ -27616,6 +27751,12 @@ $("pedigreeComments").addEventListener(
   "input",
   syncHeaderAfterManualEdit
 );
+
+["pedigreeCollectedDate", "pedigreeUpdatedDate", "pedigreeRecordedBy", "pedigreeInformant", "pedigreeAncestryMaternal", "pedigreeAncestryPaternal"]
+  .forEach(id => $(id).addEventListener(
+    id.endsWith("Date") ? "change" : "input",
+    syncHeaderAfterManualEdit
+  ));
 
 
 $("showPedigreeNumbers").addEventListener(
@@ -28612,34 +28753,84 @@ function pedSafeToken(value, fallback="0") {
   return text.replace(/\s+/g, "_");
 }
 
+// PED SEX is a legacy binary field. Never fill it from gender identity.
+// The value below reflects recorded sex assigned at birth only; it is NOT a
+// karyotype determination, gamete contribution, or a full gender descriptor.
 function pedSexCode(person) {
   if (!person) return "0";
-  if (person.sex_at_birth === "male" || person.gender === "man") return "1";
-  if (person.sex_at_birth === "female" || person.gender === "woman") return "2";
+  if (person.sex_at_birth === "male") return "1";
+  if (person.sex_at_birth === "female") return "2";
   return "0";
 }
 
-function pedPhenotypeCode(person) {
-  if (!person) return "-9";
-  if (person.affected) return "2";
-  if (person.clinical && person.clinical.phenotype_status === "unknown") return "-9";
-  return "1";
+// PID/MID represent paternal/maternal roles, not gender identity. When a
+// recorded gender and assigned sex differ, or the gender is diverse, this
+// compact format cannot establish a gamete contribution unambiguously.
+function pedParentRoleCompatible(person) {
+  if (!person || pedSexCode(person) === "0") return false;
+  if (person.gender === "man") return pedSexCode(person) === "1";
+  if (person.gender === "woman") return pedSexCode(person) === "2";
+  return person.gender === "unspecified" || !person.gender;
+}
+
+// A six-column PED contains one binary phenotype, selected at export time.
+// Legacy JSON stored the default 'unaffected' for unassessed conditions;
+// those rows are deliberately exported as missing until confirmed manually.
+function pedPhenotypeCode(person, conditionId, missingCode="-9") {
+  const missing = missingCode === "0" ? "0" : "-9";
+  if (!person || !conditionId) return missing;
+  if (!(family.conditions || []).some(c => c.id === conditionId)) return missing;
+  const states = (person.condition_states || []).filter(s =>
+    s && s.condition_id === conditionId
+  );
+  if (states.length !== 1) return missing;
+  const state = states[0];
+  if (state.status === "affected") return "2";
+  if (state.status === "unaffected" &&
+      state.ped_unaffected_confirmed === true) return "1";
+  return missing;
+}
+
+function pedPhenotypeSummary(conditionId, missingCode="-9") {
+  const people = (family.people || []).filter(p =>
+    (p.record_type || "person") === "person"
+  );
+  const codes = people.map(p => pedPhenotypeCode(p,conditionId,missingCode));
+  const notConfirmed = conditionId ? people.filter(p =>
+    (p.condition_states || []).some(s =>
+      s && s.condition_id === conditionId && s.status === "unaffected" &&
+      s.ped_unaffected_confirmed !== true
+    )
+  ).length : 0;
+  return {
+    affected:codes.filter(c=>c==="2").length,
+    unaffected:codes.filter(c=>c==="1").length,
+    missing:codes.filter(c=>c!=="1" && c!=="2").length,
+    notConfirmed,
+    codes
+  };
 }
 
 function biologicalParentsForPed(uid) {
-  const rel = (family.relationships || []).find(r =>
+  const matching = (family.relationships || []).filter(r =>
     r.type === "parentage" &&
-    r.descent_type !== "adoptive" &&
+    (r.descent_type === "biological" || !r.descent_type) &&
     (r.children || []).includes(uid)
   );
-  return rel ? (rel.parents || []).slice() : [];
+  return [...new Set(matching.flatMap(r => r.parents || []))];
 }
 
-function exportPedText() {
+function exportPedText(options={}) {
   const fid = pedSafeToken(family.family_id || "FAM001", "FAM001");
   const byUid = new Map((family.people || []).map(p => [p.uid, p]));
   const lines = [];
   const warnings = [];
+  const conditionId = options.conditionId || "";
+  const missingCode = options.missingCode === "0" ? "0" : "-9";
+  const phenotype = pedPhenotypeSummary(conditionId,missingCode);
+  if (conditionId && phenotype.notConfirmed > 0) {
+    warnings.push(t("ped.export.unconfirmedUnaffected",{count:phenotype.notConfirmed}));
+  }
 
   (family.people || []).forEach(person => {
     if ((person.record_type || "person") !== "person") {
@@ -28652,15 +28843,61 @@ function exportPedText() {
       .filter(Boolean)
       .filter(p => (p.record_type || "person") === "person");
 
-    let father = parents.find(p => pedSexCode(p) === "1") || null;
-    let mother = parents.find(p => pedSexCode(p) === "2") || null;
+    const birthSex = pedSexCode(person);
+    if (birthSex === "0" && ["man", "woman"].includes(person.gender)) {
+      warnings.push(t("ped.export.sexNotRecorded", {uid:person.uid}));
+    }
+    if (
+      (person.gender === "man" && birthSex === "2") ||
+      (person.gender === "woman" && birthSex === "1") ||
+      (!["man", "woman"].includes(person.gender) && birthSex !== "0")
+    ) {
+      warnings.push(t("ped.export.genderNotRepresentable", {uid:person.uid}));
+    }
 
-    // PED clásico exige PID/MID. Si el sexo no permite asignar el rol,
-    // no inventamos padre/madre: se exporta 0 y se avisa al usuario.
-    if (parents.length && !father && !mother) {
-      warnings.push(t("validation.ped.missingSexParents",{uid:person.uid}));
-    } else if (parents.length > ((father ? 1 : 0) + (mother ? 1 : 0))) {
-      warnings.push(t("validation.ped.parentageIncomplete",{uid:person.uid}));
+    const donorLinks = (family.people || []).some(p =>
+      ["sperm_donor", "ovum_donor"].includes(p.record_type) &&
+      (
+        (Array.isArray(p.donation_targets) && p.donation_targets.includes(person.uid)) ||
+        p.donation_target === person.uid
+      )
+    );
+    const gestationLinks = (family.relationships || []).some(r =>
+      r.type === "gestation" && r.target === person.uid
+    ) || (family.people || []).some(p =>
+      p.record_type === "gestational_carrier" && p.gestation_target === person.uid
+    );
+    const intendedParents = Array.isArray(person.intended_parent_uids) &&
+      person.intended_parent_uids.length > 0;
+    const complexReproduction = donorLinks || gestationLinks || intendedParents;
+    const nonGeneticParentage = (family.relationships || []).some(r =>
+      r.type === "parentage" &&
+      r.descent_type && r.descent_type !== "biological" &&
+      (r.children || []).includes(person.uid)
+    );
+    if (nonGeneticParentage) {
+      warnings.push(t("ped.export.nonGeneticParentage", {uid:person.uid}));
+    }
+
+    // In assisted reproduction the 6-column PED format cannot distinguish
+    // genetic, gestational and intended parenting. Leave PID/MID unassigned
+    // rather than presenting a potentially misleading paternal/maternal role.
+    const compatible = complexReproduction
+      ? [] : parents.filter(pedParentRoleCompatible);
+    const candidateFathers = compatible.filter(p => pedSexCode(p) === "1");
+    const candidateMothers = compatible.filter(p => pedSexCode(p) === "2");
+    const father = candidateFathers.length === 1 ? candidateFathers[0] : null;
+    const mother = candidateMothers.length === 1 ? candidateMothers[0] : null;
+
+    if (complexReproduction) {
+      warnings.push(t("ped.export.complexReproduction", {uid:person.uid}));
+    } else if (parents.length && (!father && !mother)) {
+      warnings.push(t("validation.ped.missingSexParents", {uid:person.uid}));
+    } else if (
+      parents.length > ((father ? 1 : 0) + (mother ? 1 : 0)) ||
+      candidateFathers.length > 1 || candidateMothers.length > 1
+    ) {
+      warnings.push(t("validation.ped.parentageIncomplete", {uid:person.uid}));
     }
 
     lines.push([
@@ -28669,35 +28906,142 @@ function exportPedText() {
       father ? pedSafeToken(father.uid, "0") : "0",
       mother ? pedSafeToken(mother.uid, "0") : "0",
       pedSexCode(person),
-      pedPhenotypeCode(person)
+      pedPhenotypeCode(person, conditionId, missingCode)
     ].join("\t"));
   });
 
-  return { text: lines.join("\n") + (lines.length ? "\n" : ""), warnings };
+  return { text: lines.join("\n") + (lines.length ? "\n" : ""), warnings, phenotype };
+}
+
+// This dialog controls a single phenotype for the six-column PED export.
+// Its settings do not change the family, saved JSON, or Undo/Redo history.
+function ensurePedExportDialog() {
+  let dialog = document.getElementById("pedExportDialog");
+  if (dialog) return dialog;
+  dialog = document.createElement("dialog");
+  dialog.id = "pedExportDialog";
+  dialog.className = "ped-export-dialog";
+  dialog.setAttribute("aria-labelledby", "pedExportTitle");
+  const card = document.createElement("div");
+  card.className = "ped-export-content";
+  const heading = document.createElement("h2");
+  heading.id = "pedExportTitle";
+  heading.textContent = t("ped.dialog.title");
+  const introduction = document.createElement("p");
+  introduction.textContent = t("ped.dialog.description");
+  const conditionLabel = document.createElement("label");
+  conditionLabel.htmlFor = "pedExportCondition";
+  conditionLabel.textContent = t("ped.dialog.condition");
+  const conditionSelect = document.createElement("select");
+  conditionSelect.id = "pedExportCondition";
+  const blank = new Option(t("ped.dialog.noCondition"), "");
+  conditionSelect.appendChild(blank);
+  (family.conditions || []).forEach(condition => {
+    const name = condition.name || condition.id;
+    conditionSelect.appendChild(new Option(`${condition.id} · ${name}`, condition.id));
+  });
+  if ((family.conditions || []).length) conditionSelect.value = family.conditions[0].id;
+  const missingLabel = document.createElement("label");
+  missingLabel.htmlFor = "pedExportMissing";
+  missingLabel.textContent = t("ped.dialog.missing");
+  const missingSelect = document.createElement("select");
+  missingSelect.id = "pedExportMissing";
+  missingSelect.append(
+    new Option(t("ped.dialog.missingNeg9"), "-9"),
+    new Option(t("ped.dialog.missingZero"), "0")
+  );
+  missingSelect.value = "-9";
+  const warning = document.createElement("p");
+  warning.id = "pedExportStatusWarning";
+  warning.className = "ped-export-caution";
+  warning.textContent = t("ped.dialog.legacyNote");
+  const preview = document.createElement("div");
+  preview.className = "ped-export-preview";
+  preview.id = "pedExportPreview";
+  preview.setAttribute("aria-live", "polite");
+  const buttons = document.createElement("div");
+  buttons.className = "ped-export-buttons";
+  const cancel = document.createElement("button");
+  cancel.type = "button";
+  cancel.className = "secondary";
+  cancel.id = "pedExportCancel";
+  cancel.textContent = t("ped.dialog.cancel");
+  const confirm = document.createElement("button");
+  confirm.type = "button";
+  confirm.className = "primary";
+  confirm.id = "pedExportDownload";
+  confirm.textContent = t("ped.dialog.download");
+  buttons.append(cancel, confirm);
+  card.append(heading,introduction,conditionLabel,conditionSelect,
+    missingLabel,missingSelect,warning,preview,buttons);
+  dialog.appendChild(card);
+  document.body.appendChild(dialog);
+  const refresh = () => {
+    const stats=pedPhenotypeSummary(conditionSelect.value,missingSelect.value);
+    const total=stats.codes.length;
+    preview.replaceChildren();
+    const summary=document.createElement("p");
+    summary.textContent=t("ped.dialog.preview",{
+      affected:stats.affected, unaffected:stats.unaffected,
+      missing:stats.missing, total
+    });
+    preview.appendChild(summary);
+    const line=document.createElement("code");
+    line.textContent=stats.codes.slice(0,12).join(" · ") || missingSelect.value;
+    preview.appendChild(line);
+    warning.hidden = stats.notConfirmed === 0;
+    if (!warning.hidden) warning.textContent = t("ped.dialog.unconfirmed",{count:stats.notConfirmed});
+  };
+  conditionSelect.addEventListener("change",refresh);
+  missingSelect.addEventListener("change",refresh);
+  cancel.addEventListener("click",()=>dialog.close());
+  confirm.addEventListener("click",()=>{
+    const result=exportPedText({
+      conditionId:conditionSelect.value,
+      missingCode:missingSelect.value
+    });
+    if(!result.text.trim()){
+      message(t("validation.export.noPEDCompatible"),"error");
+      return;
+    }
+    if(result.warnings.length){
+      const preview=result.warnings.slice(0,8).join("\n");
+      const extra=result.warnings.length>8
+        ? "\n"+t("ped.export.moreWarnings",{count:result.warnings.length-8})
+        : "";
+      if(!window.confirm(t("ped.export.incomplete")+"\n\n"+
+        preview+extra+"\n\n"+t("ped.export.confirm"))) return;
+    }
+    download((family.family_id||"pedigree")+".ped",
+      new Blob([result.text],{type:"text/plain;charset=utf-8"}));
+    dialog.close();
+    message(t("ped.export.done"),"success");
+  });
+  const relabel = () => {
+    heading.textContent = t("ped.dialog.title");
+    introduction.textContent = t("ped.dialog.description");
+    conditionLabel.textContent = t("ped.dialog.condition");
+    blank.textContent = t("ped.dialog.noCondition");
+    missingLabel.textContent = t("ped.dialog.missing");
+    missingSelect.options[0].textContent = t("ped.dialog.missingNeg9");
+    missingSelect.options[1].textContent = t("ped.dialog.missingZero");
+    cancel.textContent = t("ped.dialog.cancel");
+    confirm.textContent = t("ped.dialog.download");
+    refresh();
+  };
+  document.addEventListener("pedigrapp:languagechange",relabel);
+  dialog.addEventListener("close",()=>
+    document.removeEventListener("pedigrapp:languagechange",relabel),{once:true});
+  refresh();
+  return dialog;
 }
 
 $("exportPedBtn").onclick=()=>{
   syncHeaderToFamily();
-  const result = exportPedText();
-  if (!result.text.trim()) {
-    message(t("validation.export.noPEDCompatible"),"error");
-    return;
-  }
-  if (result.warnings.length) {
-    const preview = result.warnings.slice(0, 8).join("\n");
-    const extra = result.warnings.length > 8
-      ? '\n' + t('ped.export.moreWarnings',{count:result.warnings.length - 8})
-      : "";
-    if (!confirm(
-      t('ped.export.incomplete') + '\n\n' +
-      preview + extra + '\n\n' + t('ped.export.confirm')
-    )) return;
-  }
-  download(
-    (family.family_id||"pedigree")+".ped",
-    new Blob([result.text],{type:"text/plain;charset=utf-8"})
-  );
-  message(t('ped.export.done'),'success');
+  const old=document.getElementById("pedExportDialog");
+  if(old) old.remove();  // Rebuild the condition list from the current family.
+  const dialog=ensurePedExportDialog();
+  dialog.showModal();
 };
 
 function parsePedText(text) {
@@ -28741,6 +29085,12 @@ function parsePedText(text) {
 
   if (!rows.length && !errors.length) errors.push(t("validation.storage.emptyPED"));
 
+  // A six-column PED does not encode gender identity. The importer keeps
+  // gender unspecified unless the operator explicitly selects classic symbols.
+  if (rows.some(r => r.sex === "1" || r.sex === "2")) {
+    warnings.push(t("ped.import.sexLimitation"));
+  }
+
   const ids = new Set(rows.map(r => r.iid));
   rows.forEach(r => {
     [['father',r.pid],['mother',r.mid]].forEach(([role,id]) => {
@@ -28760,7 +29110,9 @@ function parsePedText(text) {
   const imported = emptyFamily();
   imported.family_id = detectedFid || "FAM001";
   imported.people = rows.map(r => {
-    const gender = r.sex === "1" ? "man" : r.sex === "2" ? "woman" : "unspecified";
+    const gender = "unspecified";
+    // PED SEX is carried into the closest PedigrAPP field, sex_at_birth,
+    // provisionally. This mapping must be checked against the clinical source.
     const sexAtBirth = r.sex === "1" ? "male" : r.sex === "2" ? "female" : "";
     const affected = r.phenotype === "2";
     const p = quickDefaultPerson(gender, sexAtBirth);
@@ -28810,45 +29162,119 @@ function parsePedText(text) {
   return { family: normalizeFamily(imported), rows, warnings };
 }
 
+// The import choice is explicit and does not persist any artificial gender.
+// Default: keep recorded PED SEX with unspecified gender. The optional classic
+// mode is only a presentation shortcut that the user must choose knowingly.
+function showPedImportDialog(parsed) {
+  return new Promise(resolve => {
+    const previous=document.getElementById("pedImportDialog");
+    if(previous) previous.remove();
+    const dialog=document.createElement("dialog");
+    dialog.id="pedImportDialog";
+    dialog.className="ped-export-dialog ped-import-dialog";
+    dialog.setAttribute("aria-labelledby","pedImportTitle");
+    const card=document.createElement("div");
+    card.className="ped-export-content";
+    const title=document.createElement("h2");
+    title.id="pedImportTitle";
+    title.textContent=t("ped.import.title");
+    const stats=document.createElement("p");
+    const founders=parsed.rows.filter(r=>r.pid==="0"&&r.mid==="0").length;
+    const affected=parsed.rows.filter(r=>r.phenotype==="2").length;
+    const unknownSex=parsed.rows.filter(r=>!["1","2"].includes(r.sex)).length;
+    stats.textContent=[
+      t("ped.import.family",{id:parsed.family.family_id}),
+      t("ped.import.individuals",{count:parsed.rows.length}),
+      t("ped.import.founders",{count:founders}),
+      t("ped.import.affected",{count:affected}),
+      t("ped.import.unknownSex",{count:unknownSex})
+    ].join(" · ");
+    const guidance=document.createElement("p");
+    guidance.className="ped-export-caution";
+    guidance.textContent=t("ped.import.modeExplanation");
+    const choices=document.createElement("fieldset");
+    choices.className="ped-import-mode";
+    const legend=document.createElement("legend");
+    legend.textContent=t("ped.import.modeTitle");
+    choices.appendChild(legend);
+    for(const [value,key] of [
+      ["unspecified","ped.import.modeUnspecified"],
+      ["classic","ped.import.modeClassic"]
+    ]) {
+      const label=document.createElement("label");
+      const input=document.createElement("input");
+      input.type="radio";
+      input.name="pedImportGenderMode";
+      input.value=value;
+      input.checked=value==="unspecified";
+      label.append(input,document.createTextNode(t(key)));
+      choices.appendChild(label);
+    }
+    const warnings=document.createElement("p");
+    warnings.className="ped-export-caution";
+    const distinct=[...new Set(parsed.warnings)];
+    warnings.textContent=distinct.slice(0,8).join("\n");
+    warnings.hidden=!distinct.length;
+    const buttons=document.createElement("div");
+    buttons.className="ped-export-buttons";
+    const cancel=document.createElement("button");
+    cancel.type="button";
+    cancel.className="secondary";
+    cancel.textContent=t("ped.dialog.cancel");
+    const accept=document.createElement("button");
+    accept.type="button";
+    accept.className="primary";
+    accept.textContent=t("ped.import.action");
+    buttons.append(cancel,accept);
+    card.append(title,stats,guidance,choices,warnings,buttons);
+    dialog.appendChild(card);
+    document.body.appendChild(dialog);
+    let finished=false;
+    const complete=value=>{
+      if(finished)return;
+      finished=true;
+      resolve(value);
+      dialog.close();
+    };
+    cancel.addEventListener("click",()=>complete(null));
+    accept.addEventListener("click",()=>complete(choices.querySelector('input:checked')?.value || "unspecified"));
+    dialog.addEventListener("cancel",event=>{event.preventDefault();complete(null);});
+    dialog.addEventListener("close",()=>{if(!finished)complete(null);dialog.remove();},{once:true});
+    dialog.showModal();
+  });
+}
+
+function chooseImportedPedGender(parsed,mode="unspecified") {
+  // This is only used on the detached imported family, never the current one.
+  if(mode==="classic") {
+    parsed.family.people.forEach(person=>{
+      person.gender=person.sex_at_birth==="male" ? "man" :
+        person.sex_at_birth==="female" ? "woman" : "unspecified";
+    });
+  }
+  return normalizeFamily(parsed.family);
+}
+
 $("importPedInput").addEventListener("change", async e=>{
   const f=e.target.files && e.target.files[0];
-  if (!f) return;
-
+  if(!f)return;
   try {
-    const parsed = parsePedText(await f.text());
-    const founders = parsed.rows.filter(r => r.pid === "0" && r.mid === "0").length;
-    const affected = parsed.rows.filter(r => r.phenotype === "2").length;
-    const unknownSex = parsed.rows.filter(r => !["1","2"].includes(r.sex)).length;
-    const warningText = parsed.warnings.length
-      ? '\n\n'+t('ped.import.warnings')+'\n'+parsed.warnings.slice(0,8).join('\n')+(parsed.warnings.length>8 ? '\n…' : '')
-      : "";
-
-    const ok = confirm(
-      t('ped.import.title')+'\n\n'+
-      t('ped.import.family',{id:parsed.family.family_id})+'\n'+
-      t('ped.import.individuals',{count:parsed.rows.length})+'\n'+
-      t('ped.import.founders',{count:founders})+'\n'+
-      t('ped.import.affected',{count:affected})+'\n'+
-      t('ped.import.unknownSex',{count:unknownSex})+
-      warningText+'\n\n'+t('ped.import.confirm')
-    );
-    if (!ok) return;
-
+    const parsed=parsePedText(await f.text());
+    const mode=await showPedImportDialog(parsed);
+    if(mode===null)return;
+    const imported=chooseImportedPedGender(parsed,mode);
+    validate(imported);
     pushUndoState();
-
-    family = parsed.family;
-    family.review_status = {
-      reviewed:false,
-      reviewed_at:""
-    };
-    selectedPersonUid = null;
+    family=imported;
+    family.review_status={reviewed:false,reviewed_at:""};
+    selectedPersonUid=null;
     syncFamilyToHeader();
     resetPersonForm();
     renderPedigree();
     fitPedigreeToWidthAfterLoad();
-    message(t('ped.import.done'),'success');
+    message(t("ped.import.done"),"success");
   } catch(err) {
-    message(t('ped.import.failed',{error:err.message}),'error');
+    message(t("ped.import.failed",{error:err.message}),"error");
   } finally {
     e.target.value="";
   }
@@ -31092,6 +31518,9 @@ function buildPdfReportData() {
       family.indication || "—",
     pedigree_comments:
       String(family.pedigree_comments || "").trim(),
+    clinical_documentation: {
+      ...(family.clinical_documentation || {})
+    },
     general_legend:
       generalLegend,
     condition_legend:
@@ -31216,11 +31645,30 @@ function pdfPrintAppHeader(version) {
       <img class="report-app-logo" src="${pdfPrintEscape(pdfPrintLogoSource())}" alt="PedigrAPP" onerror="this.hidden=true;this.nextElementSibling.hidden=false;">
       <span class="report-app-name" hidden>PedigrAPP</span>
     </span>
-    <span class="report-app-version">v${pdfPrintEscape(version || APP_VERSION)}</span>
+    <span class="report-app-version">v${pdfPrintEscape(version || APP_VERSION)} · <a href="https://github.com/josemilezana/pedigrapp" rel="noopener noreferrer">github.com/josemilezana/pedigrapp</a></span>
   </div>`;
 }
 
 function pdfPrintMeta(report) {
+  const doc = report.clinical_documentation || {};
+  const documentDate = value => {
+    const date = String(value || "");
+    return /^\d{4}-\d{2}-\d{2}$/.test(date)
+      ? date.split("-").reverse().join("/") : date;
+  };
+  const docs = [
+    ["documentation.collectedDate", documentDate(doc.collected_date)],
+    ["documentation.updatedDate", documentDate(doc.updated_date)],
+    ["documentation.recordedBy", doc.recorded_by],
+    ["documentation.informant", doc.informant],
+    ["documentation.ancestryMaternal", doc.ancestry_maternal],
+    ["documentation.ancestryPaternal", doc.ancestry_paternal]
+  ].filter(([, value]) => String(value || "").trim());
+  const provenance = docs.length
+    ? `<div class="pedigree-clinical-provenance">
+        <strong>${pdfPrintEscape(t("documentation.title"))}</strong>
+        ${docs.map(([key, value]) => `<div><span>${pdfPrintEscape(t(key))}:</span> ${pdfPrintEscape(value)}</div>`).join("")}
+      </div>` : "";
   return `<div class="report-meta-line">
       <span>${report.report_datetime ? `${pdfPrintEscape(t("pdf.label.date"))} ${pdfPrintEscape(report.report_datetime)}` : ""}</span>
     </div>
@@ -31228,6 +31676,7 @@ function pdfPrintMeta(report) {
     <div class="meta">
       <div class="meta-inline"><strong>ID:</strong> ${pdfPrintEscape(report.family_id || "—")}</div>
       <div class="meta-inline"><strong>${pdfPrintEscape(t("pdf.label.indication"))}</strong> ${pdfPrintEscape(report.indication || "—")}</div>
+      ${provenance}
     </div>`;
 }
 
@@ -31543,6 +31992,7 @@ body { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 .report-app-logo[hidden], .report-app-name[hidden] { display:none !important; }
 .report-app-name { font-size:12pt; font-weight:700; letter-spacing:-.02em; }
 .report-app-version { font-size:6.5pt; color:#707781; white-space:nowrap; margin-left:10pt; }
+.report-app-version a {color:inherit; text-decoration:none;}
 .landscape-page .report-app-header { margin-bottom:4pt; padding-bottom:3pt; }
 .landscape-page .report-app-logo { width:126pt; }
 .landscape-page .report-app-name { font-size:10pt; }
@@ -31596,6 +32046,26 @@ h2 {
 }
 .meta-inline {
   white-space:normal;
+}
+.pedigree-clinical-provenance {
+  font-size:7.2pt;
+  line-height:1.28;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  column-gap:14pt;
+  row-gap:2pt;
+  break-inside:avoid;
+}
+.pedigree-clinical-provenance > strong {
+  grid-column:1/-1;
+  font-size:7.3pt;
+  margin-bottom:1pt;
+}
+.pedigree-clinical-provenance > div { overflow-wrap:anywhere; }
+.pedigree-clinical-provenance > div > span { font-weight:600; }
+.landscape-page .pedigree-clinical-provenance {
+  font-size:6.1pt;
+  row-gap:1pt;
 }
 .landscape-page .meta {
   gap:1.2pt;
@@ -31874,6 +32344,183 @@ $("exportSvgBtn").onclick=()=>{
     )
   );
 };
+
+// v1.2-rc9: publication-only exports operate on a detached SVG clone.
+// NO model mutations, no writes to JSON, no clinical PDF report content.
+function publicationSvg(includeYears=false) {
+  if (!currentSvg) throw new Error(t("publication.empty"));
+  const clone = makeStandaloneSvgForExport(currentSvg,false);
+  // Original label baselines define the first annotation position before
+  // removing names and free text. After cleaning, the remaining annotations
+  // must start at that same position rather than retain blank line slots.
+  const layoutTextSelector = [
+    "text.person-label","text.pregnancy-loss-label","text.person-alias",
+    "text.person-brief-info","text.person-subtext",
+    "text.intended-parent-title","text.intended-parent-codes"
+  ].join(",");
+  const annotationAnchors=new Map();
+  clone.querySelectorAll("g.person[data-uid]").forEach(group=>{
+    const first=group.querySelector(layoutTextSelector);
+    if(first) annotationAnchors.set(group,Number(first.getAttribute("y")));
+  });
+  // Deny-by-default text policy: permit only a small set of structural
+  // nomenclature labels. All free text (including in SVG accessibility attrs)
+  // is removed. A figure can remain re-identifiable from its structure.
+  const keep = node => {
+    const value = String(node.textContent || "").trim();
+    if (node.closest("defs") || node.closest(".export-report")) return false;
+    if (node.classList.contains("person-label")) return /^[IVXLCDM]+-\d+$/.test(value);
+    if (node.classList.contains("pregnancy-loss-label")) return /^(?:SB|SAB|TOP|ECT)$/.test(value);
+    if (node.classList.contains("intended-parent-title")) return [
+      t("record.multiple.intendedParentSingular"),t("record.multiple.intendedParentPlural")
+    ].includes(value);
+    if (node.classList.contains("intended-parent-codes")) return /^(?:[IVXLCDM]+-\d+)(?:\s*(?:y|and|,|&)\s*[IVXLCDM]+-\d+)*$/i.test(value);
+    if (node.classList.contains("multiple-count-mark")) return /^(?:[2-9]\d*|n)$/.test(value);
+    if (node.classList.contains("donor-d-mark")) return value === "D";
+    if (node.classList.contains("gestational-carrier-g-mark")) return value === "G";
+    if (node.classList.contains("fetus-p-mark")) return value === "P";
+    if (node.classList.contains("proband-p")) return value === "P";
+    if (node.classList.contains("documented-evaluation-mark")) return value === "*";
+    if (node.classList.contains("unknown-condition-mark") || node.classList.contains("family-history-unknown-mark")) return value === "?";
+    if (node.classList.contains("person-subtext")) {
+      if (/^(?:AFAB|AMAB|UAAB)$/.test(value)) return true;
+      if (includeYears && (node.classList.contains("person-chronology-label") || node.classList.contains("person-death-year-label"))) {
+        return /^(?:✝\s*)?\d{4}$|^(?:n\.|b\.)\s*\d{4}$|^\d{1,3}\s*[ay]$/.test(value);
+      }
+    }
+    // Never allow arbitrary comments, clinical text, ages, free text or labels.
+    return false;
+  };
+  clone.querySelectorAll("text,title,desc,metadata,foreignObject,script,image,a,animate,animateMotion,animateTransform,set,.export-report,.comment-indicator")
+    .forEach(node => { if (!node.matches("text") || !keep(node)) node.remove(); });
+
+  // Rebuild the text stack on the detached clone only; preserve the symbol
+  // geometry, pedigree generation coordinates and line relationships.
+  annotationAnchors.forEach((initialY,group)=>{
+    if(!Number.isFinite(initialY))return;
+    const kept=[...group.querySelectorAll(layoutTextSelector)];
+    let y=initialY;
+    kept.forEach((node,index)=>{
+      if(index>0) y+=node.classList.contains("person-alias") ? 13 :
+        node.classList.contains("intended-parent-title") ? 15 : 12;
+      node.setAttribute("y",String(y));
+    });
+  });
+
+  // Accessibility annotations, data UIDs and source ids may contain names
+  // even when no visible labels are present. Remove or remap them.
+  const nodes=[clone,...clone.querySelectorAll("*")];
+  const idMap=new Map();
+  let idN=0;
+  nodes.forEach(node=>{
+    if(node.hasAttribute("id")) {
+      const old=node.getAttribute("id");
+      if(!idMap.has(old)) idMap.set(old,`pub-${++idN}`);
+      node.setAttribute("id",idMap.get(old));
+    }
+  });
+  nodes.forEach(node=>{
+    [...node.attributes].forEach(attr=>{
+      const name=attr.name, value=attr.value;
+      if (/^on/i.test(name) || /^data-/i.test(name) || /^aria-/i.test(name) ||
+          name === "role" || name === "tabindex" || name === "contenteditable") {
+        node.removeAttribute(name); return;
+      }
+      if (name === "href" || name.endsWith(":href")) {
+        if (!value.startsWith("#") || !idMap.has(value.slice(1))) node.removeAttribute(name);
+        else node.setAttribute(name,"#"+idMap.get(value.slice(1)));
+        return;
+      }
+      if (value.includes("url(#")) {
+        node.setAttribute(name,value.replace(/url\(#([^)]*)\)/g,(match,id)=>
+          idMap.has(id) ? `url(#${idMap.get(id)})` : "none"));
+      }
+    });
+  });
+  return clone;
+}
+
+function exportPublicationSvg(includeYears) {
+  const clone=publicationSvg(includeYears);
+  download("pedigrapp_figura_publicacion.svg",new Blob(
+    [new XMLSerializer().serializeToString(clone)],
+    {type:"image/svg+xml;charset=utf-8"}
+  ));
+}
+
+async function exportPublicationPng(includeYears) {
+  const clone=publicationSvg(includeYears);
+  const result=await svgExportToPngBlob(clone,false);
+  download("pedigrapp_figura_publicacion.png",result.blob);
+}
+
+function exportPublicationPdf(includeYears) {
+  // This is only the figure, not the clinical PDF report. Printing remains
+  // local in the browser; it is not sent to a remote conversion service.
+  const clone=publicationSvg(includeYears);
+  const serialized=new XMLSerializer().serializeToString(clone);
+  const win=window.open("","_blank");
+  if (!win) throw new Error(t("pdf.export.popupBlocked"));
+  win.document.open();
+  win.document.write(`<!doctype html><html><head><meta charset="utf-8">
+<title>PedigrAPP_figura_publicacion</title>
+<style>@page{size:A4 landscape;margin:12mm}html,body{margin:0;padding:0;background:#fff}
+.figure{display:flex;align-items:center;justify-content:center;height:185mm;max-width:273mm;margin:auto}
+.figure svg{display:block;width:100%;height:100%;object-fit:contain}
+@media screen{body{padding:12px}.figure{border:1px solid #ddd}}
+</style></head><body><div class="figure">${serialized}</div>
+<script>window.addEventListener('load',function(){setTimeout(function(){window.print()},300)});<\/script>
+</body></html>`);
+  win.document.close();
+}
+
+function openPublicationExportDialog() {
+  if(!currentSvg) { message(t("publication.empty"),"warning"); return; }
+  const old=document.getElementById("publicationExportDialog");
+  if(old) old.remove();
+  const dialog=document.createElement("dialog");
+  dialog.id="publicationExportDialog";
+  dialog.className="ped-export-dialog publication-export-dialog";
+  dialog.setAttribute("aria-labelledby","publicationExportTitle");
+  const content=document.createElement("div");
+  content.className="ped-export-content";
+  const title=document.createElement("h2"); title.id="publicationExportTitle";
+  title.textContent=t("publication.title");
+  const description=document.createElement("p"); description.textContent=t("publication.description");
+  const checkLabel=document.createElement("label"); checkLabel.className="publication-keep-years";
+  const check=document.createElement("input"); check.type="checkbox"; check.checked=false;
+  checkLabel.append(check,document.createTextNode(t("publication.keepYears")));
+  const warning=document.createElement("p"); warning.className="ped-export-caution";
+  warning.textContent=t("publication.warning");
+  const buttons=document.createElement("div"); buttons.className="ped-export-buttons publication-buttons";
+  const formats=["SVG","PNG","PDF"];
+  formats.forEach(format=>{
+    const button=document.createElement("button");button.type="button";
+    button.className="secondary";button.textContent=format;
+    button.addEventListener("click",async()=>{
+      try {
+        button.disabled=true;
+        if(format==="SVG") exportPublicationSvg(check.checked);
+        else if(format==="PNG") await exportPublicationPng(check.checked);
+        else exportPublicationPdf(check.checked);
+        dialog.close();
+        message(t("publication.done"),"success");
+      } catch(err) {
+        message(t("publication.failure",{error:err.message}),"error");
+      } finally { button.disabled=false; }
+    });
+    buttons.appendChild(button);
+  });
+  const cancel=document.createElement("button"); cancel.type="button";
+  cancel.className="secondary";cancel.textContent=t("publication.cancel");
+  cancel.addEventListener("click",()=>dialog.close());
+  buttons.appendChild(cancel);
+  content.append(title,description,checkLabel,warning,buttons);
+  dialog.appendChild(content);document.body.appendChild(dialog);
+  dialog.addEventListener("close",()=>dialog.remove(),{once:true});
+  dialog.showModal();
+}
+$("exportPublicationBtn").addEventListener("click",openPublicationExportDialog);
 
 $("importJsonInput").addEventListener("change", async e=>{
   const f=e.target.files && e.target.files[0];

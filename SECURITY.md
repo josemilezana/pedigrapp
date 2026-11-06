@@ -2,7 +2,7 @@
 
 ## Scope and current status
 
-PedigrAPP v1.1 does not implement user authentication, roles, or fine-grained authorization in `api.php`. **Do not expose an installation containing real clinical data directly to the Internet without appropriate external access controls and security measures.**
+PedigrAPP v1.2 does not implement user authentication, roles, or fine-grained authorization in `api.php`. **Do not expose an installation containing real clinical data directly to the Internet without appropriate external access controls and security measures.**
 
 The `data/.htaccess` rule is intended for Apache installations configured to honor it; it does not protect alternative paths or deployments on other servers by itself.
 
@@ -24,3 +24,9 @@ This document does not invent or designate an unconfirmed security email address
 ## Legal notice
 
 Distribution is governed by **EUPL-1.2**, including its disclaimer of warranties. See [LICENSE](LICENSE) and [PRIVACY.md](PRIVACY.md).
+
+## Apache protection scope
+
+`Require all denied` in `data/.htaccess` requires Apache 2.4 authorization support and an effective `AllowOverride AuthConfig` (or equivalent permitted directive) for that directory. With `AllowOverride None`, the file is ignored. Configure an equivalent server-level deny rule where required. Test denial using a synthetic file in a disposable installation.
+
+The PHP API intentionally returns stored JSON to application users; protecting direct file URLs does not restrict `api.php`. External authentication and authorization must cover the application and every API action. This release does not add built-in accounts.

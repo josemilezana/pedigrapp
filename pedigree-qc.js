@@ -19,7 +19,7 @@
     if (/^(LAYOUT_|SIBLING_BIRTH_ORDER)/.test(code)) return 'layout';
     if (/^(DOC_|INDEX_|INDICATION_|GEST_AGE|CONSANGUINITY_DEGREE|CONDITION_INHERITANCE|DECEASED_AGE|AFFECTED_AGE|DONOR_FAMILY_HISTORY)/.test(code)) return 'documentation';
     if (/^(CLIN_|COND_|PROBAND_|MULTIPLE_AFFECTED)/.test(code)) return 'clinical';
-    if (/^(ART_|G_TARGET_|SURROGATE_|MULTIPLE_CARRIERS|TWIN_|ADOPTION_|NO_CHILDREN_|INFERTILITY_|SIBLING_PARENTAGE|BIO_PARENTS|MULTI_BIO_LINK)/.test(code)) return 'family';
+    if (/^(ART_|GESTATION_|G_TARGET_|SURROGATE_|MULTIPLE_CARRIERS|TWIN_|ADOPTION_|NO_CHILDREN_|INFERTILITY_|SIBLING_PARENTAGE|BIO_PARENTS|MULTI_BIO_LINK)/.test(code)) return 'family';
     if (/^(MULTIPLE_COUNT|GESTATION_|PREGNANCY_)/.test(code)) return 'bennett';
     return 'structure';
   }
@@ -72,7 +72,7 @@
     // españoles dentro de los mensajes ingleses. Solo cambia la presentación.
     const contextLabel = kind => qci('qc.context.' + kind, null, {
       union:'Unión', parentage:'Filiación', parents:'Progenitores',
-      descendants:'Descendientes', multiple:'Gestación múltiple', sibship:'Fratría'
+      descendants:'Descendientes', multiple:'Gestación múltiple', sibship:'Fratría', gestation:'Gestación'
     }[kind]);
     const unspecifiedType = () => qci('qc.value.unspecifiedType',null,'(sin tipo)');
     const unspecifiedId = () => qci('qc.value.unspecifiedId',null,'(sin ID)');
@@ -183,6 +183,41 @@
         }
         const signature = t + ':' + key(ids);
         if (seenRelations.has(signature)) add('warning', 'DUP_GROUP', 'Relación repetida', qci("qc.issue.DUP_GROUP.detail", null, 'Esta fratría o gestación múltiple aparece duplicada.'), SRC.integrity, ids);
+        seenRelations.add(signature);
+      } else if (t === 'gestation') {
+        // 2025, Fig. 5.1.d/e: the explicit gestator is an individual
+        // documented AFAB. This relationship is NOT a genetic parentage.
+        const carrier = str(r.carrier), target = str(r.target);
+        knownMembers([carrier,target].filter(Boolean), contextLabel('gestation'));
+        if (!carrier || !pMap.has(carrier) || type(pMap.get(carrier)) !== 'person' ||
+            pMap.get(carrier).sex_at_birth !== 'female') {
+          add('error','GESTATION_CARRIER_INVALID',
+            'Asignación de gestación incompatible con los datos registrados',
+            qci('qc.issue.GESTATION_CARRIER_INVALID.detail', {p0:label(carrier)},
+              `PedigrAPP exige un registro de persona con sexo asignado al nacimiento femenino para esta relación; revisa ${label(carrier)}. Esto no evalúa la capacidad reproductiva.`),
+            SRC.art,[carrier,target]);
+        }
+        if (!target || !pMap.has(target) ||
+            !['person','fetus','stillbirth','sab','top','ect'].includes(type(pMap.get(target)))) {
+          add('error','GESTATION_TARGET_INVALID',
+            'Resultado de gestación no válido',
+            qci('qc.issue.GESTATION_TARGET_INVALID.detail', {p0:label(target)},
+              `El resultado ${label(target)} no es un individuo o evento reproductivo elegible.`),
+            SRC.art,[carrier,target]);
+        }
+        if (carrier && target && carrier === target) {
+          add('error','GESTATION_SELF_TARGET','Gestación atribuida a uno mismo',
+            qci('qc.issue.GESTATION_SELF_TARGET.detail', {p0:label(carrier)},
+              `${label(carrier)} no puede constar como gestante de sí mismo.`),
+            SRC.integrity,[carrier]);
+        }
+        const signature = 'gestation:' + carrier + ':' + target;
+        if (seenRelations.has(signature)) {
+          add('warning','GESTATION_DUPLICATE','Gestación explícita repetida',
+            qci('qc.issue.GESTATION_DUPLICATE.detail', {p0:label(target)},
+              `Hay dos relaciones idénticas de gestación para ${label(target)}.`),
+            SRC.integrity,[carrier,target]);
+        }
         seenRelations.add(signature);
       } else {
         add('warning', 'UNKNOWN_RELATION', 'Tipo de relación desconocido', qci("qc.issue.UNKNOWN_RELATION.detail", {p0:(t || unspecifiedType())}, `Revisa la relación «${t || '(sin tipo)'}».`), SRC.integrity);
@@ -334,6 +369,11 @@
     }
 
     const carrierByPregnancy = new Map();
+    for (const r of relationships) {
+      if (r.type !== 'gestation' || !str(r.target) || !str(r.carrier)) continue;
+      if (!carrierByPregnancy.has(str(r.target))) carrierByPregnancy.set(str(r.target), []);
+      carrierByPregnancy.get(str(r.target)).push(str(r.carrier));
+    }
     for (const p of people) {
       const target = type(p) === 'gestational_carrier' ? str(p.gestation_target)
         : (type(p) === 'ovum_donor' && p.surrogate === true) ? (donationIds(p)[0] || '') : '';
@@ -341,8 +381,41 @@
       if (!carrierByPregnancy.has(target)) carrierByPregnancy.set(target, []);
       carrierByPregnancy.get(target).push(str(p.uid));
     }
-    for (const [target, carriers] of carrierByPregnancy) if (carriers.length > 1) {
-      add('error', 'MULTIPLE_CARRIERS', 'Más de una gestante para el mismo embarazo', qci("qc.issue.MULTIPLE_CARRIERS.detail", {p0:(label(target)), p1:(carriers.length)}, `El embarazo ${label(target)} está vinculado a ${carriers.length} gestantes/surrogates.`), SRC.art, [target, ...carriers]);
+    // Two identical relationship rows mean duplicate data, not two people
+    // carrying the same pregnancy. Only distinct carrier IDs are a conflict.
+    for (const [target, allCarriers] of carrierByPregnancy) {
+      const carriers = unique(allCarriers);
+      if (carriers.length > 1) {
+        add('error', 'MULTIPLE_CARRIERS', 'Más de una gestante para el mismo embarazo', qci("qc.issue.MULTIPLE_CARRIERS.detail", {p0:(label(target)), p1:carriers.length}, `El embarazo ${label(target)} está vinculado a ${carriers.length} gestantes/surrogates.`), SRC.art, [target, ...carriers]);
+      }
+    }
+
+    // The two recorded gamete contributions are genetically exhaustive in
+    // the conventional two-gamete scenario. Any additional biological line
+    // from another individual is therefore suspicious, even if no intended
+    // parents or external carrier have been annotated. Advisory only.
+    // When the existing specific ART_INTENDED_BIOLOGICAL_LINE warning applies,
+    // do not duplicate its message under the more general code.
+    for (const child of people) {
+      const uid = str(child && child.uid);
+      const donors = people.filter(p =>
+        ['sperm_donor','ovum_donor'].includes(type(p)) &&
+        donationIds(p).includes(uid)
+      );
+      if (!donors.some(p => type(p)==='sperm_donor') ||
+          !donors.some(p => type(p)==='ovum_donor')) continue;
+      const parents = [...(biological.get(uid) || new Set())];
+      if (!parents.length) continue;
+      const intended = unique(array(child.intended_parent_uids).map(str).filter(Boolean));
+      const hasG = people.some(p => type(p)==='gestational_carrier' && str(p.gestation_target)===uid);
+      const specificWarningApplies = hasG && parents.some(p => intended.includes(p));
+      if (specificWarningApplies) continue;
+      add('warning','ART_DOUBLE_DONATION_BIOLOGICAL_LINE',
+        'Doble donación con filiación biológica adicional',
+        qci('qc.issue.ART_DOUBLE_DONATION_BIOLOGICAL_LINE.detail',
+          {p0:label(uid),p1:joinLabels(parents)},
+          `${label(uid)} tiene donante de semen y de óvulos, pero también filiación biológica desde ${joinLabels(parents)}. Comprueba si esa línea representa erróneamente una contribución genética; no se modificará automáticamente.`),
+        SRC.art,[uid,...parents]);
     }
 
     // Convención documental de PedigrAPP: el vínculo intencional no

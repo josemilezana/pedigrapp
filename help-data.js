@@ -1,6 +1,6 @@
 window.PEDIGRAPP_HELP_DATA = {
-  helpVersion: "1.1",
-  updatedAt: "29/10/2026",
+  helpVersion: "1.2",
+  updatedAt: "06/11/2026",
   title: "Ayuda y nomenclatura de PedigrAPP",
   intro: "Guía de uso y referencia de los símbolos, relaciones y convenciones implementadas en PedigrAPP. La aplicación se apoya en la nomenclatura estandarizada de pedigree de la National Society of Genetic Counselors (NSGC), con las revisiones y correcciones indicadas en la bibliografía.",
   notes: [
@@ -9,14 +9,15 @@ window.PEDIGRAPP_HELP_DATA = {
   ],
   quickStart: [
     {title:"Añadir individuos",text:"Los atajos de creación aparecen en una tarjeta sin título sobre el visor, incluido Padre + madre + feto (P, sexo desconocido): puede utilizarse como trío de estudio prenatal sin asignar por defecto una indicación clínica ni un resultado fetal. A su derecha se sitúa una segunda tarjeta con las acciones principales de la aplicación: nueva familia, reset, deshacer/rehacer, guardar, importar/exportar, PDF y ayuda. Más abajo, «Añadir individuo», «Relaciones avanzadas» y «Listados» comparten una misma fila en escritorio; el formulario de individuo distribuye sus campos principales en dos filas para mejorar la lectura."},
-    {title:"Abrir el menú de un individuo",text:"Pulse sobre el símbolo del individuo. La tarjeta contextual permite editar datos básicos y aplicar atajos como fallecido, probando, consultante o afectación simple."},
+    {title:"Abrir el menú de un individuo",text:"Pulse sobre el símbolo del individuo. La tarjeta contextual permite editar datos básicos y aplicar atajos como fallecido, probando, consultante o afectación simple. Al marcar Fallecido, el campo de edad se sustituye por un campo directo de año de nacimiento y puede indicar el año de fallecimiento en «✝ AAAA» (incluido el año actual). Se guarda todo con ✓, sin abrir menús adicionales."},
     {title:"Información clínica y genética",text:"Desde la tarjeta contextual pulse «Introducir información clínica y genética». Allí se registran estados por condición, resultados moleculares, variantes, cigosis y comentarios."},
     {title:"Progenitores intencionales",text:"En un embarazo o descendiente, abre Opciones avanzadas y selecciona los progenitores intencionales. PedigrAPP escribirá sus números genealógicos bajo el símbolo y actualizará el texto si cambia la numeración; no dibuja línea genética desde ellos. Es una anotación propia para aclarar la filiación intencional, distinta de las líneas de donación D y gestación G de Bennett 2025."},
     {title:"Situación reproductiva de una pareja",text:"Pulsa directamente la línea de unión; debajo de Relación finalizada y Relación consanguínea aparece Situación reproductiva. Elige No descendencia por elección/motivo desconocido o Infertilidad, atribúyelo a la pareja o a uno de sus integrantes, indica un motivo si procede y pulsa Guardar situación reproductiva. El marcador de una o dos barras se representa automáticamente. Esta información es la misma que en Relaciones avanzadas."},
-    {title:"Crear relaciones",text:"Use los atajos del tooltip para relaciones habituales, entre ellos Añadir feto y Añadir mortinato (SB) como descendencia, ambos con sexo desconocido por defecto. Si un individuo tiene varias parejas, ninguno de los dos atajos presupone cuál es la otra filiación: solo registra como progenitor al individuo seleccionado y permite indicar otro posteriormente mediante «Relaciones avanzadas». Para adopción, filiaciones específicas, gemelos y situaciones menos frecuentes también puede usar «Relaciones avanzadas»."},
+    {title:"Crear relaciones",text:"Use los atajos del tooltip para relaciones habituales, entre ellos Añadir feto y Añadir mortinato (SB) como descendencia, ambos con sexo desconocido por defecto. Si un individuo tiene varias parejas, ninguno de los dos atajos presupone cuál es la otra filiación: solo registra como progenitor al individuo seleccionado y permite indicar otro posteriormente mediante «Relaciones avanzadas». Cualquier individuo elegible, también si es de género diverso, trans o tiene el sexo asignado sin documentar, puede añadir con un clic una pareja hombre (AMAB) o mujer (AFAB). Para otras configuraciones de pareja utilice «Relaciones avanzadas». En adopciones, indicar hermandad no atribuye progenitores automáticamente. En parejas con género diverso, UAAB o sexo asignado discordante con el género, los atajos de descendencia no infieren automáticamente el segundo progenitor genético; debe especificarse en Relaciones avanzadas. Para adopción, filiaciones específicas, gemelos y situaciones menos frecuentes también puede usar «Relaciones avanzadas»."},
     {title:"Moverse por el árbol",text:"El visor permite zoom, desplazamiento, ajuste al ancho, encuadre completo y búsqueda de individuos. Al cargar un caso, el pedigree se ajusta automáticamente al ancho. Para ajustar una posición, mantén pulsado el ratón sobre un individuo y arrástralo horizontalmente: las conexiones se actualizan y los vecinos de su fila dejan espacio sin intercambiar su orden. El clic breve sigue abriendo la ficha. Los ajustes se guardan con la familia y se pueden deshacer; el botón ↺ restablece posiciones y ordenación gráfica. El botón ⇄ activa el modo «Reordenar horizontalmente»: arrastra cualquier individuo a otra posición dentro de su misma generación, aunque atraviese fratrías o donantes. Las parejas y gemelos se trasladan como unidades, sin cambiar filiaciones ni orden de nacimiento registrado; vuelve a pulsarlo para recuperar el arrastre normal. El QC puede avisar si se modifica el orden de nacimiento representado."},
     {title:"Control de calidad en directo (QC)",text:"El piloto luminoso único de QC cambia automáticamente de color al editar: rojo para errores, ámbar para avisos, azul para información, verde sin incidencias y gris para pedigree vacío o pendiente de comprobar. Una pequeña marca violeta indica incidencias gráficas. Pulse el piloto o el resumen de QC para consultar los detalles; el panel permanece cerrado por defecto. El QC no modifica el árbol ni equivale a revisión clínica."},
-    {title:"Guardar y exportar",text:"Puede guardar casos, importar/exportar JSON y PED, exportar SVG/PNG y generar un PDF clínico desde el navegador."}
+    {title:"Guardar y exportar",text:"Puede guardar familias e intercambiar archivos JSON y PED. Al importar PED, el género queda sin especificar por defecto; si necesita los símbolos clásicos hombre/mujer, debe elegir esa representación expresamente, porque el PED no documenta identidad de género. El PDF clínico muestra discretamente la versión y el repositorio de PedigrAPP. El botón PUB (Figura científica) exporta SVG, PNG y PDF sin identificadores ni textos libres por defecto y recoloca los datos conservados sin huecos. La estructura familiar puede permitir identificar a una persona: revise la figura y los consentimientos antes de publicarla."},
+    {title:"Documentación clínica del pedigree",text:"Abre Documentación clínica del pedigree, bajo los datos de familia, para introducir fechas de recogida y actualización clínica, profesional, informante y ascendencia geográfica o poblacional de las ramas materna y paterna cuando sea relevante. Son campos opcionales de texto libre y no se infieren automáticamente. El PDF mostrará únicamente los valores cumplimentados, separados de la fecha de generación del informe."}
   ],
   symbolGroups: [
     {
@@ -27,7 +28,7 @@ window.PEDIGRAPP_HELP_DATA = {
         {visual:"female",title:"Mujer / niña",standard:"NSGC/Bennett",text:"Círculo. El sexo asignado al nacimiento se documenta de forma independiente cuando es relevante."},
         {visual:"diamond",title:"Género diverso / no especificado",standard:"NSGC/Bennett 2022/2025",text:"Rombo. Se utiliza cuando el género no se conoce, no es relevante o no se representa como hombre/mujer. PedigrAPP permite además registrar AMAB, AFAB o UAAB."},
         {visual:"affected",title:"Afectado",standard:"NSGC/Bennett",text:"El relleno identifica afectación clínica. Cuando existen condiciones definidas, el estado se representa por condición y se explica en la leyenda."},
-        {visual:"deceased",title:"Fallecido",standard:"NSGC/Bennett",text:"Una línea diagonal atraviesa el símbolo. Se evita la cruz para no confundirla con otras anotaciones."},
+        {visual:"deceased",title:"Fallecido",standard:"Bennett / Convención PedigrAPP",text:"La barra diagonal sobre el símbolo indica el fallecimiento (Bennett). Opcionalmente, el año de fallecimiento se muestra debajo precedido por una cruz tipográfica sencilla (✝ 2024), sin fondo ni color especial: es una convención de PedigrAPP, no un símbolo de fallecimiento recomendado por Bennett."},
         {visual:"consultand",title:"Consultante",standard:"NSGC/Bennett",text:"Flecha hacia el individuo que solicita o recibe el asesoramiento o estudio genético. PedigrAPP permite más de un consultante."},
         {visual:"proband",title:"Probando",standard:"NSGC/Bennett",text:"Flecha acompañada de «P». PedigrAPP mantiene un único probando activo en el pedigree."},
         {visual:"family_unknown",title:"Historia familiar no disponible/desconocida",standard:"NSGC/Bennett",text:"Signo «?» asociado al individuo. Indica que no se dispone de información suficiente sobre su historia familiar."},
@@ -144,6 +145,14 @@ window.PEDIGRAPP_HELP_DATA = {
   exploitationRightsHolder:"Fundación Investigación Biomédica Hospital 12 de Octubre",
   registry:"Safe Creative 2610197365707 (20/10/2026 08:01 UTC)",
   changelog:[
+    {version:"1.2",text:""},
+    {version:"1.2-rc10",text:""},
+    {version:"1.2-rc9",text:""},
+    {version:"1.2-rc8",text:""},
+    {version:"1.2-rc5",text:""},
+    {version:"1.2-rc4",text:""},
+    {version:"1.2-rc3",text:""},
+    {version:"1.2-rc2",text:""},
     {version:"1.1",text:""},
     {version:"1.0.6-rc3",text:""},
     {version:"1.0.6-rc2",text:""},

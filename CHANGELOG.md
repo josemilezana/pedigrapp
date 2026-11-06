@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.2 — November 6, 2026
+
+- Consolidates the v1.2 development line: safer PED semantics and phenotype export, clinical provenance and ancestry, death-year annotations, improved partnership/adoption shortcuts and assisted-reproduction QC.
+- Adds separate publication SVG/PNG/print-to-PDF export with explicit identifiers and free text omitted by default; manual confidentiality review remains required.
+- Clarifies the existing clinical recorder field and adds the public repository link to the clinical PDF header.
+- Native JSON schema 4.22; older families remain compatible. Full ES/EN interface and help retained.
+- Public packages exclude examples, tests, saved families and internal deployment/validation reports. The server edition distributes only `data/.htaccess` and `data/.gitkeep` under data; the static edition has no backend or data directory.
+- This release does not claim independent clinical validation or introduce future-version functionality.
+
+
 ## v1.1 — October 29, 2026
 
 - Promotes the user-accepted **v1.0.6-rc3** to the v1.1 stable local baseline, without further changes to the pedigree drawing engine or relationship rules.
