@@ -1,35 +1,43 @@
 # PedigrAPP online
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23498335.svg)](https://doi.org/10.5281/zenodo.23498335)
+**Version 1.2** · Bilingual English/Spanish pedigree editor for clinical genetics.
 
-**Version 1.1** · Static browser edition of PedigrAPP for creating, editing, reviewing, and exporting pedigrees for clinical genetics.
+## What is new in v1.2
 
-PedigrAPP online runs entirely in the browser and does **not** require PHP, a database, or a PedigrAPP backend. Saved cases are stored in the browser's `localStorage` for the current web origin.
+- Safer PED import/export: explicit handling of SEX codes, optional classic symbols, condition-specific phenotype selection, missing values and confirmed unaffected status. Complex relationships are not silently converted into genetic parent roles.
+- Optional clinical documentation: history collection/update dates, geneticist or physician recording the history, informant and maternal/paternal ancestry. Entered values appear in the clinical PDF.
+- Optional year of death, compact chronology and improved handling of deceased individuals.
+- Improved partnership and adoption shortcuts and assisted-reproduction QC.
+- Separate publication-figure export to SVG, PNG and print-to-PDF. Explicit identifiers and free text are omitted by default; chronology is opt-in. Family structure can still identify people, so manual confidentiality review is required.
+- Native JSON schema **4.22**, with backward compatibility and no database migration. Existing v1.1 functionality, bilingual help and clinical exports are retained.
 
-Version **1.1** retains complete **English/Spanish internationalization** and adds mutually exclusive age or birth year, explicit partnerships involving donors and gestational carriers, explicit gestation by eligible AFAB individuals, and shared gamete donors across multiple outcomes while preserving documented sibships. Existing PedigrAPP family files remain compatible; the native family schema is **JSON 4.19** and language switching never translates or alters user-entered clinical data.
+Technical checks do not constitute independent clinical validation or endorsement by Bennett's authors or NSGC.
 
-**Public application:** https://josemilezana.github.io/pedigrapp/
+## Static browser edition
 
-## Privacy model
+No PHP backend or data directory. Save/load/delete use browser localStorage with the existing `pedigrees.family.` prefix, preserving earlier saved cases. Storage belongs to the browser profile and origin. Protect exports and shared devices; clearing browser data removes local cases.
 
-PedigrAPP online does not send pedigree content to a PedigrAPP application server. Save/load/delete operations use browser `localStorage`; JSON/PED import and JSON/PED/SVG/PNG/PDF export are processed in the browser.
+Public application: https://josemilezana.github.io/pedigrapp/
 
-`localStorage` is tied to the exact browser profile and origin. Clearing browser data, changing browser/profile/device, or using a different domain may make saved cases unavailable. Export important cases as JSON and protect exported clinical files according to applicable policies.
+For a private demonstration with synthetic data:
 
-See [PRIVACY.md](PRIVACY.md) and [SECURITY.md](SECURITY.md).
+```bash
+python3 -m http.server 8080 --bind 127.0.0.1
+```
 
 ## License, ownership, and registration
 
-**License:** [European Union Public Licence v1.2 (EUPL-1.2)](LICENSE). SPDX identifier: `EUPL-1.2`.
+**License:** [European Union Public Licence v1.2 (EUPL-1.2)](LICENSE), approved for PedigrAPP by the rights holder. The full, unmodified license is included in `LICENSE`. SPDX identifier: `EUPL-1.2`.
 
-**Holder of all exploitation rights:** **Fundación Investigación Biomédica Hospital 12 de Octubre**, with worldwide territorial scope according to the Safe Creative registration.
+**Holder of all exploitation rights:** **Fundación Investigación Biomédica Hospital 12 de Octubre** (worldwide territorial scope, as stated in the Safe Creative registration).
 
-**Registered title:** *PedigrAPP – Aplicación web para la creación y edición de árboles genealógicos en genética clínica*.
+**Registered title:** *PedigrAPP – Aplicación web para la creación y edición de árboles genealógicos en genética clínica* (official Spanish title; retained verbatim).
 
 - **Safe Creative registration:** `2610197365707`.
 - **Certificate:** `2610197365707-29DQUR`.
 - **Registration date:** October 20, 2026, 08:01 UTC.
-- **Registered historical snapshots:** `v1.0.0` and `online-v1.0.0`; these tags remain unchanged.
+- **Deposited archive:** `pedigrapp-main-online.zip`, containing GitHub snapshots of `main` and `online` deposited for v1.0.0.
+- **Registered historical snapshots:** tags `v1.0.0` and `online-v1.0.0`, preserved unchanged.
 
 ### Registered authors of v1.0.0
 
@@ -37,46 +45,25 @@ See [PRIVACY.md](PRIVACY.md) and [SECURITY.md](SECURITY.md).
 - **Carmen Palma Milla**
 - **Rubén Pérez de la Fuente**
 
-The full clinical/scientific project team is listed in [AUTHORS.md](AUTHORS.md).
+The complete clinical and scientific project team is listed in [AUTHORS.md](AUTHORS.md). Participation does not automatically imply authorship of later versions or scientific publications; credits depend on actual contributions and applicable criteria.
+
+For software citation information, see [CITATION.cff](CITATION.cff).
 
 ### DOI and citation
 
 - **Concept DOI covering the PedigrAPP version series:** [`10.5281/zenodo.23498335`](https://doi.org/10.5281/zenodo.23498335).
 - **Archived DOI for PedigrAPP v1.0.1:** [`10.5281/zenodo.23498336`](https://doi.org/10.5281/zenodo.23498336).
-- **Archived DOI for PedigrAPP v1.0.2:** [`10.5281/zenodo.23499180`](https://doi.org/10.5281/zenodo.23499180).
 
-For citation metadata, see [CITATION.cff](CITATION.cff).
+The concept DOI refers to the PedigrAPP version series and resolves to the latest version **available on Zenodo**. It does not imply that v1.2 has already been deposited there.
 
-## Languages and internationalization
+## Languages
 
-Use the **🇪🇸 ES / 🇬🇧 EN** selector in the header. Spanish is the default and the selected language is stored locally in the browser. User-entered names, aliases, indications, variants, and clinical notes are never translated.
+Switch ES/EN in the header. User-entered clinical data are not translated or sent to a translation service. The dictionaries in `locales/es.json` and `locales/en.json` feed `locales/catalog.js`; see [I18N.md](I18N.md).
 
-Translations are maintained in `locales/es.json` and `locales/en.json`, with the generated synchronous bundle `locales/catalog.js`. See [I18N.md](I18N.md).
+## Privacy and distribution
 
-## Key features
+No saved family records, examples, test installations, internal validation reports or deployment-specific configuration are distributed. Protect clinical exports as well as the original records. See [PRIVACY.md](PRIVACY.md) and [SECURITY.md](SECURITY.md).
 
-- Multigenerational pedigree editing with complex family relationships, multiple unions, half-siblings, consanguinity, adoption, pregnancy losses, twins and multiple gestations.
-- Assisted reproduction, gamete donation, gestational carriers, surrogates, and intended parents.
-- Multiple clinical/genetic conditions, comments, dynamic legends, and advisory QC.
-- Automatic layout, manual horizontal adjustment, same-generation reordering, Undo/Redo.
-- Browser-local save/load/delete using `localStorage`.
-- JSON and PED import/export and browser-side SVG, PNG, and PDF export.
-- Integrated bilingual help and nomenclature references.
+## References and credits
 
-## Running locally
-
-Serve the directory over HTTP, for example:
-
-```bash
-python3 -m http.server 8080 --bind 127.0.0.1
-```
-
-Then open `http://127.0.0.1:8080/`.
-
-The saved-case store belongs to that exact origin. A case saved at `http://127.0.0.1:8080` is not automatically available at another domain or port.
-
-## Scientific nomenclature
-
-PedigrAPP is informed by the standardized pedigree nomenclature recommendations of Bennett/NSGC (1995, 2008, 2022, and the 2025 correction). These references do not imply endorsement or certification by their authors or the NSGC. PedigrAPP-specific display conventions are identified in the integrated help.
-
-See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for scientific references and third-party notices.
+See [AUTHORS.md](AUTHORS.md), [CITATION.cff](CITATION.cff), [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and [CHANGELOG.md](CHANGELOG.md). Scientific references include Bennett et al. 1995, 2008, 2022 and the French et al. 2025 correction.

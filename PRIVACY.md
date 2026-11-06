@@ -29,3 +29,7 @@ Clearing browser data can remove locally saved cases. Export important cases as 
 Never include identifiable clinical data in GitHub issues, pull requests, screenshots, logs, or test fixtures. Use synthetic or properly de-identified examples.
 
 The **EUPL-1.2** license governs distribution of the software; it does not replace privacy, confidentiality, professional, or data-protection obligations.
+
+## Publication figures
+
+Publication export removes explicit identifiers by default but does not guarantee anonymity. Review every exported figure before sharing.

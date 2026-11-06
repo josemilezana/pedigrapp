@@ -5,6 +5,7 @@
 # Clinical/local family data
 /data/**
 !/data/.htaccess
+!/data/.gitkeep
 
 # Non-public examples and test material
 /examples/
@@ -14,7 +15,6 @@
 # Credentials and private configuration
 .env
 .env.*
-!.env.example
 .htpasswd
 .htpasswd.*
 *.pem
@@ -56,3 +56,21 @@ Thumbs.db
 *.tgz
 *.7z
 *.rar
+
+# Local installations and internal validation reports
+/_v*_test/
+/*_VALIDATION.md
+/DEPLOYMENT_*.md
+/I18N_REVIEW_*.md
+/V12_CONSOLIDACION_LOCAL.md
+*.sqlite*
+*.backup
+*.backup.*
+*.log.*
+*.tmp.*
+*.bak.*
+
+# Internal translation validation artifacts
+/scripts/audit_untranslated.py
+/scripts/check_i18n.py
+/scripts/i18n_*.json

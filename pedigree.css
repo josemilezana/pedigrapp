@@ -6215,3 +6215,131 @@ body.clinical-drawer-open .toast-container {
   font-size: 10px;
   text-overflow: ellipsis;
 }
+
+/* v1.2-rc2: optional provenance, intentionally separate from report timestamp. */
+.case-documentation {
+  margin:0 0 12px;
+  border:1px solid #d8e2e9;
+  border-radius:12px;
+  background:#fff;
+  padding:0 14px;
+}
+.case-documentation > summary {
+  cursor:pointer;
+  padding:12px 2px;
+  font-size:.88rem;
+  font-weight:700;
+  color:#29455c;
+}
+.case-documentation > summary:focus-visible { outline:2px solid #245e9e;outline-offset:3px; }
+.case-documentation-hint {
+  margin-left:10px;
+  font-size:.75rem;
+  font-weight:400;
+  color:#6b7580;
+}
+.case-documentation-fields {
+  display:grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap:12px 20px;
+  padding:3px 0 10px;
+}
+.case-documentation-fields > .field {min-width:0;}
+.case-documentation-note {
+  font-size:.76rem;
+  line-height:1.35;
+  color:#65707b;
+  margin:0 0 12px;
+}
+body.pedigree-focus-mode .case-documentation {display:none;}
+@media(max-width:750px){
+ .case-documentation-fields {grid-template-columns:1fr;}
+ .case-documentation-hint {display:block;margin:4px 0 0;}
+}
+
+/* v1.2-rc4: conservative single-phenotype PED export */
+.ped-export-dialog {
+  border:1px solid var(--border, #cbd5e1);border-radius:16px;
+  padding:0;max-width:min(92vw,540px);width:100%;
+  box-shadow:0 18px 65px rgba(0,0,0,.25);color:inherit;
+  background:var(--card-bg, #fff);
+}
+.ped-export-dialog::backdrop {background:rgba(12,23,41,.45);}
+.ped-export-content {display:flex;flex-direction:column;gap:12px;padding:24px;}
+.ped-export-content h2 {font-size:1.25rem;margin:0;}
+.ped-export-content p {margin:0;line-height:1.45;}
+.ped-export-content label {font-weight:650;font-size:.92rem;margin-top:4px;}
+.ped-export-content select {width:100%;max-width:100%;padding:10px;box-sizing:border-box;}
+.ped-export-caution {color:#8c410e;font-size:.85rem;}
+.ped-export-preview {padding:12px;background:rgba(100,116,139,.09);border-radius:8px;}
+.ped-export-preview code {display:block;margin-top:8px;white-space:normal;overflow-wrap:anywhere;}
+.ped-export-buttons {display:flex;justify-content:flex-end;gap:12px;margin-top:8px;}
+.person-condition-ped[hidden] {display:none;}
+
+/* v1.2-rc6: conventional male/female partner symbols use the
+ * existing quick-create icon rules; no secondary chooser is needed. */
+
+/* v1.2-rc8: modest death-year quick input (plain cross, no badge/background). */
+.condition-hover-quick-edit-bottom.with-death-year {
+  grid-template-columns: minmax(0, 1fr) 80px 30px;
+}
+.condition-hover-death-year {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  box-sizing: border-box;
+  height: 26px;
+  min-width: 0;
+  padding: 0 3px;
+  border: 1px solid #d6d6d6;
+  border-radius: 5px;
+  color: #333;
+  background: #fff;
+}
+.condition-hover-death-cross {
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1;
+  color: inherit;
+}
+.condition-hover-death-year-input {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  height: 23px;
+  padding: 2px 0;
+  border: 0;
+  outline-offset: 1px;
+  background: transparent;
+  color: #222;
+  font: inherit;
+  font-size: 11px;
+  text-align: center;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.condition-hover-death-year-input::-webkit-inner-spin-button,
+.condition-hover-death-year-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* v1.2-rc9: concise separate publication-figure export */
+.publication-export-dialog .publication-keep-years {
+  display:flex;gap:9px;align-items:center;cursor:pointer;font-weight:500;
+}
+.publication-export-dialog .publication-keep-years input {width:auto;margin:0;}
+.publication-export-dialog .publication-buttons {flex-wrap:wrap;justify-content:flex-start;}
+.publication-export-dialog .publication-buttons button {min-width:65px;}
+
+/* v1.2: publication export uses the same document icon and visual treatment as SVG/PNG/PDF. */
+#exportPublicationBtn {color:#315a85;border-color:#b2c5da;background:#f5f9ff;}
+#exportPublicationBtn:hover {background:#e7f0fb;}
+.ped-import-dialog .ped-import-mode {border:1px solid #dce3eb;border-radius:6px;padding:9px 12px;margin:9px 0;}
+.ped-import-dialog .ped-import-mode legend {font-weight:600;padding:0 4px;}
+.ped-import-dialog .ped-import-mode label {display:flex;align-items:flex-start;gap:8px;margin:8px 0;font-weight:400;cursor:pointer;}
+.ped-import-dialog .ped-import-mode input {width:auto;flex:none;margin:3px 0 0;}
+.ped-import-dialog .ped-export-caution {white-space:pre-line;}
