@@ -4,9 +4,9 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>PedigrAPP · 1.2</title>
+<title>PedigrAPP · 1.3</title>
 <link href="images/PedigrAPP_icono_small.png" rel="icon" type="image/png"/>
-<link href="pedigree.css?v=12-local" rel="stylesheet"/>
+<link href="pedigree.css?v=1300" rel="stylesheet"/>
 </head>
 <body>
 <main class="app-shell">
@@ -15,7 +15,7 @@
 <div class="app-branding">
 <img alt="PedigrAPP" class="app-logo" onerror="this.style.display='none';this.nextElementSibling.hidden=false" src="images/PedigrAPP_logo.png"/>
 <strong class="app-name-fallback" hidden="">PedigrAPP</strong>
-<div class="app-version">v1.2</div>
+<div class="app-version">v1.3</div>
 </div>
 </div><div aria-label="Language / Idioma" class="app-language-switch" role="group"><button aria-pressed="true" class="language-choice" data-language="es" title="Español" type="button"><span class="language-flag" aria-hidden="true">🇪🇸</span><span class="language-code">ES</span></button><button aria-pressed="false" class="language-choice" data-language="en" title="English" type="button"><span class="language-flag" aria-hidden="true">🇬🇧</span><span class="language-code">EN</span></button></div>
 </header>
@@ -23,7 +23,7 @@
 <div class="field">
 <div class="case-id-label-row">
 <label data-i18n="app.body1.main1.section1.div1.div1.label1.text" for="familyId">ID de familia</label>
-<span aria-live="polite" class="unsaved-indicator" hidden="" id="unsavedIndicator" role="status"><span aria-hidden="true" class="unsaved-indicator-dot">●</span> <span data-i18n="app.unsavedIndicator.text">Cambios sin guardar</span></span>
+<span aria-live="polite" class="unsaved-indicator" hidden="" id="unsavedIndicator" role="status"><span aria-hidden="true" class="unsaved-indicator-dot">●</span> <span class="unsaved-indicator-label">Cambios sin guardar</span></span>
 <span aria-live="polite" class="reviewed-indicator" hidden="" id="reviewedIndicator" role="status"><span aria-hidden="true">✓</span> <span data-i18n="app.reviewedIndicator.text">Pedigree revisado</span></span>
 <button class="rereview-family-btn" data-i18n="app.rereviewFamilyBtn.text" hidden="" id="rereviewFamilyBtn" type="button">✓ Revisar versión actual</button>
 <button class="qc-mini-indicator" data-i18n="app.qcMiniIndicator.text" data-i18n-title="app.qcMiniIndicator.title" hidden="" id="qcMiniIndicator" title="Abrir incidencias del QC automático" type="button">QC · Comprobando…</button>
@@ -313,6 +313,8 @@
 <button aria-label="Centrar pedigree" class="pedigree-viewer-button" id="pedigreeCenterBtn" title="Centrar pedigree" type="button" data-i18n-title="toolbar.pedigreeCenterBtn.title" data-i18n-aria-label="toolbar.pedigreeCenterBtn.ariaLabel">⊙</button>
 <button aria-label="Zoom 100 %" class="pedigree-viewer-button pedigree-viewer-button-wide" id="pedigreeActualSizeBtn" title="Zoom 100 %" type="button" data-i18n-title="toolbar.pedigreeActualSizeBtn.title" data-i18n-aria-label="toolbar.pedigreeActualSizeBtn.ariaLabel">1:1</button>
 <span aria-hidden="true" class="pedigree-viewer-separator"></span>
+<button aria-label="Activar movimiento solo horizontal" aria-pressed="true" class="pedigree-viewer-button is-active" id="pedigreeHorizontalLayoutBtn" title="Movimiento horizontal protegido" type="button">⟷</button>
+<button aria-label="Activar movimiento X/Y libre" aria-pressed="false" class="pedigree-viewer-button" id="pedigreeUnrestrictedLayoutBtn" title="Movimiento libre X/Y" type="button">✥</button>
 <button aria-label="Activar modo Reordenar horizontalmente" aria-pressed="false" class="pedigree-viewer-button" id="pedigreeReorderSiblingsBtn" title="Reordenar horizontalmente" type="button">⇄</button>
 <button aria-label="Restablecer posiciones manuales" class="pedigree-viewer-button" disabled="" id="pedigreeResetManualPositionsBtn" title="Restablecer distribución horizontal automática" type="button">↺</button>
 <span aria-hidden="true" class="pedigree-viewer-separator"></span>
@@ -767,8 +769,9 @@
 </section>
 </section>
 </main>
-<script src="locales/catalog.js?v=12-local"></script>
-<script src="i18n.js?v=12-local"></script><script src="pedigree-qc.js?v=12-local"></script>
-<script src="pedigree.js?v=12-local"></script>
+<script src="locales/catalog.js?v=1300"></script>
+<script src="i18n.js?v=1300"></script><script src="pedigree-qc.js?v=1300"></script>
+<script src="storage-local.js?v=1300"></script>
+<script src="pedigree.js?v=1300"></script>
 </body>
 </html>

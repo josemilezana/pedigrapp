@@ -28,11 +28,11 @@ The following individuals have been associated with development, review, clinica
 - Sonia Mayo de Andrés
 - Ana Arteche López
 - Víctor Benito García
-- Roberto Vercher Carrascosa (Residente)
+- Roberto Vercher Carrascosa (Resident)
 - Raquel Castro del Álamo
 - Miguel Ángel Martín Casanueva
 
-The team includes members of the **Servicio de Genética del Hospital Universitario 12 de Octubre (Madrid)**, along with other collaborators. Inclusion here does not by itself establish an individual's institutional affiliation, rights ownership, or registered authorship.
+The team includes members of the **Genetics Service, Hospital Universitario 12 de Octubre (Madrid)**, along with other collaborators. Inclusion here does not by itself establish an individual's institutional affiliation, rights ownership, or registered authorship.
 
 ## Authorship of future versions and publications
 

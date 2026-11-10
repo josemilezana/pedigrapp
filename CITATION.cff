@@ -9,7 +9,7 @@ authors:
     given-names: "Carmen"
   - family-names: "Pérez de la Fuente"
     given-names: "Rubén"
-version: "1.2"
+version: "1.3"
 license: EUPL-1.2
 repository-code: "https://github.com/josemilezana/pedigrapp"
 url: "https://josemilezana.github.io/pedigrapp/"

@@ -1,7 +1,7 @@
 (() => {
 "use strict";
 
-const APP_VERSION = "1.2";
+const APP_VERSION = "1.3";
 // Changes to language do not modify the family model or history.
 function refreshLocalizedPresentation() {
   // Called once dictionaries are loaded, and whenever the language changes.
@@ -117,11 +117,13 @@ function refreshLocalizedPresentation() {
     }
   }
   if(typeof window.PedigrAPPi18n?.apply==='function')window.PedigrAPPi18n.apply();
+  if (typeof updateFreeLayoutButton === 'function') updateFreeLayoutButton();
 }
 document.addEventListener('pedigrapp:languagechange',refreshLocalizedPresentation);
 window.addEventListener('pedigrapp:i18nready',refreshLocalizedPresentation);
 
 const C = {
+  api: "local-storage",
   symbolSize: 38,
   generationGap: 200,
   siblingGap: 160,
@@ -150,8 +152,6 @@ let savedCaseItems = [];
 let selectedSavedCaseId = "";
 let savedCaseReviewFilter = "all";
 
-const LOCAL_STORAGE_PREFIX = "pedigrees.family."; // Compatible with earlier online releases.
-
 /*
  * 0.8.59 — referencia del último estado realmente guardado/cargado.
  * Comparar el contenido completo permite que Deshacer vuelva a ocultar
@@ -159,9 +159,111 @@ const LOCAL_STORAGE_PREFIX = "pedigrees.family."; // Compatible with earlier onl
  */
 let savedFamilySignature = JSON.stringify(family);
 
+// v1.3: autoguardado solo para una familia con ID confirmado por el usuario o cargada desde el servidor.
+// La edición GitHub Pages guarda los casos en localStorage de este navegador.
+const AUTOSAVE_DELAY_MS = 950;
+let autosaveEnabled = false; // Se habilita al terminar el arranque limpio.
+let autosaveFamilyIdConfirmed = false; // FAM001 y los IDs generados no se autoguardan sin intervención del usuario.
+let autosaveTimer = null;
+let autosaveInFlight = null;
+let autosaveEpoch = 0;
+let autosaveScheduledSignature = "";
+let autosaveFailedSignature = "";
+let autosaveError = "";
+let autosaveCurrentCaseId = "";
+let autosaveServerRevision = null;
+let autosaveSaving = false;
+let autosaveSavedUntil = 0;
+let autosaveSavedTimer = null;
+
+function cancelPendingAutosave() {
+  clearTimeout(autosaveTimer);
+  autosaveTimer = null;
+  autosaveScheduledSignature = "";
+}
+
+function resetAutosaveContext(savedId="", revision=null) {
+  cancelPendingAutosave();
+  clearTimeout(autosaveSavedTimer);
+  autosaveEpoch += 1;
+  autosaveCurrentCaseId = savedId;
+  autosaveServerRevision = revision;
+  autosaveFamilyIdConfirmed = !!String(savedId).trim(); // Cargar un caso existente habilita su autoguardado.
+  autosaveFailedSignature = "";
+  autosaveError = "";
+  autosaveSavedUntil = 0;
+  autosaveSaving = false;
+  // Una petición de la familia anterior puede terminar, pero su respuesta
+  // nunca marca la familia actual como guardada (protección por epoch).
+}
+
+function canAutosaveCurrentFamily() {
+  return autosaveEnabled && autosaveFamilyIdConfirmed && !!String(family.family_id || "").trim();
+}
+
+function scheduleFamilyAutosave(force=false) {
+  if (!canAutosaveCurrentFamily() || !hasUnsavedFamilyChanges()) {
+    cancelPendingAutosave();
+    return;
+  }
+  // No crear expedientes por cada carácter del identificador mientras se edita.
+  if (!force && document.activeElement?.id === "familyId") {
+    cancelPendingAutosave(); // No guardar un ID parcialmente escrito.
+    return;
+  }
+  const signature=currentFamilySignature();
+  if (signature===autosaveFailedSignature) return; // Reintentar con Guardar o tras nueva edición.
+  if (autosaveFailedSignature && signature!==autosaveFailedSignature) {
+    autosaveFailedSignature="";
+    autosaveError="";
+  }
+  if (autosaveInFlight || autosaveSaving) return; // Se reprograma al finalizar la petición.
+  if (!force && autosaveTimer && autosaveScheduledSignature===signature) return;
+  cancelPendingAutosave();
+  autosaveScheduledSignature=signature;
+  autosaveTimer=setTimeout(() => {
+    autosaveTimer=null;
+    autosaveScheduledSignature="";
+    void saveFamily({auto:true,silentSuccess:true});
+  },force?0:AUTOSAVE_DELAY_MS);
+}
+
+function autosaveStatusLabel(state) {
+  const key={dirty:"autosave.status.pending",needsId:"autosave.status.needsId",saving:"autosave.status.saving",saved:"autosave.status.saved",error:"autosave.status.error"}[state];
+  return t(key || "autosave.status.pending");
+}
+
+function updateAutosaveStatus(dirty) {
+  const indicator=$("unsavedIndicator");
+  if (!indicator) return;
+  const status=autosaveError ? "error" : autosaveSaving ? "saving"
+    : dirty ? (canAutosaveCurrentFamily() ? "dirty" : "needsId") : Date.now()<autosaveSavedUntil ? "saved" : "clean";
+  indicator.hidden=status==="clean";
+  indicator.dataset.saveState=status;
+  const label=indicator.querySelector(".unsaved-indicator-label");
+  if(label)label.textContent=autosaveStatusLabel(status);
+  indicator.title=autosaveError || "";
+}
+
+function showAutosavedStatus() {
+  autosaveSavedUntil=Date.now()+2800;
+  clearTimeout(autosaveSavedTimer);
+  autosaveSavedTimer=setTimeout(() => {
+    autosaveSavedUntil=0;
+    updateUnsavedIndicator();
+  },3000);
+}
+
+window.addEventListener("beforeunload",event => {
+  if (autosaveEnabled && (hasUnsavedFamilyChanges() || autosaveInFlight)) {
+    event.preventDefault();
+    event.returnValue="";
+  }
+});
+
 function emptyFamily() {
   return {
-    schema_version: "4.22",
+    schema_version: "4.23",
     family_id: "FAM001",
     indication: "",
     pedigree_comments: "",
@@ -183,8 +285,11 @@ function emptyFamily() {
       branch_order: {},
       generation_floor: {},
       manual_x: {},
+      manual_y: {},
+      manual_free_xy: {},
       sibling_visual_order: {},
-      generation_visual_order: {}
+      generation_visual_order: {},
+      stable_order: []
     },
     conditions: [],
     people: [],
@@ -213,9 +318,8 @@ function updateUnsavedIndicator() {
   const dirty =
     hasUnsavedFamilyChanges();
 
-  if (indicator) {
-    indicator.hidden = !dirty;
-  }
+  if (dirty) scheduleFamilyAutosave();
+  updateAutosaveStatus(dirty);
 
   const saveButton =
     $("saveFamilyBtn");
@@ -2164,10 +2268,39 @@ function normalizeLayoutOverrides(
     }
   });
 
+  // v1.3-rc4: ajuste vertical de PRESENTACIÓN (en unidades SVG), separado
+  // de la generación genealógica. Su amplitud se limita a la banda visual.
+  const rawManualY = source.manual_y && typeof source.manual_y === "object"
+    ? source.manual_y : {};
+  const manualY = {};
+  Object.entries(rawManualY).forEach(([uid,value]) => {
+    const y = Number(value);
+    if (validUids.has(uid) && Number.isFinite(y) && Math.abs(y) >= 0.5) {
+      manualY[uid] = Math.max(-60,Math.min(60,y));
+    }
+  });
+
+  // rc5: desplazamientos libres RELATIVOS al layout base (independientes
+  // de los otros ajustes). Se descartan IDs desconocidos y valores extremos.
+  const rawFree = source.manual_free_xy && typeof source.manual_free_xy === 'object'
+    ? source.manual_free_xy : {};
+  const manualFreeXY = {};
+  Object.entries(rawFree).forEach(([uid,value])=>{
+    if (!validUids.has(uid) || !value || typeof value !== 'object') return;
+    const x=Number(value.x), y=Number(value.y);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+    manualFreeXY[uid]={
+      x:Math.max(-20000,Math.min(20000,x)),
+      y:Math.max(-20000,Math.min(20000,y))
+    };
+  });
+
   return {
     branch_order:branchOrder,
     generation_floor:generationFloor,
     manual_x:manualX,
+    manual_y:manualY,
+    manual_free_xy:manualFreeXY,
     sibling_visual_order:Object.fromEntries(
       Object.entries(source.sibling_visual_order && typeof source.sibling_visual_order === "object"
         ? source.sibling_visual_order : {})
@@ -2175,6 +2308,12 @@ function normalizeLayoutOverrides(
         && Number(rank)>=0 && Number(rank)<10000)
       .map(([uid,rank])=>[uid,Number(rank)])
     ),
+    // 4.23 (v1.3): orden aceptado automáticamente entre ediciones.
+    // Unicamente UIDs; no se guardan coordenadas ni datos clínicos.
+    stable_order:Array.isArray(source.stable_order)
+      ? [...new Set(source.stable_order.filter(uid =>
+          typeof uid === 'string' && validUids.has(uid)))].slice(0,5000)
+      : [],
     // 4.16: preferencias visuales de generación (independientes del nacimiento).
     generation_visual_order:Object.fromEntries(
       Object.entries(source.generation_visual_order && typeof source.generation_visual_order === "object"
@@ -2229,7 +2368,7 @@ function synchronizeAffectedFromConditions(
 function normalizeFamily(data) {
   if (!data || !Array.isArray(data.people)) return data;
 
-  data.schema_version = "4.22";
+  data.schema_version = "4.23";
 
   // <=4.0: la numeración I-1, II-1... siempre era visible.
   // Por compatibilidad, cualquier JSON sin esta opción conserva ese comportamiento.
@@ -4383,9 +4522,11 @@ function generationFamilyBlocks(arr) {
     }
 
     if (r.type === "parentage") {
+      // T25: una filiación compartida no puede fusionar dos cadenas
+      // independientes de uniones múltiples en un megabloque.
       const children = (r.children || []).filter(uid => present.has(uid));
       for (let i=1; i<children.length; i++) {
-        connectFamilyBlock(adjacency,children[i-1],children[i]);
+        connectCompatible(children[i-1],children[i]);
       }
     }
   });
@@ -4456,6 +4597,96 @@ function generationFamilyBlocks(arr) {
   });
 
   return blocks;
+}
+
+/*
+ * T27 (v1.3-rc3) — fratrías terminales de uniones independientes.
+ *
+ * El stable_order introducido para proteger el orden de nacimiento no
+ * puede congelar el orden entre grupos de hijos de PAREJAS DISTINTAS.
+ * Por ejemplo, si ya hay hijos de una pareja de la derecha y se añaden
+ * después descendientes a una pareja situada a la izquierda, éstos no
+ * deben terminar al extremo derecho del pedigree.
+ *
+ * Esta reordenación conservadora:
+ * - solo intercambia bloques CONTIGUOS de descendencia terminal;
+ * - los bloques de hermanos/gemelos son atómicos, nunca se invierten;
+ * - exige un único conjunto de progenitores por bloque y progenitores
+ *   representados en la generación inmediatamente superior;
+ * - no cruza ramas que compartan un progenitor (posibles medio-hermanos);
+ * - no afecta a uniones, ramas con descendencia propia ni orden manual;
+ * - no modifica parentescos, birth_order, ni preferencias clínicas.
+ *
+ * Es una restricción de orden entre ramas independientes, no un cambio
+ * global de layout. Las pasadas geométricas posteriores conservan la
+ * secuencia y la aproximan físicamente a sus uniones parentales.
+ */
+function placeIndependentTerminalDescendantBlocksByParentOrder(byGen) {
+  const layout = family.layout_overrides || {};
+  const manualX = layout.manual_x || {};
+  const manualSibling = layout.sibling_visual_order || {};
+  const manualGeneration = layout.generation_visual_order || {};
+
+  [...byGen.keys()].sort((a,b)=>a-b).forEach(gen => {
+    if (gen < 1 || generationHasManualBranchOrder(gen)) return;
+    const arr = byGen.get(gen) || [];
+    const parents = byGen.get(gen-1) || [];
+    if (arr.length < 2 || !parents.length) return;
+    if (Array.isArray(manualGeneration[String(gen)]) &&
+        manualGeneration[String(gen)].length) return;
+    if (arr.some(p =>
+      Object.prototype.hasOwnProperty.call(manualX,p.uid) ||
+      Object.prototype.hasOwnProperty.call(manualSibling,p.uid)
+    )) return;
+
+    const parentRank = new Map(parents.map((p,i)=>[p.uid,i]));
+    const originalIndex = new Map(arr.map((p,i)=>[p.uid,i]));
+    const rawBlocks = generationFamilyBlocks(arr);
+    const blocks = rawBlocks.map(members => {
+      const indices = members.map(uid=>originalIndex.get(uid));
+      const contiguous = Math.max(...indices)-Math.min(...indices)+1===indices.length;
+      const sets = parentSetsForBlock(members);
+      const from = sets.length===1 ? sets[0] : [];
+      const terminal = members.every(uid =>
+        !family.relationships.some(r =>
+          (r.type==='union' && (r.people||[]).includes(uid)) ||
+          (r.type==='parentage' && (r.parents||[]).includes(uid))
+        )
+      );
+      const anchored = contiguous && terminal && from.length > 0 &&
+        from.every(uid=>parentRank.has(uid));
+      const anchor = anchored
+        ? from.reduce((sum,uid)=>sum+parentRank.get(uid),0)/from.length
+        : null;
+      return {members,parentSet:from,anchor};
+    });
+    // A noncontiguous block indicates an existing complex grouping: never
+    // reconstruct its row from a reordered list.
+    if (rawBlocks.some((members,i) => {
+      const indices=members.map(uid=>originalIndex.get(uid));
+      return Math.max(...indices)-Math.min(...indices)+1!==indices.length;
+    })) return;
+
+    // Adjacent swaps, never crossing a complex/unanchored block.  Parent
+    // sets that share an individual must retain their accepted order.
+    for (let pass=0;pass<blocks.length;pass++) {
+      let changed=false;
+      for (let i=0;i<blocks.length-1;i++) {
+        const left=blocks[i], right=blocks[i+1];
+        if (left.anchor===null || right.anchor===null ||
+            shareAnyParent(left.parentSet,right.parentSet) ||
+            left.anchor<=right.anchor) continue;
+        blocks[i]=right;
+        blocks[i+1]=left;
+        changed=true;
+      }
+      if (!changed) break;
+    }
+    const reordered=blocks.flatMap(b=>b.members);
+    if (reordered.every((uid,i)=>uid===arr[i].uid)) return;
+    const byUid=new Map(arr.map(p=>[p.uid,p]));
+    byGen.set(gen,reordered.map(uid=>byUid.get(uid)));
+  });
 }
 
 function branchOrderOverrides() {
@@ -5192,7 +5423,19 @@ function placeGenerationFamilyBlocks(gen,byGen,pos) {
         blocks,
         gen
       );
-  } else {
+  } else if (
+    // T26: al modificar incrementalmente una familia con una disposición
+    // aceptada, NUNCA reordenar bloques por el centro de sus descendientes:
+    // esa optimización movía a Ana detrás de su hermano al añadir otra
+    // pareja. Conservar el orden de bloques calculado en byGen y resolver
+    // la geometría desplazando unidades, no permutándolas.
+    !(
+      (lastLaidOutFamily === family && currentLayout) ||
+      (family.layout_overrides &&
+        Array.isArray(family.layout_overrides.stable_order) &&
+        family.layout_overrides.stable_order.length > 0)
+    )
+  ) {
     blocks.sort((a,b)=>
       a.desired-b.desired ||
       a.originalIndex-b.originalIndex
@@ -10396,7 +10639,7 @@ function normalizeLayoutBounds(pos) {
     maxX += shift;
   }
 
-  return {width:Math.max(760,maxX+C.marginX)};
+  return {width:Math.max(760,maxX+C.marginX),shift};
 }
 
 function snapshotLayoutX(
@@ -11744,8 +11987,58 @@ function relaxFinalParentalBlocks(byGen,pos) {
  * La persona arrastrada más recientemente tiene prioridad durante el gesto.
  */
 let liveDragUid = null;
+// El modo manual es exclusivamente visual; no cambia generaciones, relaciones
+// ni la secuencia de hermanos. El modo habitual sigue siendo horizontal.
+// rc6: modo horizontal protegido predeterminado, X/Y libre opcional.
+// "unrestricted" es de PRESENTACION: no modifica filiacion ni birth_order.
+let horizontalLayoutMode = true;
+let unrestrictedLayoutMode = false;
 let personDragState = null;
 let suppressDraggedPersonClick = false;
+
+function manualUnrestrictedOverrides() {
+  branchOrderOverrides();
+  if (!family.layout_overrides.manual_free_xy ||
+      typeof family.layout_overrides.manual_free_xy !== 'object') {
+    family.layout_overrides.manual_free_xy = {};
+  }
+  return family.layout_overrides.manual_free_xy;
+}
+
+function applyUnrestrictedPositions(pos) {
+  // Se aplica DESPUES de los ajustes protegidos. Estos anclajes no empujan
+  // a vecinos ni fuerzan la posicion de un hermano: se puede cruzar otra
+  // persona de la misma generacion o desplazarla libremente en Y.
+  const overrides=manualUnrestrictedOverrides();
+  Object.entries(overrides).forEach(([uid,offset])=>{
+    const point=pos.get(uid);
+    if (!point || !offset) return;
+    const dx=Number(offset.x), dy=Number(offset.y);
+    if (Number.isFinite(dx)) point.x=(manualBaseX.get(uid) ?? point.x)+dx;
+    if (Number.isFinite(dy)) point.y=(automaticBaseY.get(uid) ?? point.y)+dy;
+  });
+}
+
+function manualVerticalOverrides() {
+  branchOrderOverrides();
+  if (!family.layout_overrides.manual_y ||
+      typeof family.layout_overrides.manual_y !== "object") {
+    family.layout_overrides.manual_y = {};
+  }
+  return family.layout_overrides.manual_y;
+}
+
+function applyDraggedVerticalPositions(pos) {
+  const offsets = manualVerticalOverrides();
+  Object.entries(offsets).forEach(([uid,value])=>{
+    const point = pos.get(uid);
+    if (!point || !Number.isFinite(Number(value))) return;
+    // Nunca cruzar la banda de la generación vecina. El primer nivel
+    // dispone de menos margen superior para evitar recortes del SVG.
+    const min = point.generation === 0 ? -50 : -60;
+    point.y += Math.max(min,Math.min(60,Number(value)));
+  });
+}
 
 function manualHorizontalOverrides() {
   branchOrderOverrides();
@@ -11936,6 +12229,28 @@ function applyGenerationVisualPositions(byGen,pos) {
   });
 }
 
+function updateFreeLayoutButton() {
+  const container=$('pedigreeContainer');
+  const controls=[
+    ['pedigreeHorizontalLayoutBtn',horizontalLayoutMode,
+      'action.layout.horizontalModeEnabled','action.layout.horizontalModeEnable'],
+    ['pedigreeUnrestrictedLayoutBtn',unrestrictedLayoutMode,
+      'action.layout.unrestrictedModeEnabled','action.layout.unrestrictedModeEnable']
+  ];
+  controls.forEach(([id,active,enabledKey,disabledKey])=>{
+    const button=$(id);
+    if (!button) return;
+    button.setAttribute('aria-pressed',String(active));
+    button.classList.toggle('is-active',active);
+    button.title=t(active?enabledKey:disabledKey);
+    button.setAttribute('aria-label',button.title);
+  });
+  if (container) {
+    container.classList.toggle('is-horizontal-layout-mode',horizontalLayoutMode);
+    container.classList.toggle('is-unrestricted-layout-mode',unrestrictedLayoutMode);
+  }
+}
+
 function updateSiblingReorderButton() {
   const button=$("pedigreeReorderSiblingsBtn");
   if (!button) return;
@@ -11953,6 +12268,8 @@ function updateManualLayoutResetButton() {
   const button = $("pedigreeResetManualPositionsBtn");
   if (!button) return;
   const count = Object.keys(manualHorizontalOverrides()).length +
+    Object.keys(manualVerticalOverrides()).length +
+    Object.keys(manualUnrestrictedOverrides()).length +
     Object.keys(visualSiblingOverrides()).length +
     Object.keys(generationVisualOverrides()).length;
   button.disabled = count === 0;
@@ -11963,12 +12280,20 @@ function updateManualLayoutResetButton() {
 
 function resetManualHorizontalPositions() {
   if (personDragState || !Object.keys(manualHorizontalOverrides()).length &&
+      !Object.keys(manualVerticalOverrides()).length &&
+      !Object.keys(manualUnrestrictedOverrides()).length &&
       !Object.keys(visualSiblingOverrides()).length &&
       !Object.keys(generationVisualOverrides()).length) return;
   pushUndoState();
   family.layout_overrides.manual_x = {};
+  family.layout_overrides.manual_y = {};
+  family.layout_overrides.manual_free_xy = {};
   family.layout_overrides.sibling_visual_order = {};
   family.layout_overrides.generation_visual_order = {};
+  family.layout_overrides.stable_order = [];
+  // No reusar el orden del ultimo SVG arrastrado al reconstruir desde cero.
+  lastLaidOutFamily=null;
+  lastLaidOutSignature=null;
   renderPedigree();
   message(t("message.layout.restored"),"success");
 }
@@ -12026,6 +12351,111 @@ function applyDraggedHorizontalPositions(byGen,pos) {
 
 // Se obtiene al final de calculateLayout, antes de aplicar anclajes.
 let manualBaseX = new Map();
+let automaticBaseY = new Map();
+
+// T25 (v1.3): preservar el orden visual aceptado al editar el árbol.
+// Se almacenan únicamente UID, nunca posiciones, nombres ni información clínica.
+// La representación de origen se reinicia al cargar otra familia.
+let lastLaidOutFamily = null;
+let lastLaidOutSignature = null;
+// Las coordenadas manuales no deben convertirse en "orden aceptado"
+// estable: al pulsar ↺ debe reaparecer el orden automatico original.
+function familyStructuralSignature() {
+  if (!family) return '';
+  const {layout_overrides, ...clinicalAndStructure} = family;
+  return JSON.stringify(clinicalAndStructure);
+}
+
+function stableLayoutUids(layout) {
+  if (!layout || !layout.byGen || !layout.pos) return [];
+  const result = [];
+  [...layout.byGen.entries()]
+    .sort((a,b)=>a[0]-b[0])
+    .forEach(([,people]) => {
+      [...people]
+        .filter(p=>layout.pos.has(p.uid))
+        .sort((a,b)=>layout.pos.get(a.uid).x-layout.pos.get(b.uid).x)
+        .forEach(p=>result.push(p.uid));
+    });
+  return [...new Set(result)];
+}
+
+function stabilizedGenerationForIncrementalEdit(gen, arranged, stableUids) {
+  if (!stableUids || !stableUids.length || arranged.length<2) return arranged;
+  // Un reordenamiento manual explícito prevalece sobre la estabilidad automática.
+  if (generationHasManualBranchOrder(gen)) return arranged;
+
+  const byUid = new Map(arranged.map(p=>[p.uid,p]));
+  const priorSet = new Set(stableUids);
+  const retained = stableUids.filter(uid=>byUid.has(uid));
+  if (retained.length<2) return arranged;
+  const order = [...retained];
+
+  // Crear un nuevo cónyuge no permite mover a todos los hermanos de su
+  // pareja: se inserta junto al miembro existente y en el lado disponible.
+  const newPeople = arranged.filter(p=>!priorSet.has(p.uid));
+  newPeople.forEach(person => {
+    const uid=person.uid;
+    const partners=family.relationships
+      .filter(r=>r.type==='union' && !r.intergenerational &&
+        (r.people||[]).includes(uid))
+      .map(r=>r.people[0]===uid?r.people[1]:r.people[0])
+      .filter(other=>order.includes(other));
+    if (partners.length) {
+      const anchor=partners[0];
+      const anchorIndex=order.indexOf(anchor);
+      const existingPartners=family.relationships
+        .filter(r=>r.type==='union' && !r.intergenerational &&
+          (r.people||[]).includes(anchor))
+        .map(r=>r.people[0]===anchor?r.people[1]:r.people[0])
+        .filter(other=>other!==uid && order.includes(other));
+      const leftOccupied=existingPartners.some(other=>order.indexOf(other)<anchorIndex);
+      const rightOccupied=existingPartners.some(other=>order.indexOf(other)>anchorIndex);
+      let before;
+      if (rightOccupied && !leftOccupied) before=true;
+      else if (leftOccupied && !rightOccupied) before=false;
+      else if (leftOccupied && rightOccupied && personByUid(anchor)?.gender==='man') before=true;
+      else if (leftOccupied && rightOccupied && personByUid(anchor)?.gender==='woman') before=false;
+      else if (person.gender==='man' && personByUid(anchor)?.gender==='woman') before=true;
+      else if (person.gender==='woman' && personByUid(anchor)?.gender==='man') before=false;
+      else before=arranged.findIndex(p=>p.uid===uid)<arranged.findIndex(p=>p.uid===anchor);
+      order.splice(anchorIndex+(before?0:1),0,uid);
+      return;
+    }
+    // Nueva hermana/o: incorporarlo respetando el birth_order documentado
+    // sin invertir a los hermanos preexistentes ni mover bloques de parejas.
+    const siblings=[...order].filter(other=>
+      family.relationships.some(r=>(r.type==='sibling' &&
+        (r.members||[]).includes(uid) && (r.members||[]).includes(other)) ||
+        (r.type==='parentage' && (r.children||[]).includes(uid) &&
+          (r.children||[]).includes(other)))
+    );
+    if (siblings.length) {
+      const rank=Number.isFinite(person.birth_order)?person.birth_order:Infinity;
+      const later=siblings.find(other=>{
+        const p=personByUid(other);
+        return Number.isFinite(p?.birth_order) && p.birth_order>rank;
+      });
+      const index=later?order.indexOf(later):order.indexOf(siblings[siblings.length-1])+1;
+      order.splice(index,0,uid);
+      return;
+    }
+    // Sin parentesco directo que marque el lado, respetar los vecinos del
+    // resultado del motor sin invertir a los individuos que ya existían.
+    const proposed=arranged.findIndex(p=>p.uid===uid);
+    const left=[...arranged.slice(0,proposed)].reverse()
+      .find(p=>order.includes(p.uid));
+    const right=arranged.slice(proposed+1)
+      .find(p=>order.includes(p.uid));
+    if(left)order.splice(order.indexOf(left.uid)+1,0,uid);
+    else if(right)order.splice(order.indexOf(right.uid),0,uid);
+    else order.push(uid);
+  });
+  // Mantener todos los elementos, incluso cuando un caso excepcional
+  // no pasó por las estrategias de inserción anteriores.
+  arranged.forEach(p=>{if (!order.includes(p.uid))order.push(p.uid);});
+  return order.map(uid=>byUid.get(uid)).filter(Boolean);
+}
 
 function calculateLayout() {
   const g = generationMap();
@@ -12072,11 +12502,31 @@ function calculateLayout() {
         arranged
       );
 
+    // Una recolocacion libre NO redefine el orden estable automatico.
+    // Si no, cada render adoptaria el orden visual y cambiaria la base
+    // relativa usada por manual_free_xy, perdiendo posiciones al recargar.
+    const fixedFreeOrder = family.layout_overrides?.stable_order || [];
+    const hasFreeAnchors = Object.keys(family.layout_overrides?.manual_free_xy || {}).length > 0;
+    const knownStableOrder = hasFreeAnchors && fixedFreeOrder.length
+      ? fixedFreeOrder
+      : ((lastLaidOutFamily === family && currentLayout)
+        ? stableLayoutUids(currentLayout)
+        : fixedFreeOrder);
+    arranged = stabilizedGenerationForIncrementalEdit(
+      gen,
+      arranged,
+      knownStableOrder
+    );
+
     byGen.set(
       gen,
       arranged
     );
   });
+
+  // T27: el orden entre fratrías TERMINALES de parejas distintas sigue
+  // la posición de sus progenitores, sin mover hermanos ya ordenados.
+  placeIndependentTerminalDescendantBlocksByParentOrder(byGen);
 
   const rowOffsets = new Map();
   let maxRowWidth = 0;
@@ -12224,15 +12674,27 @@ function calculateLayout() {
   // Guardamos la coordenada base para que un nuevo arrastre arranque desde
   // la posición efectivamente dibujada, aunque otros anclajes la hayan movido.
   const automaticX = new Map([...pos.entries()].map(([uid,p]) => [uid,p.x]));
+  const automaticY = new Map([...pos.entries()].map(([uid,p]) => [uid,p.y]));
   manualBaseX = automaticX;
+  automaticBaseY = automaticY;
   applyDraggedHorizontalPositions(byGen,pos);
   applySiblingVisualPositions(byGen,pos);
   applyGenerationVisualPositions(byGen,pos);
+  applyDraggedVerticalPositions(pos);
+  // Modo rc5: prioridad absoluta a las coordenadas libres del usuario.
+  // Las fratrias y parejas se dibujan despues desde estas coordenadas.
+  applyUnrestrictedPositions(pos);
 
   const bounds = normalizeLayoutBounds(pos);
-  const height = C.marginTop*2+maxGen*C.generationGap+145;
+  // Las posiciones libres pueden superar la parte superior de la primera
+  // generacion. Mantenerlas dentro del viewBox sin modificar sus coords.
+  const viewY = Math.min(0, ...[...pos.values()].map(p=>p.y-115));
+  const bottomY = Math.max(C.marginTop*2+maxGen*C.generationGap+145,
+    ...[...pos.values()].map(p=>p.y+135));
+  const height = bottomY-viewY;
 
-  return {g,byGen,pos,width:bounds.width,height,automaticX};
+  return {g,byGen,pos,width:bounds.width,height,viewY,automaticX,automaticY,
+    normalizationShift:bounds.shift};
 }
 
 function assignPedigreeNumbers(layout) {
@@ -18452,6 +18914,36 @@ function drawUnion(svg,r,pos) {
     return;
   }
 
+  if (Math.abs(a.y-b.y) > 0.75) {
+    // En ajuste manual, una pareja puede tener distintas alturas. Dibujar
+    // una polilínea ortogonal conectada a AMBOS símbolos, con el eje parental
+    // sobre el tramo central, en vez de la horizontal huérfana anterior.
+    const elbow = (offset,className) => svg.appendChild(svgEl("path",{
+      d:`M ${a.x} ${a.y+offset} H ${midX+offset} V ${b.y+offset} H ${b.x}`,
+      class:className,fill:"none"
+    }));
+    if (r.consanguineous) {
+      elbow(-3,"consanguinity-line");
+      elbow(3,"consanguinity-line");
+      const degree=String(r.consanguinity_degree||"").trim();
+      if (degree) svg.appendChild(svgEl("text",{
+        x:midX,y:y-12,class:"consanguinity-label"
+      },degree));
+    } else elbow(0,"pedigree-line");
+    if (ended) {
+      // Marcas convencionales de fin de relación en el tramo central.
+      [-4,4].forEach(dx=>svg.appendChild(svgEl("line",{
+        x1:midX+dx-4,y1:y+10,x2:midX+dx+4,y2:y-10,
+        class:"relationship-end-mark"
+      })));
+    }
+    drawReproductiveStatusMarker(svg,r,pos,{x:midX,y});
+    addRelationshipHitTarget(svg,r,{routed:true,points:[
+      [a.x,a.y],[midX,a.y],[midX,b.y],[b.x,b.y]
+    ]},x1,x2,y);
+    return;
+  }
+
   if (r.consanguineous) {
     const offset = 4;
     drawStraightLineAt(y-offset,"consanguinity-line");
@@ -18514,7 +19006,7 @@ function drawMultipleBirthBranch(
       x1:midX,
       y1:junctionY,
       x2:p.x,
-      y2:childTop,
+      y2:p.y-C.symbolSize/2,
       class:"pedigree-line"
     }));
   });
@@ -18739,7 +19231,7 @@ function drawSiblingGroup(svg,r,pos,laneOffset=0) {
 
     svg.appendChild(svgEl("line", {
       x1:p.x, y1:sibY,
-      x2:p.x, y2:topY,
+      x2:p.x, y2:p.y-C.symbolSize/2,
       class:"pedigree-line"
     }));
   });
@@ -24064,12 +24556,35 @@ function installPedigreeViewer() {
   if (reorderButton) reorderButton.addEventListener("click",()=>{
     if (personDragState) return;
     siblingReorderMode=!siblingReorderMode;
+    horizontalLayoutMode=!siblingReorderMode;
+    unrestrictedLayoutMode=false;
+    updateFreeLayoutButton();
     updateSiblingReorderButton();
     message(siblingReorderMode
       ? t("message.reorder.enabled")
       : t("message.reorder.disabled"),"info");
   });
   updateSiblingReorderButton();
+  const horizontalButton=$('pedigreeHorizontalLayoutBtn');
+  if (horizontalButton) horizontalButton.addEventListener('click',()=>{
+    if (personDragState) return;
+    horizontalLayoutMode=true;
+    unrestrictedLayoutMode=false;
+    siblingReorderMode=false;
+    updateSiblingReorderButton();updateFreeLayoutButton();
+    message(t('message.layout.horizontalModeEnabled'),'info');
+  });
+  const unrestrictedButton=$('pedigreeUnrestrictedLayoutBtn');
+  if (unrestrictedButton) unrestrictedButton.addEventListener('click',()=>{
+    if (personDragState) return;
+    unrestrictedLayoutMode=!unrestrictedLayoutMode;
+    horizontalLayoutMode=!unrestrictedLayoutMode;
+    siblingReorderMode=false;
+    updateSiblingReorderButton();updateFreeLayoutButton();
+    message(t(unrestrictedLayoutMode ? 'message.layout.unrestrictedModeEnabled'
+      : 'message.layout.unrestrictedModeDisabled'),'info');
+  });
+  updateFreeLayoutButton();
   const zoomOut = $("pedigreeZoomOutBtn");
   const fit = $("pedigreeFitBtn");
   const fitWidth = $("pedigreeFitWidthBtn");
@@ -24157,7 +24672,16 @@ function installPedigreeViewer() {
       uid,pointerId:event.pointerId,container,
       startClientX:event.clientX,startClientY:event.clientY,
       startX:currentLayout.pos.get(uid).x,
+      startY:currentLayout.pos.get(uid).y,
+      autoY:currentLayout.automaticY.get(uid),
+      horizontal:horizontalLayoutMode,
+      unrestricted:unrestrictedLayoutMode,
       autoX:currentLayout.automaticX.get(uid),
+      initialUnrestrictedX:(manualUnrestrictedOverrides()[uid]?.x ??
+        (currentLayout.pos.get(uid).x-currentLayout.automaticX.get(uid)-
+          (currentLayout.normalizationShift || 0))),
+      initialUnrestrictedY:(manualUnrestrictedOverrides()[uid]?.y ??
+        (currentLayout.pos.get(uid).y-currentLayout.automaticY.get(uid))),
       // Restar la base automática permite comenzar el gesto desde la
       // coordenada actual incluso tras ajustes anteriores de la misma fila.
       initialOffset:currentLayout.pos.get(uid).x - currentLayout.automaticX.get(uid),
@@ -24169,7 +24693,7 @@ function installPedigreeViewer() {
       sourceIndex:moveIndex,
       targetIndex:moveIndex,
       marker:null,
-      moved:false,frame:null,lastDraw:0,pendingX:null
+      moved:false,frame:null,lastDraw:0,pendingX:null,pendingY:null
     };
   });
 
@@ -24204,54 +24728,73 @@ function installPedigreeViewer() {
   const flushPersonDrag = () => {
     const state = personDragState;
     if (!state || !state.moved || state.pendingX === null) return;
-    const requested = state.pendingX;
+    const requestedX = state.pendingX;
+    const requestedY = state.pendingY ?? 0;
     state.pendingX = null;
-    // Gesto vertical: no cambia la posición horizontal.
-    if (Math.abs(requested) < 6) return;
+    state.pendingY = null;
     if (state.reorder) {
-      updateSiblingReorderPreview(state,requested);
+      updateSiblingReorderPreview(state,requestedX);
       return;
     }
-    const dx = requested / state.pxPerUnit;
-    const overrides = manualHorizontalOverrides();
-    const writeOffset = fraction => {
-      const x = Math.round((state.initialOffset + dx*fraction)*10)/10;
-      if (Math.abs(x) >= .5) overrides[state.uid] = x;
-      else delete overrides[state.uid];
-    };
-    liveDragUid = state.uid;
-    writeOffset(1);
 
-    // Si desplazar un hermano empuja al grupo contra el margen izquierdo,
-    // la normalización del lienzo podría invertir aparentemente el gesto.
-    // Limitamos el arrastre al máximo realmente disponible: nunca debe
-    // desplazarse a la derecha cuando el ratón se lleva a la izquierda.
-    let trial = calculateLayout();
-    const actualX = trial.pos.get(state.uid)?.x ?? state.startX;
-    const backwards = dx < 0
-      ? actualX > state.startX + 0.5
-      : (dx > 0 && actualX < state.startX - 0.5);
-    if (backwards) {
-      let lo = 0, hi = 1;
-      for (let step = 0; step < 7; step++) {
-        const fraction = (lo+hi)/2;
-        writeOffset(fraction);
-        trial = calculateLayout();
-        const actual = trial.pos.get(state.uid)?.x ?? state.startX;
-        const valid = dx < 0
-          ? actual <= state.startX + .5
-          : actual >= state.startX - .5;
-        if (valid) lo = fraction;
-        else hi = fraction;
+    const dx = requestedX / state.pxPerUnit;
+    const dy = requestedY / state.pxPerUnit;
+    if (!state.unrestricted && Math.abs(requestedX) < 6) return;
+    if (state.unrestricted) {
+      // El gesto es libre; los cruces y las fratrias se recalculan a partir
+      // de estas coordenadas, sin empujar ni reordenar a terceros.
+      const offsets=manualUnrestrictedOverrides();
+      if (!Object.keys(offsets).length &&
+          !(family.layout_overrides.stable_order || []).length) {
+        // Congelar ANTES del primer arrastre el orden automatico base.
+        family.layout_overrides.stable_order=stableLayoutUids(currentLayout);
       }
-      if (lo < 0.01) {
-        const original = state.before.layout_overrides?.manual_x?.[state.uid];
-        if (Number.isFinite(Number(original)) && original !== undefined) {
-          overrides[state.uid] = original;
-        } else {
-          delete overrides[state.uid];
+      offsets[state.uid]={
+        x:Math.round(Math.max(-20000,Math.min(20000,
+          state.initialUnrestrictedX+dx))*10)/10,
+        y:Math.round(Math.max(-20000,Math.min(20000,
+          state.initialUnrestrictedY+dy))*10)/10
+      };
+      renderPedigree();
+      return;
+    }
+    if (Math.abs(requestedX) >= 0.5) {
+      const overrides = manualHorizontalOverrides();
+      const writeOffset = fraction => {
+        const x = Math.round((state.initialOffset + dx*fraction)*10)/10;
+        if (Math.abs(x) >= .5) overrides[state.uid] = x;
+        else delete overrides[state.uid];
+      };
+      liveDragUid = state.uid;
+      writeOffset(1);
+
+      // Conservar la protección rc1 frente a gestos horizontales invertidos
+      // por normalización. Los ajustes Y son independientes.
+      let trial = calculateLayout();
+      const actualX = trial.pos.get(state.uid)?.x ?? state.startX;
+      const backwards = dx < 0
+        ? actualX > state.startX + 0.5
+        : (dx > 0 && actualX < state.startX - 0.5);
+      if (backwards) {
+        let lo = 0, hi = 1;
+        for (let step = 0; step < 7; step++) {
+          const fraction = (lo+hi)/2;
+          writeOffset(fraction);
+          trial = calculateLayout();
+          const actual = trial.pos.get(state.uid)?.x ?? state.startX;
+          const valid = dx < 0
+            ? actual <= state.startX + .5
+            : actual >= state.startX - .5;
+          if (valid) lo = fraction;
+          else hi = fraction;
         }
-      } else writeOffset(lo);
+        if (lo < 0.01) {
+          const original = state.before.layout_overrides?.manual_x?.[state.uid];
+          if (Number.isFinite(Number(original)) && original !== undefined)
+            overrides[state.uid] = original;
+          else delete overrides[state.uid];
+        } else writeOffset(lo);
+      }
     }
     renderPedigree();
   };
@@ -24271,6 +24814,7 @@ function installPedigreeViewer() {
       try { container.setPointerCapture(state.pointerId); } catch (_) {}
     }
     state.pendingX = dx;
+    state.pendingY = dy;
     event.preventDefault();
     // Evita el redibujado del SVG y los paneles en cada evento de ratón.
     if (state.frame === null) {
@@ -24304,6 +24848,7 @@ function installPedigreeViewer() {
     }
     if (state.moved && !cancelled) {
       state.pendingX = event.clientX-state.startClientX;
+      state.pendingY = event.clientY-state.startClientY;
       flushPersonDrag();
     }
     if (state.marker && state.marker.isConnected) state.marker.remove();
@@ -24323,12 +24868,21 @@ function installPedigreeViewer() {
         }
       }
     } else {
-      const drawnX = currentLayout?.pos?.get(state.uid)?.x ?? state.startX;
-      changed = state.moved && !cancelled && Math.abs(drawnX-state.startX) > 0.75;
+      const drawn = currentLayout?.pos?.get(state.uid);
+      const drawnX = drawn?.x ?? state.startX;
+      const drawnY = drawn?.y ?? state.startY;
+      changed = state.moved && !cancelled && (
+        Math.abs(drawnX-state.startX) > 0.75 ||
+        Math.abs(drawnY-state.startY) > 0.75
+      );
     }
     if (!changed && !state.reorder) {
       family.layout_overrides.manual_x =
-        {...(state.before.layout_overrides && state.before.layout_overrides.manual_x || {})};
+        {...(state.before.layout_overrides?.manual_x || {})};
+      family.layout_overrides.manual_y =
+        {...(state.before.layout_overrides?.manual_y || {})};
+      family.layout_overrides.manual_free_xy =
+        {...(state.before.layout_overrides?.manual_free_xy || {})};
     }
     if (changed) {
       undoHistory.push(state.before);
@@ -24885,7 +25439,7 @@ function renderPedigree() {
 
     const svg = svgEl("svg", {
       xmlns:svgNS,
-      viewBox:`0 0 ${layout.width} ${layout.height}`,
+      viewBox:`0 ${layout.viewY || 0} ${layout.width} ${layout.height}`,
       class:"pedigree-svg"
     });
 
@@ -25051,6 +25605,16 @@ function renderPedigree() {
       updateNotesPanel();
       syncPedigreeSearchFromSelection();
     }
+
+    // Solo una edición efectiva de ESTA MISMA familia activa el registro
+    // de orden; cargar, abrir, hacer zoom o exportar no altera el JSON.
+    if (lastLaidOutFamily===family && lastLaidOutSignature !== null &&
+        lastLaidOutSignature !== familyStructuralSignature()) {
+      family.layout_overrides = family.layout_overrides || {};
+      family.layout_overrides.stable_order = stableLayoutUids(layout);
+    }
+    lastLaidOutFamily=family;
+    lastLaidOutSignature=familyStructuralSignature();
 
     updateFamilyReviewIndicator();
     updateUnsavedIndicator();
@@ -27730,8 +28294,12 @@ function syncFamilyToHeader() {
     pedigreeNumbersVisible();
 }
 
-function syncHeaderAfterManualEdit() {
+function syncHeaderAfterManualEdit(event) {
   syncHeaderToFamily();
+  if (event?.target?.id === "familyId") {
+    autosaveFamilyIdConfirmed = !!String(family.family_id || "").trim();
+    if (!autosaveFamilyIdConfirmed) cancelPendingAutosave();
+  }
   clearRedoHistory();
   updateUnsavedIndicator();
   updateFamilyReviewIndicator();
@@ -27742,6 +28310,7 @@ $("familyId").addEventListener(
   "input",
   syncHeaderAfterManualEdit
 );
+$("familyId").addEventListener("blur",()=>scheduleFamilyAutosave(true));
 
 $("indication").addEventListener(
   "input",
@@ -28192,63 +28761,40 @@ function exactSavedCaseFromSearch() {
 async function listSaved(
   preferredId=null
 ) {
-  const previousId =
-    preferredId ||
-    selectedSavedCaseId;
-
   try {
-    const items = [];
+    const previousId =
+      preferredId ||
+      selectedSavedCaseId;
 
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
+    const res =
+      await window.PedigrAPPLocalStorage.request(
+        C.api+"?action=list",
+        {cache:"no-store"}
+      );
 
-      if (
-        !key ||
-        !key.startsWith(LOCAL_STORAGE_PREFIX)
-      ) {
-        continue;
-      }
+    const text =
+      await res.text();
 
-      try {
-        const raw = localStorage.getItem(key);
-        const data = JSON.parse(raw || "null");
-
-        if (!data || typeof data !== "object") {
-          continue;
-        }
-
-        const familyId = String(
-          data.family_id ||
-          key.slice(LOCAL_STORAGE_PREFIX.length)
-        );
-        const reviewStatus =
-          data.review_status &&
-          typeof data.review_status === "object"
-            ? data.review_status
-            : {};
-
-        items.push({
-          family_id: familyId,
-          indication: String(data.indication || ""),
-          reviewed: reviewStatus.reviewed === true,
-          reviewed_at:
-            reviewStatus.reviewed === true
-              ? String(reviewStatus.reviewed_at || "")
-              : "",
-          modified: String(data.updated_at || "")
-        });
-      } catch (err) {
-        // One damaged localStorage record must not prevent opening the others.
-      }
+    if (!text.trim()) {
+      throw new Error(
+        t("validation.storage.emptyApi")
+      );
     }
 
-    savedCaseItems = items.sort((a,b) =>
-      a.family_id.localeCompare(
-        b.family_id,
-        window.PedigrAPPi18n?.current()==='en'?'en':'es',
-        {numeric:true}
-      )
-    );
+    const payload =
+      JSON.parse(text);
+
+    if (!payload.ok) {
+      throw new Error(
+        payload.error ||
+        "Error listando casos."
+      );
+    }
+
+    savedCaseItems =
+      Array.isArray(payload.families)
+        ? payload.families
+        : [];
 
     updateSavedCaseReviewFilterButtons();
 
@@ -28256,24 +28802,24 @@ async function listSaved(
       previousId &&
       savedCaseById(previousId)
     ) {
-      setSelectedSavedCase(previousId);
+      setSelectedSavedCase(
+        previousId
+      );
     } else {
-      clearSelectedSavedCase(false);
+      clearSelectedSavedCase(
+        false
+      );
     }
-  } catch (err) {
+  } catch(err) {
     savedCaseItems = [];
     clearSelectedSavedCase(false);
-    updateSavedCaseReviewFilterButtons();
 
     message(
-      t("online.storage.accessFailure",{error:err.message}),
+      "No se pudieron listar los casos: "+
+      err.message,
       "error"
     );
   }
-}
-
-function localStorageKeyForFamily(id) {
-  return LOCAL_STORAGE_PREFIX + String(id || "");
 }
 
 function resolvedSavedCaseId() {
@@ -28309,128 +28855,210 @@ async function deleteSavedFamily(id) {
     return;
   }
 
-  const item = savedCaseById(id);
-  const indication =
-    item && String(item.indication || "").trim();
-  const detail = indication ? `\n${indication}` : "";
+  const item =
+    savedCaseById(id);
 
-  if (!confirm(t("online.storage.confirmDelete",{id,detail}))) {
+  const indication =
+    item &&
+    String(
+      item.indication || ""
+    ).trim();
+
+  const detail =
+    indication
+      ? `\n${indication}`
+      : "";
+
+  if (
+    !confirm(
+      t("family.confirmDelete",{id,detail})
+    )
+  ) {
     return;
   }
 
   try {
-    localStorage.removeItem(
-      localStorageKeyForFamily(id)
-    );
+    cancelPendingAutosave();
+    if (autosaveInFlight) await autosaveInFlight.catch(()=>{});
+    const res =
+      await window.PedigrAPPLocalStorage.request(
+        C.api+"?action=delete",
+        {
+          method:"POST",
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+          body:JSON.stringify({
+            family_id:id
+          })
+        }
+      );
+
+    const text =
+      await res.text();
+
+    if (!text.trim()) {
+      throw new Error(
+        t("validation.storage.emptyApi")
+      );
+    }
+
+    const payload =
+      JSON.parse(text);
+
+    if (!payload.ok) {
+      throw new Error(
+        payload.error ||
+        t("validation.storage.deleteError")
+      );
+    }
 
     clearSelectedSavedCase(true);
     await listSaved();
 
-    if (family.family_id === id) {
-      markCurrentFamilyAsUnsaved();
+    const deletedCurrent=family.family_id===id;
+    if (deletedCurrent) {
+      resetAutosaveContext();
+      family=emptyFamily();
+      family.family_id="FAM"+String(Date.now()).slice(-6);
+      selectedPersonUid=null;
+      clearUndoHistory();
+      syncFamilyToHeader();
+      resetPersonForm();
+      markCurrentFamilyAsSaved();
+      renderPedigree();
+    } else {
+      // Borrar otro caso no cancela el autoguardado pendiente del caso activo.
+      updateUnsavedIndicator();
     }
 
     message(
-      family.family_id === id
-        ? t("online.storage.deletedCurrent",{id})
-        : t("online.storage.deleted",{id}),
+      deletedCurrent
+        ? t("family.deleted",{id})
+        : `Caso ${id} borrado.`,
       "success"
     );
   } catch(err) {
     message(
-      t("online.storage.deleteFailure",{error:err.message}),
+      "No se pudo borrar el caso: "+
+      err.message,
       "error"
     );
   }
 }
 
-async function saveFamily(
-  options={}
-) {
-  const silentSuccess =
-    !!(
-      options &&
-      typeof options === "object" &&
-      options.silentSuccess === true
-    );
-
+async function saveFamily(options={}) {
+  const auto=!!(options && options.auto===true);
+  const silentSuccess=auto || !!(options && options.silentSuccess===true);
+  cancelPendingAutosave();
+  // Guardar siempre en serie, incluso al pulsar Guardar durante un autoguardado.
+  if (autosaveInFlight) {
+    await autosaveInFlight;
+    if (!hasUnsavedFamilyChanges()) return true;
+  }
   syncHeaderToFamily();
+  if (auto && (!canAutosaveCurrentFamily() || !hasUnsavedFamilyChanges())) return true;
+  if (!auto) { autosaveError=""; autosaveFailedSignature=""; }
 
-  try {
-    validate(family);
+  const epoch=autosaveEpoch;
+  const currentCaseId=String(family.family_id || "").trim();
+  const snapshot=cloneFamilyState(family);
+  const signature=JSON.stringify(snapshot);
+  const isCurrentSavedCase=autosaveCurrentCaseId===currentCaseId && !!currentCaseId;
+  const createOnly=!isCurrentSavedCase;
 
-    if (!family.family_id) {
-      throw new Error(
-        t("validation.storage.saveId")
-      );
-    }
-
-    const savedFamily =
-      cloneFamilyState(family);
-
-    savedFamily.updated_at =
-      new Date().toISOString();
-
-    localStorage.setItem(
-      localStorageKeyForFamily(
-        savedFamily.family_id
-      ),
-      JSON.stringify(savedFamily)
-    );
-
-    family.updated_at =
-      savedFamily.updated_at;
-
-    await listSaved(
-      savedFamily.family_id
-    );
-
-    markCurrentFamilyAsSaved();
-
-    if (!silentSuccess) {
-      message(
-        t("online.storage.saved",{id:savedFamily.family_id}),
-        "success"
-      );
-    }
-
-    return true;
-  } catch(err) {
-    const quotaMessage =
-      err && err.name === "QuotaExceededError"
-        ? t("online.storage.quota")
-        : "";
-
-    message(
-      (err && err.message
-        ? err.message
-        : String(err)) +
-      quotaMessage,
-      "error"
-    );
-
+  // Una importación o un identificador nuevo no deben sobrescribir un caso
+  // ya almacenado por simple autoguardado, nunca sin autorización.
+  if (createOnly && savedCaseById(currentCaseId)) {
+    autosaveError=t("autosave.error.existing");
+    autosaveFailedSignature=signature;
+    updateUnsavedIndicator();
+    if (!auto) message(autosaveError,"error");
     return false;
   }
+
+  let promise;
+  try {
+    validate(snapshot);
+    if (!currentCaseId) throw new Error(t("validation.storage.saveId"));
+    autosaveSaving=true;
+    autosaveError="";
+    updateUnsavedIndicator();
+    promise=(async()=>{
+      const headers={"Content-Type":"application/json"};
+      if (!createOnly && autosaveServerRevision) {
+        headers["X-Pedigrapp-Revision"]=autosaveServerRevision;
+      }
+      const res=await window.PedigrAPPLocalStorage.request(C.api+"?action=save"+(createOnly?"&create=1":""),{
+        method:"POST", headers, body:JSON.stringify(snapshot)
+      });
+      const body=await res.text();
+      if (!body.trim()) throw new Error(t("validation.storage.emptyApi"));
+      const payload=JSON.parse(body);
+      if (!res.ok || !payload.ok) {
+        throw new Error(payload.error || t("validation.storage.saveError"));
+      }
+      return payload;
+    })();
+    autosaveInFlight=promise;
+    const payload=await promise;
+    if (epoch===autosaveEpoch && String(family.family_id || "").trim()===currentCaseId) {
+      autosaveCurrentCaseId=currentCaseId;
+      autosaveServerRevision=payload.revision || null;
+      autosaveFamilyIdConfirmed=true; // Guardar manualmente convierte el caso en uno persistido.
+      savedFamilySignature=signature; // Nunca se marca como guardada una edición posterior.
+      autosaveFailedSignature="";
+      autosaveError="";
+      if (!hasUnsavedFamilyChanges()) showAutosavedStatus();
+      void listSaved(currentCaseId);
+      if (!silentSuccess) message(t("autosave.message.manualSaved",{id:currentCaseId}),"success");
+    }
+    return true;
+  } catch(err) {
+    if (epoch===autosaveEpoch) {
+      autosaveError=String(err.message || err);
+      autosaveFailedSignature=signature;
+      if (!auto) message(autosaveError,"error");
+    }
+    return false;
+  } finally {
+    if (autosaveInFlight===promise) autosaveInFlight=null;
+    if (epoch===autosaveEpoch) autosaveSaving=false;
+    // La familia pudo haber cambiado mientras terminaba la solicitud anterior.
+    // Reexaminar siempre el estado actual para no perder su autoguardado.
+    updateUnsavedIndicator();
+  }
+}
+
+async function flushAutosaveBeforeSwitch() {
+  cancelPendingAutosave();
+  if (autosaveInFlight) await autosaveInFlight.catch(()=>{});
+  if (hasUnsavedFamilyChanges()) await saveFamily({auto:true,silentSuccess:true});
+  if (hasUnsavedFamilyChanges()) {
+    return confirm(t("autosave.confirm.unsavedSwitch"));
+  }
+  return true;
 }
 
 async function loadFamily(id) {
   if (!id) return;
+  if (!await flushAutosaveBeforeSwitch()) return;
 
   try {
-    const raw = localStorage.getItem(
-      localStorageKeyForFamily(id)
+    const res = await window.PedigrAPPLocalStorage.request(
+      C.api+"?action=load&id="+encodeURIComponent(id)+"&v="+Date.now(),
+      {cache:"no-store"}
     );
 
-    if (!raw) {
-      throw new Error(
-        t("online.storage.missing")
-      );
-    }
+    const text=await res.text();
+    if (!text.trim()) throw new Error(t("validation.storage.emptyApi"));
+    const payload=JSON.parse(text);
+    if (!payload.ok) throw new Error(payload.error || t("validation.storage.loadError"));
 
-    const data = JSON.parse(raw);
-
-    family = normalizeFamily(data);
+    family=normalizeFamily(payload.family);
     validate(family);
+    resetAutosaveContext(id,payload.revision || null);
     selectedPersonUid = null;
     clearUndoHistory();
     setSelectedSavedCase(id);
@@ -28439,16 +29067,10 @@ async function loadFamily(id) {
     markCurrentFamilyAsSaved();
     renderPedigree();
     fitPedigreeToWidthAfterLoad();
-    message(
-      t("online.storage.loaded",{id}),
-      "success"
-    );
+    message("Caso "+id+" cargado.","success");
     announceLoadedFamilyReview();
   } catch(err) {
-    message(
-      t("online.storage.loadFailure",{error:err.message}),
-      "error"
-    );
+    message(err.message,"error");
   }
 }
 
@@ -28595,16 +29217,19 @@ document.addEventListener(
   }
 );
 
-$("newFamilyBtn").onclick=()=>{
+$("newFamilyBtn").onclick=async()=>{
   if (!confirm(t("confirm.family.new"))) return;
+  if (!await flushAutosaveBeforeSwitch()) return;
+  resetAutosaveContext();
   family=emptyFamily();
   family.family_id="FAM"+String(Date.now()).slice(-6);
   selectedPersonUid = null;
   clearUndoHistory();
   syncFamilyToHeader();
   resetPersonForm();
+  markCurrentFamilyAsSaved(); // El caso nuevo se crea en servidor con su primera edición.
   renderPedigree();
-  message("Nueva familia creada.","success");
+  message(t("autosave.message.newCase"),"success");
 };
 
 $("resetTreeBtn").onclick=()=>{
@@ -29236,7 +29861,9 @@ $("importPedInput").addEventListener("change", async e=>{
     if(mode===null)return;
     const imported=chooseImportedPedGender(parsed,mode);
     validate(imported);
-    pushUndoState();
+    if (!await flushAutosaveBeforeSwitch()) return;
+    resetAutosaveContext();
+    clearUndoHistory();
     family=imported;
     family.review_status={reviewed:false,reviewed_at:""};
     selectedPersonUid=null;
@@ -31621,6 +32248,14 @@ function pdfPrintAppHeader(version) {
   </div>`;
 }
 
+function pdfPrintDisclosureHtml() {
+  const url="https://github.com/josemilezana/pedigrapp/blob/main/TERMS_OF_USE.md";
+  return `<footer class="report-disclosure" role="contentinfo">
+    ${pdfPrintEscape(t("pdf.disclosure.text"))}
+    <a href="${url}" rel="noopener noreferrer">${pdfPrintEscape(t("pdf.disclosure.terms"))}</a>
+  </footer>`;
+}
+
 function pdfPrintMeta(report) {
   const doc = report.clinical_documentation || {};
   const documentDate = value => {
@@ -31840,6 +32475,7 @@ async function exportCurrentPedigreePdf() {
     const pedigreeCommentsHtml = pdfPrintPedigreeCommentsHtml(report.pedigree_comments);
     const peopleHtml = pdfPrintPeopleHtml(report.people);
     const commentsHtml = pdfPrintCommentsHtml(report.extended_comments);
+    const disclosureHtml = pdfPrintDisclosureHtml();
 
     const printWindow = window.open("", "_blank");
 
@@ -31860,6 +32496,7 @@ async function exportCurrentPedigreePdf() {
           ${pedigreeCommentsHtml}
           ${peopleHtml}
           ${commentsHtml}
+          ${disclosureHtml}
         </div>
       </main>`;
 
@@ -31874,6 +32511,7 @@ async function exportCurrentPedigreePdf() {
           ${pedigreeCommentsHtml}
           ${peopleHtml}
           ${commentsHtml}
+          ${disclosureHtml}
         </div>
       </section>`;
 
@@ -32083,8 +32721,11 @@ h2 {
 /* Más separación ENTRE apartados, poco espacio dentro de cada apartado. */
 .report-section { margin:13pt 0 0; padding:0; }
 .first-report-section { margin-top:0; }
-.report-content { margin-top:-7pt; }
-.landscape-page .legend-section { margin-top:-6pt; }
+/* rc6: separación intermedia respecto a rc4/rc5; mantiene
+   un pequeño colchón tras etiquetas multilinea de los individuos. */
+.report-content { margin-top:9pt; }
+.landscape-page .landscape-content { margin-top:10pt; }
+.landscape-page .legend-section { margin-top:0; }
 .landscape-page .landscape-content {
   margin-left:10pt;
   margin-right:10pt;
@@ -32241,6 +32882,20 @@ h2 {
   line-height:1.22;
   color:#222;
 }
+
+/* Pie discreto del informe, no del propio modelo familiar. */
+.report-disclosure {
+  margin:17pt 0 0;
+  padding:0;
+  font-size:5.8pt;
+  line-height:1.35;
+  color:#7a8089;
+  overflow-wrap:anywhere;
+  break-inside:avoid;
+  page-break-inside:avoid;
+}
+.report-disclosure a { color:inherit; text-decoration:underline; text-decoration-color:#c3c8cc; }
+.landscape-page .report-disclosure { font-size:5.2pt; margin-top:12pt; }
 
 /* Aviso sólo en pantalla: no forma parte del PDF. */
 .print-help {
@@ -32501,6 +33156,8 @@ $("importJsonInput").addEventListener("change", async e=>{
   try {
     const data=JSON.parse(await f.text());
     validate(data);
+    if (!await flushAutosaveBeforeSwitch()) return;
+    resetAutosaveContext();
     family=normalizeFamily(data);
     selectedPersonUid = null;
     clearUndoHistory();
@@ -32531,7 +33188,9 @@ $("importJsonInput").addEventListener("change", async e=>{
   clearUndoHistory();
   syncFamilyToHeader();
   resetPersonForm();
+  resetAutosaveContext();
   markCurrentFamilyAsSaved();
   renderPedigree();
+  autosaveEnabled=true;
 })();
 })();
