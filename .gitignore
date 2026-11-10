@@ -1,76 +1,59 @@
-# ============================================================
-# PedigrAPP - files that must never be published
-# ============================================================
-
-# Clinical/local family data
+# Never publish clinical family records: only protective placeholders in /data
 /data/**
 !/data/.htaccess
 !/data/.gitkeep
 
-# Non-public examples and test material
+# Private local example cases and separate test installations
 /examples/
-/tests/
-/test/
+/_v*_test/
 
-# Credentials and private configuration
+# Local credentials, environment and backups
 .env
 .env.*
-.htpasswd
-.htpasswd.*
 *.pem
 *.key
 *.p12
 *.pfx
-*.cnf
-*.kdbx
-
-# Databases, dumps and logs
-*.sql
-*.sqlite
-*.sqlite3
-*.db
-*.dump
-*.log
-
-# Python/test/editor/system caches
-__pycache__/
-*.pyc
-*.pyo
-.pytest_cache/
-.coverage
-.DS_Store
-Thumbs.db
 *.bak
+*.backup
 *.tmp
-*.old
-*.orig
-*.rej
 *.swp
 *.swo
-*~
-
-# Local archives and packages
 *.zip
 *.tar
 *.tar.gz
 *.tgz
-*.7z
-*.rar
+*~
 
-# Local installations and internal validation reports
-/_v*_test/
-/*_VALIDATION.md
+# System and generated files
+.DS_Store
+Thumbs.db
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Internal tests, validation reports and server configuration
+/tests/
+/test/
+/V13_RC*.md
 /DEPLOYMENT_*.md
 /I18N_REVIEW_*.md
-/V12_CONSOLIDACION_LOCAL.md
-*.sqlite*
-*.backup
-*.backup.*
-*.log.*
-*.tmp.*
-*.bak.*
-
-# Internal translation validation artifacts
 /scripts/audit_untranslated.py
 /scripts/check_i18n.py
 /scripts/i18n_*.json
+.htpasswd
+.htpasswd.*
+*.log
+*.log.*
+*.sql
+*.sqlite*
+*.db
+*.dump
+*.bak.*
+*.backup.*
+*.tmp.*
+*.old
+*.orig
+*.rej
+*.7z
+*.rar

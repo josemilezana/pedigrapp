@@ -1,77 +1,60 @@
 # PedigrAPP
 
-**Version 1.2** · Bilingual English/Spanish pedigree editor for clinical genetics.
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23498335.svg)](https://doi.org/10.5281/zenodo.23498335)
 
-## What is new in v1.2
+**Version 1.3** · A bilingual (Español / English) web application to create, edit, review and export pedigrees in clinical genetics.
 
-- Safer PED import/export: explicit handling of SEX codes, optional classic symbols, condition-specific phenotype selection, missing values and confirmed unaffected status. Complex relationships are not silently converted into genetic parent roles.
-- Optional clinical documentation: history collection/update dates, geneticist or physician recording the history, informant and maternal/paternal ancestry. Entered values appear in the clinical PDF.
-- Optional year of death, compact chronology and improved handling of deceased individuals.
-- Improved partnership and adoption shortcuts and assisted-reproduction QC.
-- Separate publication-figure export to SVG, PNG and print-to-PDF. Explicit identifiers and free text are omitted by default; chronology is opt-in. Family structure can still identify people, so manual confidentiality review is required.
-- Native JSON schema **4.22**, with backward compatibility and no database migration. Existing v1.1 functionality, bilingual help and clinical exports are retained.
+PedigrAPP implements pedigree symbols and conventions informed by the standardized nomenclature publications of Bennett and colleagues (1995, 2008, 2022) and the 2025 correction. It supports complex family relationships, adoption, multiple gestation, assisted reproduction, clinical and genetic annotations, advisory quality checks and structured exports. These publications do not imply endorsement of PedigrAPP.
 
-Technical checks do not constitute independent clinical validation or endorsement by Bennett's authors or NSGC.
+## Features
 
-## Server edition (`main`)
+- Pedigree editor with automatic layout and protected horizontal or unrestricted X/Y manual adjustment. Manual positions can be undone or reset, and are persisted separately from clinical relationships.
+- Sex assigned at birth and gender identity represented independently; adoption, donors, gestational carriers and other nonstandard parentage relationships.
+- Multiple unions, siblings, twins and other multiple gestations; family documentation and condition-specific phenotype records.
+- JSON import/export, PED import/export (with explicit limitations), SVG/PNG export, clinical PDF and publication-oriented figures.
+- Bilingual user interface, help, nomenclature guidance and clinical PDF (Spanish/English).
+- Autosave with status feedback, conflict detection and protected case creation. **For a new family, autosave starts only after the user enters a Family ID**; previously saved families autosave when loaded. Manual Save is always available.
 
-Requires PHP and a web server; no MySQL or frontend build framework. `api.php` implements JSON persistence. Install into a new directory, configure external authentication/authorization and HTTPS, and give the PHP process the required permissions on the data directory.
+**Native JSON format:** 4.23. Older family JSON files remain supported by the application; always retain a backup of the original case files before upgrading.
 
-`data/` contains only `.htaccess` and an empty `.gitkeep` in this distribution. On upgrades, preserve all existing local family files; do not synchronize or overwrite the live data directory from a release archive.
+## Installation
 
-The `.htaccess` blocks direct file access only when Apache honors it. It does not protect the API. See [SECURITY.md](SECURITY.md) for Apache configuration requirements and deployment checks.
+1. Deploy the application files on a web server with PHP support (PHP 8 is recommended). The editor itself is HTML/CSS/JavaScript; saving/loading families requires `api.php`.
+2. Configure the server to allow the PHP process to read/write its own local `data/` directory. The public source package contains **only** `data/.htaccess` and `data/.gitkeep`, never saved cases.
+3. Restrict access to the application and API before using real clinical data. `data/.htaccess` blocks direct downloads **only when Apache honors `.htaccess` directives**. It does not secure the API or replace authentication, authorization, network access controls, backups and legal safeguards.
+4. Open `index.html` through the configured server. Select ES/EN in the top bar. Use **Help** for clinical notation, controls and the release history.
 
-For a disposable demonstration using synthetic data only:
+**Upgrading:** back up your installation and `data/` first. Replace the application code **without overwriting, deleting or copying your real `data/` records into a public repository**. Review [SECURITY.md](SECURITY.md) and [PRIVACY.md](PRIVACY.md).
+
+For trusted local development, `php -S 127.0.0.1:8080` can serve the application. This built-in PHP server does **not** enforce Apache `.htaccess` protections; do not expose it publicly with real case data.
+
+## PDF and report use
+
+The clinical PDF includes a subdued bilingual notice that reports are user-generated and require independent review. Generated reports may be used, including for professional and commercial purposes, subject to applicable law, confidentiality and third-party rights. See [Terms of Use](TERMS_OF_USE.md). The application's PDF links to this document in the public repository.
+
+Publication-oriented figures omit certain text fields by default, but **must not be assumed anonymous**: pedigree geometry and clinical annotations can still identify families. Review every figure before disclosure.
+
+## PED interoperability
+
+A conventional six-column PED file cannot encode all pedigree concepts (gender identity, nuanced reproduction, gestational relationships or clinical provenance). Import and export must be interpreted and verified by a qualified professional. PED sex fields do not establish gender identity.
+
+## Languages and maintenance
+
+Editable language sources are `locales/es.json` and `locales/en.json`; `locales/catalog.js` is generated for the browser. For string changes:
 
 ```bash
-php -S 127.0.0.1:8080
+python3 scripts/build_locale_bundle.py
 ```
 
-The PHP development server does not enforce Apache `.htaccess` rules and is not suitable for a clinical production deployment.
+See [I18N.md](I18N.md) and [CONTRIBUTING.md](CONTRIBUTING.md) for maintenance guidance. The locale-bundle generator is included for contributors. Internal validation tools and registries are not part of the public distribution.
 
-## Static edition (`online`)
+## Licence, rights and credits
 
-The independent `online` branch runs without PHP and saves cases in browser `localStorage`. Public application: https://josemilezana.github.io/pedigrapp/
+- **Software licence:** [European Union Public Licence, EUPL-1.2](LICENSE).
+- **Holder of exploitation rights:** Fundación Investigación Biomédica Hospital 12 de Octubre, as recorded in the Safe Creative registration.
+- **Registered title:** *PedigrAPP – Aplicación web para la creación y edición de árboles genealógicos en genética clínica*.
+- **Safe Creative registration:** `2610197365707` (deposited version v1.0.0).
+- **Concept DOI:** [10.5281/zenodo.23498335](https://doi.org/10.5281/zenodo.23498335). The DOI points to deposited Zenodo versions and does not mean this release has been deposited there.
+- See [AUTHORS.md](AUTHORS.md), [CITATION.cff](CITATION.cff), [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and [CHANGELOG.md](CHANGELOG.md).
 
-## License, ownership, and registration
-
-**License:** [European Union Public Licence v1.2 (EUPL-1.2)](LICENSE), approved for PedigrAPP by the rights holder. The full, unmodified license is included in `LICENSE`. SPDX identifier: `EUPL-1.2`.
-
-**Holder of all exploitation rights:** **Fundación Investigación Biomédica Hospital 12 de Octubre** (worldwide territorial scope, as stated in the Safe Creative registration).
-
-**Registered title:** *PedigrAPP – Aplicación web para la creación y edición de árboles genealógicos en genética clínica* (official Spanish title; retained verbatim).
-
-- **Safe Creative registration:** `2610197365707`.
-- **Certificate:** `2610197365707-29DQUR`.
-- **Registration date:** October 20, 2026, 08:01 UTC.
-- **Deposited archive:** `pedigrapp-main-online.zip`, containing GitHub snapshots of `main` and `online` deposited for v1.0.0.
-- **Registered historical snapshots:** tags `v1.0.0` and `online-v1.0.0`, preserved unchanged.
-
-### Registered authors of v1.0.0
-
-- **José Miguel Lezana Rosales**
-- **Carmen Palma Milla**
-- **Rubén Pérez de la Fuente**
-
-The complete clinical and scientific project team is listed in [AUTHORS.md](AUTHORS.md). Participation does not automatically imply authorship of later versions or scientific publications; credits depend on actual contributions and applicable criteria.
-
-For software citation information, see [CITATION.cff](CITATION.cff).
-
-### DOI and citation
-
-- **Concept DOI covering the PedigrAPP version series:** [`10.5281/zenodo.23498335`](https://doi.org/10.5281/zenodo.23498335).
-- **Archived DOI for PedigrAPP v1.0.1:** [`10.5281/zenodo.23498336`](https://doi.org/10.5281/zenodo.23498336).
-
-The concept DOI refers to the PedigrAPP version series and resolves to the latest version **available on Zenodo**. It does not imply that v1.2 has already been deposited there.
-
-## Languages
-
-Switch ES/EN in the header. User-entered clinical data are not translated or sent to a translation service. The dictionaries in `locales/es.json` and `locales/en.json` feed `locales/catalog.js`; see [I18N.md](I18N.md).
-
-## Privacy and distribution
-
-No saved family records, examples, test installations, internal validation reports or deployment-specific configuration are distributed. Protect clinical exports as well as the original records. See [PRIVACY.md](PRIVACY.md) and [SECURITY.md](SECURITY.md).
-
-## References and credits
-
-See [AUTHORS.md](AUTHORS.md), [CITATION.cff](CITATION.cff), [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and [CHANGELOG.md](CHANGELOG.md). Scientific references include Bennett et al. 1995, 2008, 2022 and the French et al. 2025 correction.
+Use of the software and its generated reports does not imply independent clinical certification, verification or endorsement by the project or its contributors.

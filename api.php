@@ -15,6 +15,18 @@ function fail_response(string $message, int $status = 400) {
     respond(array('ok' => false, 'error' => $message), $status);
 }
 
+// Serializa las escrituras al almacén clínico en Apache/PHP concurrente.
+// El fichero de bloqueo no contiene datos del caso ni se distribuye en ZIP.
+function acquireDataWriteLock(string $dataDir) {
+    $path = $dataDir . DIRECTORY_SEPARATOR . '.pedigrapp-write.lock';
+    $lock = @fopen($path, 'c');
+    if ($lock === false || !@flock($lock, LOCK_EX)) {
+        if ($lock !== false) @fclose($lock);
+        fail_response('No se pudo bloquear el almacén para escribir.', 500);
+    }
+    return $lock;
+}
+
 function safeFamilyId(string $id): string {
     $id = trim($id);
     if ($id === '' || !preg_match('/^[A-Za-z0-9._-]{1,80}$/', $id)) {
@@ -95,7 +107,8 @@ if ($action === 'load') {
     $data = json_decode($raw, true);
     if (!is_array($data)) fail_response('JSON almacenado no válido.', 500);
 
-    respond(array('ok' => true, 'family' => $data));
+    respond(array('ok' => true, 'family' => $data,
+        'revision' => hash('sha256', $raw)));
 }
 
 if ($action === 'delete') {
@@ -122,6 +135,7 @@ if ($action === 'delete') {
         $id .
         '.json';
 
+    $writeLock = acquireDataWriteLock($dataDir);
     if (!is_file($file)) {
         fail_response('No existe el caso.', 404);
     }
@@ -133,6 +147,8 @@ if ($action === 'delete') {
         );
     }
 
+    @flock($writeLock, LOCK_UN);
+    @fclose($writeLock);
     respond(array(
         'ok' => true,
         'family_id' => $id
@@ -170,23 +186,46 @@ if ($action === 'save') {
     if ($json === false) fail_response('No se pudo serializar.', 500);
 
     $file = $dataDir . DIRECTORY_SEPARATOR . $id . '.json';
+    $writeLock = acquireDataWriteLock($dataDir);
+    $createOnly = isset($_GET['create']) && $_GET['create'] === '1';
+    $expectedRevision = (string)($_SERVER['HTTP_X_PEDIGRAPP_REVISION'] ?? '');
+    if ($createOnly && is_file($file)) {
+        fail_response('Ya existe un caso con este ID. Cárgalo o utiliza otro identificador.', 409);
+    }
+    if (!$createOnly && $expectedRevision !== '') {
+        if (!is_file($file) ||
+            !hash_equals($expectedRevision, (string)hash_file('sha256', $file))) {
+            fail_response('El caso ha cambiado en otra pestaña o sesión. No se ha sobrescrito; vuelve a cargarlo tras conservar tus cambios.', 409);
+        }
+    }
     $tmp = $file . '.tmp.' . uniqid();
 
     if (file_put_contents($tmp, $json . PHP_EOL, LOCK_EX) === false) {
         fail_response('No se pudo escribir en data/. Revisa permisos.', 500);
     }
 
-    if (!rename($tmp, $file)) {
+    // link() crea una nueva ruta de forma atómica sin sobrescribir un caso
+    // existente cuando la petición procede de un autoguardado inicial.
+    if ($createOnly) {
+        if (!@link($tmp, $file)) {
+            @unlink($tmp);
+            fail_response('No se pudo crear el caso sin sobrescribir otro existente.', 409);
+        }
+        @unlink($tmp);
+    } elseif (!rename($tmp, $file)) {
         @unlink($tmp);
         fail_response('No se pudo finalizar el guardado.', 500);
     }
 
     @chmod($file, 0660);
+    @flock($writeLock, LOCK_UN);
+    @fclose($writeLock);
 
     respond(array(
         'ok' => true,
         'family_id' => $id,
-        'updated_at' => $data['updated_at']
+        'updated_at' => $data['updated_at'],
+        'revision' => hash('sha256', $json . PHP_EOL)
     ));
 }
 
